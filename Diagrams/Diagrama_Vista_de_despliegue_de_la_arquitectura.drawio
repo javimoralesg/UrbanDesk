@@ -1,0 +1,53 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" version="29.5.1">
+  <diagram name="Página-1" id="Gk7ecmonTJSunGPyK4_q">
+    <mxGraphModel dx="386" dy="277" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="N5ogT814I6zrMCMVFax4-9" parent="1" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;whiteSpace=wrap;" value="Servidor de Base de Datos" vertex="1">
+          <mxGeometry height="120" width="180" x="120" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="N5ogT814I6zrMCMVFax4-1" parent="1" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;whiteSpace=wrap;" value="Cliente (Navegador Web)" vertex="1">
+          <mxGeometry height="120" width="180" x="120" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="N5ogT814I6zrMCMVFax4-2" parent="1" style="html=1;dropTarget=0;whiteSpace=wrap;" value="Frontend&lt;div&gt;React&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="120" x="140" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="N5ogT814I6zrMCMVFax4-3" parent="N5ogT814I6zrMCMVFax4-2" style="shape=module;jettyWidth=8;jettyHeight=4;" value="" vertex="1">
+          <mxGeometry height="20" relative="1" width="20" x="1" as="geometry">
+            <mxPoint x="-27" y="7" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N5ogT814I6zrMCMVFax4-4" parent="1" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;whiteSpace=wrap;" value="Servidor de Aplicaciones" vertex="1">
+          <mxGeometry height="120" width="180" x="120" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="N5ogT814I6zrMCMVFax4-5" parent="1" style="html=1;dropTarget=0;whiteSpace=wrap;" value="&lt;div&gt;Backend&lt;/div&gt;&lt;div&gt;Spring Boot&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="120" x="150" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="N5ogT814I6zrMCMVFax4-6" parent="N5ogT814I6zrMCMVFax4-5" style="shape=module;jettyWidth=8;jettyHeight=4;" value="" vertex="1">
+          <mxGeometry height="20" relative="1" width="20" x="1" as="geometry">
+            <mxPoint x="-27" y="7" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N5ogT814I6zrMCMVFax4-7" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;" value="Base de Datos Relacional" vertex="1">
+          <mxGeometry height="80" width="130" x="145" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="N5ogT814I6zrMCMVFax4-10" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="210" y="220" as="sourcePoint" />
+            <mxPoint x="210" y="259" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N5ogT814I6zrMCMVFax4-11" edge="1" parent="1" source="N5ogT814I6zrMCMVFax4-4" style="endArrow=classic;html=1;rounded=0;exitX=0.995;exitY=0.474;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0;entryDx=0;entryDy=85;entryPerimeter=0;" target="N5ogT814I6zrMCMVFax4-9" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="210" y="230" as="sourcePoint" />
+            <mxPoint x="210" y="269" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="N5ogT814I6zrMCMVFax4-12" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Llamadas a la API" vertex="1">
+          <mxGeometry height="30" width="100" x="220" y="220" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
