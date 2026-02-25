@@ -7,7 +7,7 @@
         <mxCell id="1r_r8CnzlmVz76CgzMaL-12" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Usuario" vertex="1">
           <mxGeometry height="100" width="140" x="80" y="-50" as="geometry" />
         </mxCell>
-        <mxCell id="1r_r8CnzlmVz76CgzMaL-13" parent="1r_r8CnzlmVz76CgzMaL-12" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="id&lt;div&gt;nombre&lt;/div&gt;&lt;div&gt;correo electrónico&lt;/div&gt;&lt;div&gt;&amp;nbsp;ontraseña&lt;/div&gt;" vertex="1">
+        <mxCell id="1r_r8CnzlmVz76CgzMaL-13" parent="1r_r8CnzlmVz76CgzMaL-12" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="id&lt;div&gt;nombre&lt;/div&gt;&lt;div&gt;correo electrónico&lt;/div&gt;&lt;div&gt;contraseña&lt;/div&gt;" vertex="1">
           <mxGeometry height="74" width="140" y="26" as="geometry" />
         </mxCell>
         <mxCell id="1r_r8CnzlmVz76CgzMaL-14" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Ciudadano" vertex="1">
