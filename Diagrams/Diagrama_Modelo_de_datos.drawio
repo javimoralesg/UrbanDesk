@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" version="29.5.1">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" version="29.5.2">
   <diagram name="Página-1" id="w5jf3MayLi7TR0XsQRGy">
-    <mxGraphModel dx="1418" dy="1575" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2010" dy="2017" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -19,7 +19,7 @@
         <mxCell id="1ubXJhVLTKN52xPisP0o-9" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Personal Municipal" vertex="1">
           <mxGeometry height="100" width="140" x="220" y="160" as="geometry" />
         </mxCell>
-        <mxCell id="1ubXJhVLTKN52xPisP0o-10" parent="1ubXJhVLTKN52xPisP0o-9" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="número de empleado&lt;div&gt;departamento&lt;/div&gt;&lt;div&gt;permisos&lt;/div&gt;" vertex="1">
+        <mxCell id="1ubXJhVLTKN52xPisP0o-10" parent="1ubXJhVLTKN52xPisP0o-9" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;div&gt;departamento&lt;/div&gt;&lt;div&gt;permisos&lt;/div&gt;" vertex="1">
           <mxGeometry height="74" width="140" y="26" as="geometry" />
         </mxCell>
         <mxCell id="1ubXJhVLTKN52xPisP0o-11" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Operador" vertex="1">
@@ -31,13 +31,13 @@
         <mxCell id="1ubXJhVLTKN52xPisP0o-13" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Técnico" vertex="1">
           <mxGeometry height="100" width="140" x="330" y="340" as="geometry" />
         </mxCell>
-        <mxCell id="1ubXJhVLTKN52xPisP0o-14" parent="1ubXJhVLTKN52xPisP0o-13" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;div&gt;nombre del equipo&lt;/div&gt;&lt;div&gt;zona asignada&lt;/div&gt;&lt;div&gt;capacidad de carga&lt;/div&gt;&lt;div&gt;especialidad&lt;/div&gt;" vertex="1">
+        <mxCell id="1ubXJhVLTKN52xPisP0o-14" parent="1ubXJhVLTKN52xPisP0o-13" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;div&gt;nombre del equipo&lt;/div&gt;&lt;div&gt;capacidad de carga&lt;/div&gt;&lt;div&gt;especialidad&lt;/div&gt;" vertex="1">
           <mxGeometry height="74" width="140" y="26" as="geometry" />
         </mxCell>
         <mxCell id="1ubXJhVLTKN52xPisP0o-16" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Incidencia" vertex="1">
           <mxGeometry height="140" width="140" x="90" y="519.3199999999999" as="geometry" />
         </mxCell>
-        <mxCell id="1ubXJhVLTKN52xPisP0o-17" parent="1ubXJhVLTKN52xPisP0o-16" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="id&lt;div&gt;título&lt;/div&gt;&lt;div&gt;descripción&lt;/div&gt;&lt;div&gt;fecha de creación&lt;/div&gt;&lt;div&gt;fecha de resolución&lt;/div&gt;&lt;div&gt;gravedad&lt;/div&gt;&lt;div&gt;estado&lt;/div&gt;" vertex="1">
+        <mxCell id="1ubXJhVLTKN52xPisP0o-17" parent="1ubXJhVLTKN52xPisP0o-16" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="id&lt;div&gt;título&lt;/div&gt;&lt;div&gt;descripción&lt;/div&gt;&lt;div&gt;fecha de creación&lt;/div&gt;&lt;div&gt;fecha de resolución&lt;/div&gt;&lt;div&gt;estado&lt;/div&gt;" vertex="1">
           <mxGeometry height="114" width="140" y="26" as="geometry" />
         </mxCell>
         <mxCell id="1ubXJhVLTKN52xPisP0o-18" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Ubicación" vertex="1">
