@@ -1,0 +1,89 @@
+.item img {
+    width: 28px;
+    height: 28px;
+    color: white;
+    
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: white;
+    padding-top: 10px;
+    cursor: pointer;
+}
+
+.home-hover-content{
+    background-color: #003DF6;
+    height: 115px;
+    width: 95px;
+    font-weight: bold;
+}
+
+.home-hover{
+    width: 1058px;
+    max-width: 100%;
+    position: absolute;
+    z-index: 300;
+    align-items: center;
+    top: 124px;
+    left: 0; 
+    right: 0; 
+    margin-left: auto; 
+    margin-right: auto; 
+}
+
+.home-hover-main{
+    display: flex;
+    justify-content: center;
+    
+}
+
+
+
+
+.item-peque img {
+    width: 28px;
+    height: 28px;
+    color: white;
+    
+}
+
+.item-peque {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    font-size: 1.25em;
+    color: white;
+    padding: 8px 0px 8px 16px;
+    min-width: 318px;
+    cursor: pointer;
+}
+
+.home-hover-content-peque{
+    background-color: #003DF6;
+    height: 47px;
+}
+
+.home-hover-peque{
+    width: 1058px;
+    max-width: 100%;
+    position: absolute;
+    z-index: 300;
+    align-items: center;
+    top: 240px;
+    left: 0; 
+    right: 0; 
+    margin-left: auto; 
+    margin-right: auto; 
+    
+}
+
+.home-hover-main-peque{
+    display: flex;
+    justify-content: center;
+}
