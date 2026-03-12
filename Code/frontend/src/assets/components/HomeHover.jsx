@@ -24,10 +24,10 @@ export default function HomeHover() {
             <div className="home-hover-main" style={{ display: windowWidth >= 768 ? '' : 'none' }}>
                 <div className="home-hover">
                     <div className="home-hover-content">
-                        <Link to="/incidencias" >
+                        <Link to="/incidencias-urbanas" >
                             <div className="item" >
                                 <img src={megaphone} />
-                                Incidencias Urbanas
+                                Incidencias urbanas
                             </div>
                         </Link>
                     </div>
@@ -37,10 +37,10 @@ export default function HomeHover() {
             <div className="home-hover-main-peque" style={{ display: windowWidth < 768 ? '' : 'none' }}>
                 <div className="home-hover-peque">
                     <div className="home-hover-content-peque">
-                        <Link to="/incidencias" >
+                        <Link to="/incidencias-urbanas" >
                             <div className="item-peque" >
                                 <img src={megaphone} />
-                                Incidencias Urbanas
+                                Incidencias urbanas
                             </div>
                         </Link>
                     </div>

@@ -23,6 +23,23 @@
     font-weight: bold;
 }
 
+.home-hover-content:hover{
+    background-color: white;
+}
+
+.home-hover-content:hover .item{
+    color: #003DF6;
+}
+
+.home-hover-content:hover .item img{
+    background-color: #003DF6;
+    -webkit-mask: url("/websAytoMadrid/megaphone.png") no-repeat center;
+    mask: url("/websAytoMadrid/megaphone.png") no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    object-position: -9999px;
+}
+
 .home-hover{
     width: 1058px;
     max-width: 100%;
@@ -67,6 +84,23 @@
 .home-hover-content-peque{
     background-color: #003DF6;
     height: 47px;
+}
+
+.home-hover-content-peque:hover{
+    background-color: white;
+}
+
+.home-hover-content-peque:hover .item-peque{
+    color: #003DF6;
+}
+
+.home-hover-content-peque:hover .item-peque img{
+    background-color: #003DF6;
+    -webkit-mask: url("/websAytoMadrid/megaphone.png") no-repeat center;
+    mask: url("/websAytoMadrid/megaphone.png") no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    object-position: -9999px;
 }
 
 .home-hover-peque{
