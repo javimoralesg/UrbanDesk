@@ -1,5 +1,28 @@
 # React + Vite
 
+## Cómo arrancar el proyecto
+
+Para arrancar el frontend de la aplicación, sigue los siguientes pasos:
+
+1.  Abre una terminal y navega hasta la carpeta del frontend:
+    ```bash
+    cd Code/frontend
+    ```
+
+2.  Instala las dependencias del proyecto:
+    ```bash
+    npm install
+    ```
+
+3.  Inicia el servidor de desarrollo:
+    ```bash
+    npm run dev
+    ```
+
+4.  Abre tu navegador y accede a la URL que aparece en la terminal (generalmente http://localhost:5173).
+
+---
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
