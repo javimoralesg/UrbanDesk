@@ -10,7 +10,8 @@ export default function RegistrarIncidencia() {
         handleInputChange,
         seleccionarSugerencia,
         handleMapCenterChange,
-        handleCurrentLocation
+        handleCurrentLocation,
+        addressPopup
     } = useMapRegisterLogic();
 
     return (
@@ -18,6 +19,13 @@ export default function RegistrarIncidencia() {
             <h1>Registrar Incidencia</h1>
             
             <div style={{ position: 'relative', marginBottom: '20px', zIndex: 5000, maxWidth: '400px' }}>
+                
+               {addressPopup && (
+                    <div style={{ top: '50%', left: '10px', transform: 'translateY(-50%)', color: '#888' }}>
+                        <h3>Ubicación fuera de los distritos de Madrid</h3>
+                    </div>
+                )}
+
                 <input 
                     type="text" 
                     value={address} 
