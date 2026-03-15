@@ -1,8 +1,11 @@
 import { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
+
 import 'leaflet/dist/leaflet.css';
-import { useNavigate, useLocation } from 'react-router';
+import '../css/Map.css';
+
 
 const pruebaPuntos = [
   { lat: 40.4531, lng: -3.6883, info: { nombre: "Estadio Santiago Bernabéu", id: 101 } },
