@@ -154,7 +154,8 @@ export function useMapRegisterLogic() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [targetLocation, setTargetLocation] = useState(null);
 
-  const [addressPopup, setAddressPopup] = useState(false);
+  const [addressPopup, setAddressPopup] = useState(null);
+  const [warningPopup, setWarningPopup] = useState(false);
 
   const searchTimeoutRef = useRef(null);
   const reverseDebounceRef = useRef(null);
@@ -172,11 +173,11 @@ export function useMapRegisterLogic() {
   };
 
   useEffect(() => {
-    if (addressPopup) {
-      const timeoutId = setTimeout(() => setAddressPopup(false), 3500);
-      return () => clearTimeout(timeoutId);
+    if (address.trim() === '') {
+      setWarningPopup(false);
+      setAddressPopup(null);
     }
-  }, [addressPopup]);
+  }, [address]);
 
   const clearReverseLookup = () => {
     if (reverseDebounceRef.current) {
@@ -196,8 +197,8 @@ export function useMapRegisterLogic() {
       reverseAbortRef.current = controller;
 
       if (!isInsideMadrid(lat, lon)) {
-        setAddress('');
-        setAddressPopup(true);
+        setAddressPopup('Ubicación fuera de los distritos de Madrid');
+        setWarningPopup(true);
         return;
       }
 
@@ -215,6 +216,9 @@ export function useMapRegisterLogic() {
       }
 
       const data = await res.json();
+
+      setWarningPopup(false);
+      setAddressPopup(null);
 
       if (requestId !== reverseRequestIdRef.current) return;
       if (data.display_name) setAddress(data.display_name);
@@ -332,11 +336,14 @@ export function useMapRegisterLogic() {
       if (data.length > 0) {
         const { lat, lon, display_name, boundingbox } = data[0];
 
-        if (!isInsideMadrid(lat, lon)) {
-            setAddress('');
-            setAddressPopup(true);
+        if (!isInsideMadrid(lat, lon)) {            
+            setAddressPopup('Ubicación fuera de los distritos de Madrid');
+            setWarningPopup(true);
             return;
         }
+
+        setWarningPopup(false);
+        setAddressPopup(null);
 
         setAddress(display_name);
         setTargetLocation({
@@ -344,6 +351,10 @@ export function useMapRegisterLogic() {
           lon: parseFloat(lon),
           boundingbox,
         });
+      }
+      else {
+        setAddressPopup('Ubicación no encontrada, por favor intenta con otra dirección');
+        setWarningPopup(true);
       }
     } catch (err) {
       console.error(err);
@@ -385,8 +396,9 @@ export function useMapRegisterLogic() {
     seleccionarSugerencia,
     handleMapCenterChange,
     handleCurrentLocation,
-    addressPopup
-  };
+    addressPopup,
+    warningPopup
+    };
 }
 
 export default function MapRegister({

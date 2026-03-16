@@ -11,7 +11,8 @@ export default function RegistrarIncidencia() {
         seleccionarSugerencia,
         handleMapCenterChange,
         handleCurrentLocation,
-        addressPopup
+        addressPopup,
+        warningPopup
     } = useMapRegisterLogic();
 
     return (
@@ -20,21 +21,29 @@ export default function RegistrarIncidencia() {
             
             <div style={{ position: 'relative', marginBottom: '20px', zIndex: 5000, maxWidth: '400px' }}>
                 
-               {addressPopup && (
+               {warningPopup && (
                     <div style={{ top: '50%', left: '10px', transform: 'translateY(-50%)', color: '#888' }}>
-                        <h3>Ubicación fuera de los distritos de Madrid</h3>
+                        <h3>{addressPopup}</h3>
                     </div>
                 )}
 
-                <input 
-                    type="text" 
-                    value={address} 
-                    onFocus={() => setShowSuggestions(true)}
-                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                    onChange={handleInputChange}
-                    placeholder="Escribe una dirección..."
-                    style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
-                />
+                <div style={{ display: 'flex', flexDirection: 'row', gap: '10px', position: 'relative' }}>
+                    <input 
+                        type="text" 
+                        value={address} 
+                        onFocus={() => setShowSuggestions(true)}
+                        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                        onChange={handleInputChange}
+                        placeholder="Escribe una dirección..."
+                        style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+                    />
+                    
+                    {warningPopup && (
+                        <img src="/warning.png" alt="Warning" style={{ width: '20px', height: '20px' }} />
+                    )}
+                </div>
+                
+
 
                 {showSuggestions && suggestions.length > 0 && (
                     <ul style={{
