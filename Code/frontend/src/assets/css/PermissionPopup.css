@@ -1,0 +1,30 @@
+.permission-popup {
+    position: absolute;
+    bottom: 60px; /* Adjust according to mic button position */
+    right: -20px; /* Adjust according to mic button position */
+    background-color: #ff4d4f;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    max-width: 200px;
+    text-align: center;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.permission-popup::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: 32px; /* Centers the arrow relative to the mic button area roughly */
+    border-width: 8px 8px 0;
+    border-style: solid;
+    border-color: #ff4d4f transparent transparent transparent;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

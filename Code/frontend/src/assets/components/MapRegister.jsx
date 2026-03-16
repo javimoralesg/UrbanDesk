@@ -362,7 +362,7 @@ export function useMapRegisterLogic() {
   };
 
   const handleInputChange = (e) => {
-    const val = e.target.value;
+    const val = e && e.target ? e.target.value : e;
     setAddress(val);
 
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
@@ -397,7 +397,7 @@ export function useMapRegisterLogic() {
     handleMapCenterChange,
     handleCurrentLocation,
     addressPopup,
-    warningPopup
+    warningPopup,
     };
 }
 

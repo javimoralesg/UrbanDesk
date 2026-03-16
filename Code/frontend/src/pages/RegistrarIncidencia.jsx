@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import MapRegister, { useMapRegisterLogic } from '../assets/components/MapRegister';
+import Recording from '../assets/components/Recording';
 
 export default function RegistrarIncidencia() {
+    const [descripcion, setDescripcion] = useState('');
+
     const {
         address,
         suggestions,
@@ -12,7 +16,7 @@ export default function RegistrarIncidencia() {
         handleMapCenterChange,
         handleCurrentLocation,
         addressPopup,
-        warningPopup
+        warningPopup,
     } = useMapRegisterLogic();
 
     return (
@@ -20,9 +24,15 @@ export default function RegistrarIncidencia() {
             <h1>Registrar Incidencia</h1>
             
             <div style={{ position: 'relative', marginBottom: '20px', zIndex: 5000, maxWidth: '400px' }}>
+
+                <Recording setDescripcion={setDescripcion} address={address} handleInputChange={handleInputChange}/>
+
+
+                <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Descripción de la incidencia..." style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '10px' }} rows={6} />
+
                 
                {warningPopup && (
-                    <div style={{ top: '50%', left: '10px', transform: 'translateY(-50%)', color: '#888' }}>
+                    <div style={{ top: '50%', left: '10px', color: '#888' }}>
                         <h3>{addressPopup}</h3>
                     </div>
                 )}
@@ -73,6 +83,8 @@ export default function RegistrarIncidencia() {
                 onCenterChanged={handleMapCenterChange} 
                 targetLocation={targetLocation}
             />
+
+
         </div>
     );
 }
