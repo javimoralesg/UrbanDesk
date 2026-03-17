@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useReactMediaRecorder } from "react-media-recorder";
 import PermissionPopup from './PermissionPopup';
 
-export default function Recording({ setDescripcion, address, handleInputChange }) {
+export default function Recording({ setDescripcion, handleInputChange }) {
     const [recordingTime, setRecordingTime] = useState(0);
     const [permissionError, setPermissionError] = useState(null);
     const [processingMessage, setProcessingMessage] = useState('');
@@ -63,10 +63,8 @@ export default function Recording({ setDescripcion, address, handleInputChange }
                                 try {
                                     const parsedReply = JSON.parse(data.reply);
                                     setDescripcion(parsedReply.descripcion);
-                                    if (parsedReply.ubicacion) {
+                                    if (parsedReply.ubicacion.trim() !== '') {
                                         handleInputChange(parsedReply.ubicacion); 
-                                    } else {
-                                        handleInputChange(address);
                                     }
                                 } catch (e) {
                                     console.error("Error parsing reply:", e);

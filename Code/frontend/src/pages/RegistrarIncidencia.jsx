@@ -25,7 +25,7 @@ export default function RegistrarIncidencia() {
             
             <div style={{ position: 'relative', marginBottom: '20px', zIndex: 5000, maxWidth: '400px' }}>
 
-                <Recording setDescripcion={setDescripcion} address={address} handleInputChange={handleInputChange}/>
+                <Recording setDescripcion={setDescripcion} handleInputChange={handleInputChange}/>
 
 
                 <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Descripción de la incidencia..." style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '10px' }} rows={6} />
