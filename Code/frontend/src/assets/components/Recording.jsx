@@ -146,7 +146,7 @@ export default function Recording({ setDescripcion, address, handleInputChange }
             <div 
                 onClick={toggleRecording} 
                 className={`recording-button ${status === 'recording' ? 'is-recording' : ''} ${isProcessing ? 'is-processing' : ''}`}
-                style={{ cursor: isProcessing ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', minWidth: '100px', padding: '10px', borderRadius: '5px', backgroundColor: status === 'recording' ? '#ff4d4d' : '#eee', color: status === 'recording' ? 'white' : '#333', border: 'none', marginBottom: '10px' }}
+                style={{ cursor: isProcessing ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', minWidth: '100px', padding: '10px', borderRadius: '5px', backgroundColor: status === 'recording' ? '#ff4d4d' : '#eee', color: status === 'recording' ? 'white' : '#333', border: 'none', marginBottom: '10px', height: '37px' }}
             >
                 {status === "recording" ? (
                     <>
