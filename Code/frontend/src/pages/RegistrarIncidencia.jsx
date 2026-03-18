@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import MapRegister, { useMapRegisterLogic } from '../assets/components/MapRegister';
 import Recording from '../assets/components/Recording';
+import Sidebar from '../assets/components/Sidebar';
+import "../assets/css/RegistrarIncidencia.css";
 
 export default function RegistrarIncidencia() {
     const [descripcion, setDescripcion] = useState('');
@@ -83,6 +85,9 @@ export default function RegistrarIncidencia() {
                 onCenterChanged={handleMapCenterChange} 
                 targetLocation={targetLocation}
             />
+            <div className="registrar-incidencia__sidebar">
+                <Sidebar active="incidencia" />
+            </div>            
 
 
         </div>

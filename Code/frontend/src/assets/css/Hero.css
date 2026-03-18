@@ -1,0 +1,51 @@
+.urban-hero {
+  height: 240px;
+  background-image: url("/hero-image.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.urban-hero__overlay {
+  height: 100%;
+  background: rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 32px 24px;
+}
+
+.urban-hero__topbar {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.urban-hero__brand {
+  color: white;
+  font-weight: 600;
+}
+
+.urban-hero__breadcrumb {
+  color: white;
+  font-size: 0.95rem;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.urban-hero__content {
+  text-align: center;
+  color: white;
+}
+
+.urban-hero__label {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.urban-hero__content h1 {
+  margin: 0;
+  font-size: 4rem;
+  font-weight: 300;
+}

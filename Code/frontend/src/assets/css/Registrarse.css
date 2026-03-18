@@ -1,0 +1,83 @@
+.urban-register__layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 0;
+  background: #f3f3f3;
+  min-height: calc(100vh - 220px);
+  align-items: start;
+}
+
+.urban-register__content {
+  padding: 40px 70px;
+  border-left: 3px solid #111;
+  min-height: 100%;
+}
+
+.urban-register__title {
+  font-size: 4rem;
+  font-weight: 400;
+  color: #111;
+  margin: 0 0 10px;
+}
+
+.urban-register__subtitle {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 42px;
+}
+
+.urban-register__form {
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+
+.urban-register__group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.urban-register__label {
+  font-size: 1.2rem;
+  color: #111;
+}
+
+.urban-register__input {
+  width: 100%;
+  max-width: 620px;
+  height: 74px;
+  border: 3px solid #111;
+  border-radius: 24px;
+  padding: 0 28px;
+  font-size: 1.1rem;
+  background: #f8f8f8;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.urban-register__input::placeholder {
+  color: #999;
+}
+
+.urban-register__actions {
+  display: flex;
+  gap: 50px;
+  margin-top: 18px;
+}
+
+.urban-register__button {
+  min-width: 220px;
+  height: 78px;
+  border: none;
+  border-radius: 22px;
+  background: #d9d9d9;
+  color: #111;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.urban-register__button:hover {
+  opacity: 0.92;
+}

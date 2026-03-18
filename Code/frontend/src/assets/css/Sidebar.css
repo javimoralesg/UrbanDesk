@@ -1,0 +1,29 @@
+.urban-sidebar {
+  background: #f7f7f7;
+  border-right: 1px solid #ddd;
+  padding: 20px 0;
+}
+
+.urban-sidebar__title {
+  font-weight: 600;
+  padding: 0 24px 16px;
+  color: #333;
+}
+
+.urban-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.urban-sidebar__item {
+  padding: 14px 24px;
+  color: #444;
+  text-decoration: none;
+  border-top: 1px solid #e5e5e5;
+}
+
+.urban-sidebar__item--active {
+  background: #0d5eff;
+  color: #fff;
+  font-weight: 600;
+}
