@@ -17,3 +17,14 @@
   min-width: 0;
   padding: 24px;
 }
+
+.registrar-incidencia__title {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.urban-register__subtitle {
+  color: #444;
+  margin-bottom: 40px;
+}
