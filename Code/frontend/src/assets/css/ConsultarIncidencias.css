@@ -1,0 +1,19 @@
+.consultar-incidencias__layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 0;
+  min-height: 100vh;
+  background: #f3f3f3;
+  align-items: start;
+}
+
+.consultar-incidencias__sidebar {
+  width: 260px;
+  min-height: 100%;
+  background: #e5e5e5;
+}
+
+.consultar-incidencias__content {
+  min-width: 0;
+  padding: 24px;
+}

@@ -1,15 +1,15 @@
 import Hero from "../assets/components/Hero";
 import Sidebar from "../assets/components/Sidebar";
 import MapLocate from '../assets/components/MapLocate';
-import "../assets/css/RegistrarIncidencia.css"; 
+import "../assets/css/ConsultarIncidencias.css"; 
 
 export default function ConsultarIncidencias() {
   return (
     <>
       <Hero />
-      <main className="registrar-incidencia__layout">
-        <Sidebar className="registrar-incidencia__sidebar" />
-        <div className="registrar-incidencia__content">
+      <main className="consultar-incidencias__layout">
+        <Sidebar className="consultar-incidencias__sidebar" />
+        <div className="consultar-incidencias__content">
             <h1>Consultar Incidencias</h1>
             <MapLocate width="100%" /> 
         </div>
