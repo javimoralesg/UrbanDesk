@@ -1,8 +1,20 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import Hero from "../assets/components/Hero";
 import Sidebar from "../assets/components/Sidebar";
 import "../assets/css/IniciarSesion.css";
 
 export default function IniciarSesion() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Aquí iría la lógica para enviar los datos al backend y autenticar al usuario
+    console.log("Iniciando sesión con:", { email, password });
+  };
+
   return (
     <>
       <Hero />
@@ -23,6 +35,8 @@ export default function IniciarSesion() {
                 type="email"
                 placeholder="Escribe aquí tu email..."
                 className="urban-login__input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -33,12 +47,16 @@ export default function IniciarSesion() {
                 type="password"
                 placeholder="Escribe aquí tu contraseña..."
                 className="urban-login__input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
             <div className="urban-login__actions">
-              <button type="button" className="urban-login__button">Cancelar</button>
-              <button type="submit" className="urban-login__button">Iniciar sesión</button>
+              <button type="button" className="urban-login__button" onClick={() => navigate(-1)}>Cancelar</button>
+              <button type="submit" className="urban-login__button" onClick={handleSubmit}>
+                Iniciar sesión
+              </button>
             </div>
           </form>
         </section>
