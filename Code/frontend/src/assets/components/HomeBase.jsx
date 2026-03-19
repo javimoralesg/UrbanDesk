@@ -19,19 +19,19 @@ export default function HomeBase() {
         <div style={{ overflow: 'hidden' }}>
             <iframe
                 title="HomeBase-Mayor"
-                src="../../../public/WebsAytoMadrid/Mayor.html"
+                src="/websAytoMadrid/Mayor.html"
                 scrolling="no"
                 style={{ ...iframeStyle, display: windowWidth >= 991 ? 'block' : 'none' }}
             />
             <iframe
                 title="HomeBase-Mediano"
-                src="../../../public/WebsAytoMadrid/Mediano.html"
+                src="/websAytoMadrid/Mediano.html"
                 scrolling="no"
                 style={{ ...iframeStyle, display: windowWidth >= 768 && windowWidth < 991 ? 'block' : 'none' }}
             />
             <iframe
                 title="HomeBase-Pequeño"
-                src="../../../public/WebsAytoMadrid/Pequeño.html"
+                src="/websAytoMadrid/Pequeño.html"
                 scrolling="no"
                 style={{ ...iframeStyle, display: windowWidth < 768 ? 'block' : 'none' }}
             />
