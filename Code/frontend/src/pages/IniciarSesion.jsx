@@ -27,7 +27,7 @@ export default function IniciarSesion() {
             Iniciar sesión
           </h2>
           <p className="urban-login__subtitle">
-            Consulta toda la información relacionada con incidencias urbanas
+            ####Falta por cambiar
           </p>
 
           <form className="urban-login__form">

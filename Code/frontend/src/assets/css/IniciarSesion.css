@@ -1,9 +1,9 @@
 .urban-login__layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  display: grid;
+  grid-template-columns: 330px 1fr;
   gap: 0;
   min-height: 100vh;
-  background: #f3f3f3;
   align-items: start;
 }
 
@@ -13,10 +13,11 @@
 }
 
 .urban-login__title {
-  font-size: 1.5rem;
+  font-size: 2rem;
   margin-bottom: 10px;
   text-align: start;
   margin: 0;
+  margin-left: -50px;
 }
 
 .urban-login__subtitle {
@@ -25,6 +26,7 @@
   color: #444;
   margin:0;
   margin-bottom: 20px;
+  margin-left: -50px;
 }
 
 .urban-login__form {

@@ -2,15 +2,19 @@
   width: 260px;
   min-height: 100%;
   float: left;
-  margin-left: 20px;
-  padding-top: 30px;
+  margin-left: 30px;
+  margin-top: 110px;
+  padding-right: 30px;
+  border-right: 3px solid black;
+  justify-content: left;
 }
 
 .urban-sidebar__sidebar-title {
-  background: white;
-  color: #1a3cff;
+  background: #f3f3f3;
+  color: black;
   padding: 15px;
-  font-weight: bold;
+  display: flex;
+  justify-self: left;
 }
 
 .urban-sidebar__sidebar-title--active {

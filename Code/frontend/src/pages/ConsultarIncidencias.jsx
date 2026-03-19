@@ -15,7 +15,7 @@ export default function ConsultarIncidencias() {
           </h2>
 
           <p className="consultar-incidencias__subtitle">
-            Consulta toda la información relacionada con incidencias urbanas
+            ####Falta por cambiar
           </p>
             <MapLocate width="100%" /> 
         </div>

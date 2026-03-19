@@ -31,7 +31,7 @@ export default function Registrarse() {
           </h2>
 
           <p className="urban-register__subtitle">
-            Consulta toda la información relacionada con incidencias urbanas
+            ####Falta por cambiar
           </p>
 
           <form className="urban-register__form">
