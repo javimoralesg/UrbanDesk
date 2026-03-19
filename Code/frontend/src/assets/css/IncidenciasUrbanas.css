@@ -8,20 +8,22 @@
   align-items: start;
 }
 
-
 .urban-home__content {
   min-width: 0;
   padding: 24px;
 }
 
-
 .urban-home__title {
-  font-size: 3rem;
+  font-size: 1.5rem;
   margin-bottom: 10px;
+  text-align: start;
+  margin: 0;
 }
 
-
 .urban-home__subtitle {
+  font-size: 0.8rem;
+  text-align: start;
   color: #444;
-  margin-bottom: 40px;
+  margin:0;
+  margin-bottom: 20px;
 }

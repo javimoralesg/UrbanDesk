@@ -10,7 +10,13 @@ export default function ConsultarIncidencias() {
       <main className="consultar-incidencias__layout">
         <Sidebar />
         <div className="consultar-incidencias__content">
-            <h1>Consultar Incidencias</h1>
+            <h2 className="consultar-incidencias__title">
+            Consultar Incidencias
+          </h2>
+
+          <p className="consultar-incidencias__subtitle">
+            Consulta toda la información relacionada con incidencias urbanas
+          </p>
             <MapLocate width="100%" /> 
         </div>
       </main>

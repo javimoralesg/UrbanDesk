@@ -7,8 +7,22 @@
   align-items: start;
 }
 
-
 .consultar-incidencias__content {
   min-width: 0;
   padding: 24px;
+}
+
+.consultar-incidencias__title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  text-align: start;
+  margin: 0;
+}
+
+.consultar-incidencias__subtitle {
+  font-size: 0.8rem;
+  text-align: start;
+  color: #444;
+  margin:0;
+  margin-bottom: 20px;
 }

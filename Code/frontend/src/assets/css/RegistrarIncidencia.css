@@ -13,12 +13,16 @@
 }
 
 .registrar-incidencia__title {
-  font-size: 3rem;
+  font-size: 1.5rem;
   margin-bottom: 10px;
-  text-align: center;
+  text-align: start;
+  margin: 0;
 }
 
-.urban-register__subtitle {
+.registrar-incidencia__subtitle {
+  font-size: 0.8rem;
+  text-align: start;
   color: #444;
-  margin-bottom: 40px;
+  margin:0;
+  margin-bottom: 20px;
 }
