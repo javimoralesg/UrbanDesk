@@ -1,16 +1,10 @@
 .registrar-incidencia__layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 280px 1fr;
   gap: 0;
   min-height: 100vh;
   background: #f3f3f3;
   align-items: start;
-}
-
-.registrar-incidencia__sidebar {
-  width: 260px;
-  min-height: 100%;
-  background: #e5e5e5;
 }
 
 .registrar-incidencia__content {

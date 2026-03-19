@@ -8,7 +8,7 @@ export default function ConsultarIncidencias() {
     <>
       <Hero />
       <main className="consultar-incidencias__layout">
-        <Sidebar className="consultar-incidencias__sidebar" />
+        <Sidebar />
         <div className="consultar-incidencias__content">
             <h1>Consultar Incidencias</h1>
             <MapLocate width="100%" /> 

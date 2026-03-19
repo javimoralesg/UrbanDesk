@@ -24,84 +24,84 @@ export default function Registrarse() {
       <main className="urban-register__layout">
         <Sidebar/>
 
-        <div className="urban-register__content-wrapper">
-          <section className="urban-register__content">
-            <h2 className="urban-register__title">
-              Registrarse
-            </h2>
+        
+        <section className="urban-register__content">
+          <h2 className="urban-register__title">
+            Registrarse
+          </h2>
 
-            <p className="urban-register__subtitle">
-              Consulta toda la información relacionada con incidencias urbanas
-            </p>
+          <p className="urban-register__subtitle">
+            Consulta toda la información relacionada con incidencias urbanas
+          </p>
 
-            <form className="urban-register__form">
-              <div className="urban-register__group">
-                <label htmlFor="nombre" className="urban-register__label">
-                  Nombre:
-                </label>
-                <input
-                  id="nombre"
-                  type="text"
-                  placeholder="Escribe aquí tu nombre..."
-                  className="urban-register__input"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                />
-              </div>
+          <form className="urban-register__form">
+            <div className="urban-register__group">
+              <label htmlFor="nombre" className="urban-register__label">
+                Nombre:
+              </label>
+              <input
+                id="nombre"
+                type="text"
+                placeholder="Escribe aquí tu nombre..."
+                className="urban-register__input"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+              />
+            </div>
 
-              <div className="urban-register__group">
-                <label htmlFor="cp" className="urban-register__label">
-                  Código Postal:
-                </label>
-                <input
-                  id="cp"
-                  type="text"
-                  placeholder="Escribe aquí tu código postal..."
-                  className="urban-register__input"
-                  value={cp}
-                  onChange={(e) => setCp(e.target.value)}
-                />
-              </div>
+            <div className="urban-register__group">
+              <label htmlFor="cp" className="urban-register__label">
+                Código Postal:
+              </label>
+              <input
+                id="cp"
+                type="text"
+                placeholder="Escribe aquí tu código postal..."
+                className="urban-register__input"
+                value={cp}
+                onChange={(e) => setCp(e.target.value)}
+              />
+            </div>
 
-              <div className="urban-register__group">
-                <label htmlFor="email" className="urban-register__label">
-                  Email:
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="Escribe aquí tu email..."
-                  className="urban-register__input"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
+            <div className="urban-register__group">
+              <label htmlFor="email" className="urban-register__label">
+                Email:
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="Escribe aquí tu email..."
+                className="urban-register__input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
-              <div className="urban-register__group">
-                <label htmlFor="password" className="urban-register__label">
-                  Contraseña:
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  placeholder="Escribe aquí tu contraseña..."
-                  className="urban-register__input"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
+            <div className="urban-register__group">
+              <label htmlFor="password" className="urban-register__label">
+                Contraseña:
+              </label>
+              <input
+                id="password"
+                type="password"
+                placeholder="Escribe aquí tu contraseña..."
+                className="urban-register__input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
-              <div className="urban-register__actions">
-                <button type="button" className="urban-register__button" onClick={() => navigate(-1)}>
-                  Cancelar
-                </button>
-                <button type="submit" className="urban-register__button" onClick={handleSubmit}>
-                  Registrarse
-                </button>
-              </div>
-            </form>
-          </section>
-        </div>
+            <div className="urban-register__actions">
+              <button type="button" className="urban-register__button" onClick={() => navigate(-1)}>
+                Cancelar
+              </button>
+              <button type="submit" className="urban-register__button" onClick={handleSubmit}>
+                Registrarse
+              </button>
+            </div>
+          </form>
+        </section>
+       
       </main>
     </>
   );

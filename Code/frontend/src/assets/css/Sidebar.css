@@ -1,10 +1,10 @@
 .urban-sidebar__sidebar {
   background: #f7f7f7;
-  border: 1px solid #ddd;
   width: 260px;
   min-height: 100%;
   float: left;
-  margin-right: 20px;
+  margin-left: 20px;
+  padding-top: 30px;
 }
 
 .urban-sidebar__sidebar-title {
@@ -31,6 +31,9 @@
 .urban-sidebar__nav {
   display: flex;
   flex-direction: column;
+  position: sticky;
+  top: 30px;
+
 }
 
 

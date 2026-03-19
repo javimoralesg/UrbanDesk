@@ -1,36 +1,26 @@
 .urban-home__layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  width: 100%;
-  min-height: calc(100vh - 220px);
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 0;
+  min-height: 100vh;
   background: #f3f3f3;
+  align-items: start;
 }
 
-/* Sidebar no se toca aquí */
 
-/* CONTENEDOR DERECHO (toda la parte blanca/gris) */
-.urban-home__content-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-/* CONTENIDO REAL CENTRADO */
 .urban-home__content {
-  width: 100%;
-  max-width: 900px;   /* controla el ancho del contenido */
-  padding: 40px 0;
-  border-left: 3px solid #111;
-  text-align: center;
+  min-width: 0;
+  padding: 24px;
 }
 
-/* TÍTULO */
+
 .urban-home__title {
   font-size: 3rem;
   margin-bottom: 10px;
 }
 
-/* SUBTÍTULO */
+
 .urban-home__subtitle {
   color: #444;
   margin-bottom: 40px;

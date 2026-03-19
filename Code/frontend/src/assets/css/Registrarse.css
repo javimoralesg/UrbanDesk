@@ -1,24 +1,15 @@
 .urban-register__layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  width: 100%;
-  min-height: calc(100vh - 220px);
+  grid-template-columns: 280px 1fr;
+  gap: 0;
+  min-height: 100vh;
   background: #f3f3f3;
-}
-
-.urban-register__content-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
+  align-items: start;
 }
 
 .urban-register__content {
-  width: 100%;
-  max-width: 900px;
-  /* controla el ancho del contenido */
-  padding: 40px 0;
-  border-left: 3px solid #111;
-  text-align: center;
+  min-width: 0;
+  padding: 24px;
 }
 
 .urban-register__title {

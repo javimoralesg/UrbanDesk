@@ -11,19 +11,18 @@ export default function IncidenciasUrbanas() {
       <main className="urban-home__layout">
         <Sidebar />
 
-        <div className="urban-home__content-wrapper">
-          <section className="urban-home__content">
-            <h2 className="urban-home__title">
-              Portada
-            </h2>
+        <section className="urban-home__content">
+          <h2 className="urban-home__title">
+            Portada
+          </h2>
 
-            <p className="urban-home__subtitle">
-              Consulta toda la información relacionada con incidencias urbanas
-            </p>
+          <p className="urban-home__subtitle">
+            Consulta toda la información relacionada con incidencias urbanas
+          </p>
 
-            <Cards />
-          </section>
-        </div>
+          <Cards />
+        </section>
+        
       </main>
     </>
   );
