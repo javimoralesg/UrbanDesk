@@ -52,7 +52,7 @@ export default function MapLocate({ width = "100%", height = "500px", puntos = [
   puntos = pruebaPuntos;
 
   return (
-    <div style={{ width, height, position: 'relative', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+    <div style={{ width: width === "100%" ? undefined : width, height, border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }} className="map-container">
       
       <MapContainer 
         center={[40.41, -3.70]} 

@@ -1,9 +1,27 @@
 .urban-sidebar__sidebar {
   background: #f7f7f7;
   border: 1px solid #ddd;
+  width: 260px;
+  min-height: 100vh;
+  float: left;
+  margin-right: 20px;
 }
 
 .urban-sidebar__sidebar-title {
+  background: white;
+  color: #1a3cff;
+  padding: 15px;
+  font-weight: bold;
+}
+
+.urban-sidebar__sidebar-title--active {
+  background: #1a3cff;
+  color: white;
+  padding: 15px;
+  font-weight: bold;
+}
+
+.urban-sidebar__sidebar-title:hover {
   background: #1a3cff;
   color: white;
   padding: 15px;
@@ -15,18 +33,5 @@
   flex-direction: column;
 }
 
-.urban-sidebar__nav-item {
-  padding: 15px;
-  border-top: 1px solid #ddd;
-  background: #f2f2f2;
-  cursor: pointer;
-}
 
-.urban-sidebar__nav-item:hover {
-  background: #e6ebff;
-}
 
-.urban-sidebar__nav-item--active {
-  background: white;
-  font-weight: bold;
-}

@@ -22,7 +22,7 @@ export default function Registrarse() {
       <Hero />
 
       <main className="urban-register__layout">
-        <Sidebar active="registro" />
+        <Sidebar/>
 
         <div className="urban-register__content-wrapper">
           <section className="urban-register__content">

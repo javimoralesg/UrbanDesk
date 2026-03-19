@@ -9,7 +9,7 @@ export default function IncidenciasUrbanas() {
       <Hero />
 
       <main className="urban-home__layout">
-        <Sidebar active="portada" />
+        <Sidebar />
 
         <div className="urban-home__content-wrapper">
           <section className="urban-home__content">

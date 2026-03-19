@@ -19,7 +19,7 @@ export default function IniciarSesion() {
     <>
       <Hero />
       <main className="urban-login__layout">
-        <Sidebar active="login" />
+        <Sidebar />
 
         <div className="urban-login__content-wrapper">
           <section className="urban-login__content">

@@ -27,7 +27,7 @@ export default function RegistrarIncidencia() {
             <Hero />
 
             <main className="registrar-incidencia__layout">
-                <Sidebar active="incidencia" />
+                <Sidebar />
 
                 <div className="registrar-incidencia__content-wrapper">
                     <section className="registrar-incidencia__content">

@@ -1,39 +1,57 @@
 import { Link } from "react-router";
+import { useLocation } from 'react-router';
 import '../css/Sidebar.css';
 
-export default function Sidebar({ active = "portada" }) {
+const opcionesGlobales = {
+    SinRegistro: [
+        { text: "Portada", link: "/incidencias-urbanas" },
+        { text: "Registrarse", link: "/incidencias-urbanas/register" },
+        { text: "Iniciar sesión", link: "/incidencias-urbanas/login" },
+        { text: "Registrar incidencia", link: "/incidencias-urbanas/registrar-incidencia" },
+    ],
+    Usuario: [
+        { text: "Portada", link: "/incidencias-urbanas" },
+        { text: "Cerrar sesión", link: "/incidencias-urbanas/logout" },
+        { text: "Editar perfil", link: "/incidencias-urbanas/editar-perfil " },
+        { text: "Consultar incidencias", link: "/incidencias-urbanas/consultar-incidencias" },
+        { text: "Registrar incidencia", link: "/incidencias-urbanas/registrar-incidencia" },
+    ],
+    Operador: [
+        { text: "Portada", link: "/incidencias-urbanas" },
+        { text: "Cerrar sesión", link: "/incidencias-urbanas/logout" },
+        { text: "Editar perfil", link: "/incidencias-urbanas/editar-perfil " },
+        { text: "Consultar incidencias", link: "/incidencias-urbanas/consultar-incidencias" },
+        { text: "Buscar incidencias cercanas", link: "/incidencias-urbanas/buscar-incidencias-cercanas" },
+        { text: "Generar informe", link: "/incidencias-urbanas/generar-informe" },
+    ],
+    Tecnico: [
+        { text: "Portada", link: "/incidencias-urbanas" },
+        { text: "Cerrar sesión", link: "/incidencias-urbanas/logout" },
+        { text: "Editar perfil", link: "/incidencias-urbanas/editar-perfil " },
+        { text: "Consultar incidencias", link: "/incidencias-urbanas/consultar-incidencias" },
+    ]
+  };
+
+export default function Sidebar() {
+  const location = useLocation();
+
+  const opciones = opcionesGlobales.SinRegistro  // Se consulta en la bbdd que usuario esta autenticado
+    
   return (
     <aside className="urban-sidebar__sidebar">
-      <div className="urban-sidebar__sidebar-title">Portada</div>
 
       <nav className="urban-sidebar__nav">
-        <Link
-          to="/"
-          className={`urban-sidebar__nav-item ${active === "portada" ? "urban-sidebar__nav-item--active" : ""}`}
-        >
-          Portada
-        </Link>
-
-        <Link
-          to="/register"
-          className={`urban-sidebar__nav-item ${active === "registro" ? "urban-sidebar__nav-item--active" : ""}`}
-        >
-          Registrarse
-        </Link>
-
-        <Link
-          to="/login"
-          className={`urban-sidebar__nav-item ${active === "login" ? "urban-sidebar__nav-item--active" : ""}`}
-        >
-          Iniciar sesión
-        </Link>
-
-        <Link
-          to="/registrar-incidencia"
-          className={`urban-sidebar__nav-item ${active === "incidencia" ? "urban-sidebar__nav-item--active" : ""}`}
-        >
-          Registrar incidencia
-        </Link>
+        {opciones.map((option, index) => (
+          <Link
+            key={index}
+            to={option.link}
+            className={`urban-sidebar__sidebar-title ${
+              location.pathname === option.link ? "urban-sidebar__sidebar-title--active" : ""
+            }`}
+          >
+            <span>{option.text}</span>
+          </Link>
+        ))}
       </nav>
     </aside>
   );
