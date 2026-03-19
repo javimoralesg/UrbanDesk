@@ -1,9 +1,43 @@
+import { Link, useLocation } from "react-router";
 import Hero from "../assets/components/Hero";
 import Sidebar from "../assets/components/Sidebar";
-import Cards from "../assets/components/Cards";
 import "../assets/css/IncidenciasUrbanas.css";
 
+const opcionesGlobales = {
+    SinRegistro: [
+        { text: "Portada", link: "/incidencias-urbanas" },
+        { text: "Registrarse", link: "/incidencias-urbanas/register" },
+        { text: "Iniciar sesión", link: "/incidencias-urbanas/login" },
+        { text: "Registrar incidencia", link: "/incidencias-urbanas/registrar-incidencia" },
+    ],
+    Usuario: [
+        { text: "Portada", link: "/incidencias-urbanas" },
+        { text: "Cerrar sesión", link: "/incidencias-urbanas/logout" },
+        { text: "Editar perfil", link: "/incidencias-urbanas/editar-perfil " },
+        { text: "Consultar incidencias", link: "/incidencias-urbanas/consultar-incidencias" },
+        { text: "Registrar incidencia", link: "/incidencias-urbanas/registrar-incidencia" },
+    ],
+    Operador: [
+        { text: "Portada", link: "/incidencias-urbanas" },
+        { text: "Cerrar sesión", link: "/incidencias-urbanas/logout" },
+        { text: "Editar perfil", link: "/incidencias-urbanas/editar-perfil " },
+        { text: "Consultar incidencias", link: "/incidencias-urbanas/consultar-incidencias" },
+        { text: "Buscar incidencias cercanas", link: "/incidencias-urbanas/buscar-incidencias-cercanas" },
+        { text: "Generar informe", link: "/incidencias-urbanas/generar-informe" },
+    ],
+    Tecnico: [
+        { text: "Portada", link: "/incidencias-urbanas" },
+        { text: "Cerrar sesión", link: "/incidencias-urbanas/logout" },
+        { text: "Editar perfil", link: "/incidencias-urbanas/editar-perfil " },
+        { text: "Consultar incidencias", link: "/incidencias-urbanas/consultar-incidencias" },
+    ]
+  };
+
 export default function IncidenciasUrbanas() {
+  const location = useLocation();
+
+  const opciones = opcionesGlobales.SinRegistro  // Se consulta en la bbdd que usuario esta autenticado
+
   return (
     <>
       <Hero />
@@ -20,9 +54,21 @@ export default function IncidenciasUrbanas() {
             Consulta toda la información relacionada con incidencias urbanas
           </p>
 
-          <Cards />
+          <section className="urban-cards__cards">
+            {opciones.map((opcion, index) => (
+              <Link
+                key={index}
+                to={opcion.link}
+                className={`urban-cards__action-card ${
+                  location.pathname === opcion.link ? "urban-cards__action-card--active" : ""
+                }`}
+              >
+                <span>{opcion.text}</span>
+              </Link>
+            ))}
+          </section>
+
         </section>
-        
       </main>
     </>
   );

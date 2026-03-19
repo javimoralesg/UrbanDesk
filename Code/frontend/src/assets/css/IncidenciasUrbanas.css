@@ -27,3 +27,60 @@
   margin:0;
   margin-bottom: 20px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+.urban-cards__cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem 3rem;
+  margin-top: 3rem;
+}
+
+.urban-cards__action-card {
+  min-height: 50px;
+  min-width: 280px;
+  padding: 1.5rem 2rem;
+  background: #d9d9d9;
+  border-radius: 28px;
+  color: #111;
+  font-size: 2rem;
+  font-weight: 500;
+  transition: 0.18s ease;
+}
+
+.urban-cards__action-card--active {
+  min-height: 50px;
+  min-width: 280px;
+  padding: 1.5rem 2rem;
+  background: #1a3cff;
+  border-radius: 28px;
+  color: white;
+  font-size: 2rem;
+  font-weight: 500;
+  transition: 0.18s ease;
+}
+
+.urban-cards__action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  background: #d1d1d1;
+  color:black
+}
+
+.urban-cards__action-card--active:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  background: #1838eb;
+  color:white
+}

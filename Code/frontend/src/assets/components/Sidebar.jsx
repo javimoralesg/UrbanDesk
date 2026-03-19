@@ -1,5 +1,4 @@
-import { Link } from "react-router";
-import { useLocation } from 'react-router';
+import { Link, useLocation } from "react-router";
 import '../css/Sidebar.css';
 
 const opcionesGlobales = {

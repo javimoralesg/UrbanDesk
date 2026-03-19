@@ -14,6 +14,8 @@ export default function Hero() {
             <img src="/completeLogo.png" alt="Ayuntamiento" className="ayuntamientoLogo" />
           </div>
         </div>
+        <span className="heroTitle">INCIDENCIAS URBANAS</span>
+        <div className="blackOverlay"></div>
         <img src="/incidenciasUrbanas.png" alt="Incidencias Urbanas" className="back" />
       </header>
       <div className="heroBottom">
