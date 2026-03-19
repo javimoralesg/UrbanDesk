@@ -13,7 +13,7 @@ export default function IncidenciasUrbanas() {
 
         <div className="urban-home__content-wrapper">
           <section className="urban-home__content">
-            <h2 id="portada" className="urban-home__title">
+            <h2 className="urban-home__title">
               Portada
             </h2>
 
