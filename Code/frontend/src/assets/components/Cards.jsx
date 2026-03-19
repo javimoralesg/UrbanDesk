@@ -8,31 +8,31 @@ export default function Cards() {
     {
       id: 1,
       text: "Registrarse",
-      link: "/register",
+      link: "/incidencias-urbanas/register",
       wide: false,
     },
     {
       id: 2,
       text: "Iniciar sesión",
-      link: "/login",
+      link: "/incidencias-urbanas/login",
       wide: false,
     },
     {
       id: 3,
       text: "Registrar incidencia",
-      link: "/registrar-incidencia",
+      link: "/incidencias-urbanas/registrar-incidencia",
       wide: true,
     },
   ];
 
   return (
-    <section className="urban-home__cards">
+    <section className="urban-cards__cards">
       {cardsData.map((card) => (
         <Link
           key={card.id}
           to={card.link}
-          className={`urban-home__action-card ${
-            card.wide ? "urban-home__action-card--wide" : ""
+          className={`urban-cards__action-card ${
+            card.wide ? "urban-cards__action-card--wide" : ""
           }`}
         >
           <span>{card.text}</span>

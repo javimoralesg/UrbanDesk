@@ -1,13 +1,13 @@
-.urban-sidebar {
+.urban-sidebar__sidebar {
   background: #f7f7f7;
-  border-right: 1px solid #ddd;
-  padding: 20px 0;
+  border: 1px solid #ddd;
 }
 
-.urban-sidebar__title {
-  font-weight: 600;
-  padding: 0 24px 16px;
-  color: #333;
+.urban-sidebar__sidebar-title {
+  background: #1a3cff;
+  color: white;
+  padding: 15px;
+  font-weight: bold;
 }
 
 .urban-sidebar__nav {
@@ -15,15 +15,18 @@
   flex-direction: column;
 }
 
-.urban-sidebar__item {
-  padding: 14px 24px;
-  color: #444;
-  text-decoration: none;
-  border-top: 1px solid #e5e5e5;
+.urban-sidebar__nav-item {
+  padding: 15px;
+  border-top: 1px solid #ddd;
+  background: #f2f2f2;
+  cursor: pointer;
 }
 
-.urban-sidebar__item--active {
-  background: #0d5eff;
-  color: #fff;
-  font-weight: 600;
+.urban-sidebar__nav-item:hover {
+  background: #e6ebff;
+}
+
+.urban-sidebar__nav-item--active {
+  background: white;
+  font-weight: bold;
 }

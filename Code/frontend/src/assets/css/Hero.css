@@ -1,51 +1,105 @@
-.urban-hero {
-  height: 240px;
-  background-image: url("/hero-image.jpg");
-  background-size: cover;
-  background-position: center;
+.heroContent{
+  height: 200px;
+  overflow: hidden;
   position: relative;
+  
 }
 
-.urban-hero__overlay {
-  height: 100%;
-  background: rgba(0, 0, 0, 0.15);
+.heroOverlay{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  
+  max-height: 80px;
+  overflow: hidden;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.heroText{
+  width: 1068px;
+  height: 80px;
+  background-color: black;
+  color: white;
+  display: flex;
+  padding-top: 10px;
   justify-content: space-between;
-  padding: 18px 32px 24px;
 }
 
-.urban-hero__topbar {
+.portal{
+  font-family: Lato-Bold, Lato, Arial, Helvetica, sans-serif;
+  font-size: 1em;
+  color: #fff;
+  padding-left: 30px;
+  font-weight: bold;
+}
+
+.ayuntamientoLogo{
+  padding-top: 10px;
+  width: 250px;
+  height: fit-content;
+  padding-right: 30px;
+}
+
+.back{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media screen and (max-width: 992px) {
+  .portal{
+    display: none;
+  }
+    
+  .heroText{
+    justify-content: center;
+  }
+}
+
+.heroBottom {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
+  padding: 10px 0;
 }
 
-.urban-hero__brand {
-  color: white;
-  font-weight: 600;
-}
-
-.urban-hero__breadcrumb {
-  color: white;
-  font-size: 0.95rem;
+.heroBottomText {
+  width: 100%;
+  max-width: 1068px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  margin: 0;
+  font-family: Lato, Arial, Helvetica, sans-serif;
+  font-size: 14px;
   display: flex;
-  gap: 8px;
   align-items: center;
 }
 
-.urban-hero__content {
-  text-align: center;
-  color: white;
+.heroBottomText a {
+  text-decoration: none;
+  color: #0066cc;
 }
 
-.urban-hero__label {
-  margin: 0 0 10px;
-  font-size: 0.9rem;
-  letter-spacing: 1px;
+.heroBottomText a:hover {
+  text-decoration: underline;
 }
 
-.urban-hero__content h1 {
-  margin: 0;
-  font-size: 4rem;
-  font-weight: 300;
+.breadcrumb-part {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb-separator {
+  margin: 0 8px;
+  color: #666;
+}
+
+.breadcrumb-current {
+  color: #333;
+  font-weight: 500;
 }

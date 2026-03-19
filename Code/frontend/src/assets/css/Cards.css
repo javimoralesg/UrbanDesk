@@ -1,28 +1,58 @@
-.urban-cards {
+.urban-cards__cards {
   display: grid;
-  grid-template-columns: repeat(2, minmax(220px, 280px));
+  grid-template-columns: repeat(2, minmax(220px, 300px));
   justify-content: center;
-  gap: 28px;
+  gap: 4rem 5rem;
+  margin-top: 3rem;
 }
 
-.urban-cards__item {
-  min-height: 120px;
-  border-radius: 20px;
-  background: #e9ebe9;
+.urban-cards__action-card {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 140px;
+  padding: 1.5rem 2rem;
+  background: #d9d9d9;
+  border-radius: 28px;
   text-decoration: none;
-  color: #444;
-  font-size: 2rem;
-  font-weight: 300;
-  transition: transform 0.2s ease;
+  color: #111;
+  font-size: 2.2rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.15;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
-.urban-cards__item:hover {
-  transform: translateY(-2px);
+.urban-cards__action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  background: #d1d1d1;
+  color:black
 }
 
-.urban-cards__item--wide {
-  grid-column: span 2;
+.urban-cards__action-card:focus {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 4px;
+}
+
+.urban-cards__action-card--wide {
+  grid-column: 1 / 3;
+  justify-self: center;
+  width: 300px;
+  min-height: 130px;
+}
+
+@media (max-width: 900px) {
+  .urban-cards__cards {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .urban-cards__action-card,
+  .urban-cards__action-card--wide {
+    grid-column: auto;
+    width: 100%;
+    max-width: 320px;
+    justify-self: center;
+  }
 }

@@ -1,15 +1,13 @@
-import Hero from '../assets/components/Hero';
-import Sidebar from '../assets/components/Sidebar';
-
+import HomeBase from '../assets/components/HomeBase';
+import HomeHover from '../assets/components/HomeHover';
 import '../assets/css/Home.css';
 
 export default function Home() {
   return (
-    <div className="urban-home">
-      <Hero />
-      <main className="urban-home__layout">
-        <Sidebar />
-      </main>
+    <div className="page-home">
+        <HomeHover />
+        <div className='blackout'></div>
+        <HomeBase />
     </div>
   );
 }
