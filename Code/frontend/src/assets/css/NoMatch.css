@@ -43,11 +43,11 @@
   text-decoration: none;
   border-radius: 10px;
   font-weight: 600;
-  transition: background 0.2s ease;
 }
 
 .no-match__button:hover {
   background: #1d4ed8;
+  color: white;
 }
 
 .no-match__logo {

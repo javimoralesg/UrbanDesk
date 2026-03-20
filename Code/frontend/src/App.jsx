@@ -20,7 +20,6 @@ function App() {
         <Route path="/incidencias-urbanas/login" element={<IniciarSesion />} />
         <Route path="/incidencias-urbanas/register" element={<Registrarse />} />
         <Route path="*" element={<NoMatch />} />
-        {/* <Route path="*" element={<NoMatch />} /> */}
       </Routes>
     </>
   )
