@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from "react-router";
 import '../css/Sidebar.css';
 
@@ -33,25 +34,72 @@ const opcionesGlobales = {
 
 export default function Sidebar() {
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const opciones = opcionesGlobales.SinRegistro  // Se consulta en la bbdd que usuario esta autenticado
-    
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <aside className="urban-sidebar__sidebar">
-
-      <nav className="urban-sidebar__nav">
-        {opciones.map((option, index) => (
-          <Link
-            key={index}
-            to={option.link}
-            className={`urban-sidebar__sidebar-title ${
-              location.pathname === option.link ? "urban-sidebar__sidebar-title--active" : ""
-            }`}
-          >
-            <span>{option.text}</span>
-          </Link>
-        ))}
-      </nav>
+      {isMobile ? (
+        <>
+          {!menuOpen && (
+            <button
+              className="urban-sidebar__toggle-btn"
+              onClick={() => setMenuOpen(true)}
+            >
+              VER OPCIONES
+              <img src='/desplegable.png' alt='Desplegable' className="urban-sidebar__toggle-icon" />
+            </button>
+          )}
+          <nav className={`urban-sidebar__nav${menuOpen ? ' urban-sidebar__nav--open' : ''}`}>
+            {menuOpen && opciones.map((option, index) => (
+              <Link
+                key={index}
+                to={option.link}
+                className={`urban-sidebar__sidebar-title ${
+                  location.pathname === option.link ? "urban-sidebar__sidebar-title--active" : ""
+                }`}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span>{option.text}</span>
+              </Link>
+            ))}
+            {menuOpen && (
+              <button
+                className="urban-sidebar__close-btn"
+                onClick={() => setMenuOpen(false)}
+              >
+                OCULTAR OPCIONES
+                <img src='/desplegable.png' alt='Desplegable' className="urban-sidebar__toggle-icon-inverted" />
+              </button>
+            )}
+          </nav>
+        </>
+      ) : (
+        <nav className="urban-sidebar__nav">
+          {opciones.map((option, index) => (
+            <Link
+              key={index}
+              to={option.link}
+              className={`urban-sidebar__sidebar-title ${
+                location.pathname === option.link ? "urban-sidebar__sidebar-title--active" : ""
+              }`}
+            >
+              <span>{option.text}</span>
+            </Link>
+          ))}
+        </nav>
+      )}
     </aside>
   );
 }

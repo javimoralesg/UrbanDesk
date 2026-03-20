@@ -42,6 +42,7 @@ Here is an image of the depencencies included in the Spring project
    cd Code/backend
    ```
 3. Start the backend:
+
    **In Windows:**
 
     ```powershell

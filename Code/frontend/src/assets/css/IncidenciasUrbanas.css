@@ -75,3 +75,20 @@
   background: #1838eb;
   color:white
 }
+
+@media (max-width: 640px) {
+  .urban-home__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .urban-home__title {
+    font-size: 1.5rem;
+    margin-left: 0px;
+  }
+
+  .urban-home__subtitle {
+    font-size: 0.7rem;
+    margin-left: 0px;
+  } 
+  
+}

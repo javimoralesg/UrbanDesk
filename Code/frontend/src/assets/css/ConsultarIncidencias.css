@@ -28,3 +28,20 @@
   margin-bottom: 20px;
   margin-left: -50px;
 }
+
+@media (max-width: 640px) {
+  .consultar-incidencias__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .consultar-incidencias__title {
+    font-size: 1.5rem;
+    margin-left: 0px;
+  }
+
+  .consultar-incidencias__subtitle {
+    font-size: 0.7rem;
+    margin-left: 0px;
+  } 
+  
+}

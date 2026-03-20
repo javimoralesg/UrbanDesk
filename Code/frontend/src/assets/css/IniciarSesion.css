@@ -97,3 +97,20 @@
 input {
   color: black;
 }
+
+@media (max-width: 640px) {
+  .urban-login__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .urban-login__title {
+    font-size: 1.5rem;
+    margin-left: 0px;
+  }
+
+  .urban-login__subtitle {
+    font-size: 0.7rem;
+    margin-left: 0px;
+  } 
+  
+}
