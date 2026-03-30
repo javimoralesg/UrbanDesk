@@ -1,5 +1,5 @@
 import { useLocation, Link } from "react-router";
-import "../css/Hero.css";
+import "../assets/css/Hero.css";
 
 export default function Hero() {
   const location = useLocation();

@@ -1,5 +1,5 @@
-import HomeBase from '../assets/components/HomeBase';
-import HomeHover from '../assets/components/HomeHover';
+import HomeBase from '../components/HomeBase';
+import HomeHover from '../components/HomeHover';
 import '../assets/css/Home.css';
 
 export default function Home() {

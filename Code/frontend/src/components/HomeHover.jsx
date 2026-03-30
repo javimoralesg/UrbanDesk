@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
 
 import megaphone from '/websAytoMadrid/megaphone.png';
-import '../css/HomeHover.css';
+import '../assets/css/HomeHover.css';
 
 
 export default function HomeHover() {

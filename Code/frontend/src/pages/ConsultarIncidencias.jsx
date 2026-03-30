@@ -1,6 +1,6 @@
-import Hero from "../assets/components/Hero";
-import Sidebar from "../assets/components/Sidebar";
-import MapLocate from '../assets/components/MapLocate';
+import Hero from "../components/Hero";
+import Sidebar from "../components/Sidebar";
+import MapLocate from '../components/MapLocate';
 import "../assets/css/ConsultarIncidencias.css"; 
 
 export default function ConsultarIncidencias() {

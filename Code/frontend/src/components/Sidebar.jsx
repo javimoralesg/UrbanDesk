@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from "react-router";
-import '../css/Sidebar.css';
+import '../assets/css/Sidebar.css';
 
 const opcionesGlobales = {
     SinRegistro: [

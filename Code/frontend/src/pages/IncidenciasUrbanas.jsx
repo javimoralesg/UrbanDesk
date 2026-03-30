@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router";
-import Hero from "../assets/components/Hero";
-import Sidebar from "../assets/components/Sidebar";
+import Hero from "../components/Hero";
+import Sidebar from "../components/Sidebar";
 import "../assets/css/IncidenciasUrbanas.css";
 
 const opcionesGlobales = {

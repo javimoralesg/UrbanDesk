@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import Hero from "../assets/components/Hero";
-import Sidebar from "../assets/components/Sidebar";
+import Hero from "../components/Hero";
+import Sidebar from "../components/Sidebar";
 import "../assets/css/IniciarSesion.css";
 
 export default function IniciarSesion() {

@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
 import 'leaflet/dist/leaflet.css';
-import '../css/Map.css';
+import '../assets/css/Map.css';
 
 
 const pruebaPuntos = [

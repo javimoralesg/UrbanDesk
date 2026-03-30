@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import MapRegister, { useMapRegisterLogic } from '../assets/components/MapRegister';
-import Recording from '../assets/components/Recording';
-import Sidebar from '../assets/components/Sidebar';
-import Hero from "../assets/components/Hero";
+import MapRegister, { useMapRegisterLogic } from '../components/MapRegister';
+import Recording from '../components/Recording';
+import Sidebar from '../components/Sidebar';
+import Hero from "../components/Hero";
 import "../assets/css/RegistrarIncidencia.css";
 
 export default function RegistrarIncidencia() {

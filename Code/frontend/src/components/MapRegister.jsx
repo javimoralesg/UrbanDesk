@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { GeoJSON, MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 
 import 'leaflet/dist/leaflet.css';
-import '../css/Map.css';
+import '../assets/css/Map.css';
 
-import madridBoundary from '../geo/madrid-boundary.json';
+import madridBoundary from '../assets/geo/madrid-boundary.json';
 
 const MADRID_GEOMETRY = madridBoundary?.features?.[0]?.geometry ?? null;
 

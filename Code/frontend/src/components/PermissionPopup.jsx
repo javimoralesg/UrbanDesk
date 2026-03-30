@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import '../css/PermissionPopup.css';
+import '../assets/css/PermissionPopup.css';
 
 const PermissionPopup = ({ message, onClose }) => {
     useEffect(() => {
