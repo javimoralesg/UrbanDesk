@@ -1,6 +1,6 @@
 package urbandesk.backend.repository;
 
-import urbandesk.backend.model.Usuario;
+import urbandesk.backend.domain.user.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
