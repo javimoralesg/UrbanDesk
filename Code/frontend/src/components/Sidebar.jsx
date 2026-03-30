@@ -13,7 +13,7 @@ const opcionesGlobales = {
         { text: "Portada", link: "/incidencias-urbanas" },
         { text: "Cerrar sesión", link: "/incidencias-urbanas/logout" },
         { text: "Editar perfil", link: "/incidencias-urbanas/editar-perfil " },
-        { text: "Consultar incidencias", link: "/incidencias-urbanas/consultar-incidencias" },
+        { text: "Mis incidencias", link: "/incidencias-urbanas/mis-incidencias" },
         { text: "Registrar incidencia", link: "/incidencias-urbanas/registrar-incidencia" },
     ],
     Operador: [

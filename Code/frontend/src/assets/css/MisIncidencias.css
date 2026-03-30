@@ -1,0 +1,34 @@
+.mis-incidencias__layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.mis-incidencias__content {
+  flex: 1;
+  padding: 2rem 3rem;
+}
+
+.mis-incidencias__title {
+  font-size: 3rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.mis-incidencias__subtitle {
+  font-size: 1.4rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .mis-incidencias__content {
+    padding: 1.5rem;
+  }
+
+  .mis-incidencias__title {
+    font-size: 2.2rem;
+  }
+
+  .mis-incidencias__subtitle {
+    font-size: 1.1rem;
+  }
+}
