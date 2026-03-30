@@ -3,6 +3,7 @@ import MapRegister, { useMapRegisterLogic } from '../components/MapRegister';
 import Recording from '../components/Recording';
 import Sidebar from '../components/Sidebar';
 import Hero from "../components/Hero";
+import { api } from "../services/api";
 import "../assets/css/RegistrarIncidencia.css";
 
 export default function RegistrarIncidencia() {
@@ -99,7 +100,7 @@ export default function RegistrarIncidencia() {
                         targetLocation={targetLocation}
                     />
                 </section>
-                
+
             </main>
         </>
     );
