@@ -11,10 +11,35 @@ export default function Registrarse() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí iría la lógica para enviar los datos al backend y registrar al usuario
     console.log("Registrando usuario:", { nombre, cp, email, password });
+    const usuario = {
+      nombre: nombre,
+      email: email,
+      passwordHash: password, 
+      codigoPostal: cp
+    };
+    try {
+      const response = await fetch("http://localhost:8080/api/usuarios/registro", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(usuario),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error en el registro");
+      }
+
+      const data = await response.json();
+      console.log("Usuario creado:", data);
+
+      navigate("incidencias-urbanas/login");
+    } catch (error) {
+      console.error("Error al registrar usuario:", error);
+    }
   };
 
   return (
@@ -34,7 +59,7 @@ export default function Registrarse() {
             ####Falta por cambiar
           </p>
 
-          <form className="urban-register__form">
+          <form className="urban-register__form" onSubmit={handleSubmit}>
             <div className="urban-register__group">
               <label htmlFor="nombre" className="urban-register__label">
                 Nombre:
@@ -95,7 +120,7 @@ export default function Registrarse() {
               <button type="button" className="urban-register__button" onClick={() => navigate(-1)}>
                 Cancelar
               </button>
-              <button type="submit" className="urban-register__button" onClick={handleSubmit}>
+              <button type="submit" className="urban-register__button">
                 Registrarse
               </button>
             </div>
