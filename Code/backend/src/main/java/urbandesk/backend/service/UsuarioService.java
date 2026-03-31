@@ -6,6 +6,7 @@ import urbandesk.backend.domain.user.Usuario;
 import urbandesk.backend.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -46,4 +47,32 @@ public class UsuarioService {
 
     return usuarioRepository.save(ciudadano);
     }
+
+    public String hashPassword(String password) {
+        return passwordEncoder.encode(password);
+    }
+
+    public Usuario modificarPerfil(Long id, String nombre, String email, String password) {
+        Usuario usuario = obtenerUsuarioPorId(id);
+
+        if (password != null && !password.isBlank()) {
+            usuario.actualizarPassword(hashPassword(password));
+        }
+        if (usuario instanceof Ciudadano ciudadano) {
+            if (nombre != null && !nombre.isBlank()) {
+                ciudadano.actualizarDatosPersonales(ciudadano.getNombre(), email);
+            }
+            if (email != null && !email.isBlank()) {
+            if (!email.equals(usuario.getEmail()) && usuarioRepository.existsByEmail(email)) {
+                throw new DomainRuleViolation("El email ya está registrado");
+            }
+            usuario.actualizarDatosPersonales(nombre, ciudadano.getEmail());   
+            }  
+            if (ciudadano.getCodigoPostal() != null && !ciudadano.getCodigoPostal().isBlank()) {
+                ciudadano.actualizarCodigoPostal(ciudadano.getCodigoPostal());
+            }
+        }
+        return usuarioRepository.save(usuario);
+    }
+
 }
