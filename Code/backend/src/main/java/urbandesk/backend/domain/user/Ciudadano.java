@@ -12,6 +12,7 @@ import java.util.*;
 @Entity
 @PrimaryKeyJoinColumn(name = "usuario_id")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ciudadano extends Usuario {
 

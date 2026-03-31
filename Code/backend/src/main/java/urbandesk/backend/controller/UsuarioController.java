@@ -1,30 +1,34 @@
 package urbandesk.backend.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import urbandesk.backend.domain.user.*;
+
+import urbandesk.backend.domain.user.Ciudadano;
+import urbandesk.backend.domain.user.Usuario;
 import urbandesk.backend.service.UsuarioService;
 
-import java.util.List;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/usuarios")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class UsuarioController {
-
-    /**  
-     
     private final UsuarioService usuarioService;
 
-    
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
-        usuarioService.eliminar(id);
-        return ResponseEntity.noContent().build();
+    @PostMapping("/registro")
+    public ResponseEntity<Usuario> registrar(@RequestBody Map<String, String> body) {
+        String nombre = body.get("nombre");
+        String email = body.get("email");
+        String password = body.get("passwordHash");
+        String codigoPostal = body.get("codigoPostal");
+
+        Usuario usuario = usuarioService.registrarCiudadano(
+            nombre, email, password, codigoPostal
+        );
+
+        return ResponseEntity.ok(usuario);
     }
-        
-    */
 }

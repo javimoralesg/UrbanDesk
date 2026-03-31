@@ -1,6 +1,7 @@
 package urbandesk.backend.service;
 
 import urbandesk.backend.domain.DomainRuleViolation;
+import urbandesk.backend.domain.user.Ciudadano;
 import urbandesk.backend.domain.user.Usuario;
 import urbandesk.backend.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
-    public void eliminar(Integer id) {
+    public void eliminar(Long id) {
         if (!usuarioRepository.existsById(id)) {
             throw new NoSuchElementException("Usuario no encontrado");
         }
@@ -26,7 +27,7 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Usuario obtenerUsuarioPorId(Integer id) {
+    public Usuario obtenerUsuarioPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new DomainRuleViolation("Usuario no encontrado"));
     }
@@ -34,5 +35,15 @@ public class UsuarioService {
     public Usuario obtenerUsuarioPorEmail(String email) {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new DomainRuleViolation("Usuario no encontrado"));
+    }
+
+    public Usuario registrarCiudadano(String nombre, String email, String password, String codigoPostal) {
+    if (usuarioRepository.existsByEmail(email)) {
+        throw new DomainRuleViolation("El email ya está registrado");
+    }
+
+    Ciudadano ciudadano = new Ciudadano(nombre, email, password, codigoPostal);
+
+    return usuarioRepository.save(ciudadano);
     }
 }

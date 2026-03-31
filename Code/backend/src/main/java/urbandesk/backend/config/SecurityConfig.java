@@ -25,12 +25,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // API stateless con Basic Auth
             .headers(headers -> headers.frameOptions(frame -> frame.disable()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "URL_DE_LA_RUTA_API").permitAll()
-                .anyRequest().authenticated())
-            .httpBasic(basic -> {
-            });
+                .anyRequest().permitAll()
+            );
+
 
         return http.build();
     }
