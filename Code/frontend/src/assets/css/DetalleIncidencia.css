@@ -1,106 +1,284 @@
+.detalle-incidencia__layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f7fb;
+}
+
 .detalle-incidencia__content {
   flex: 1;
-  padding: 2rem;
+  max-width: 900px;
+  margin: 2rem auto;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 2.5rem 3rem;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
   display: flex;
   flex-direction: column;
-  align-items: center; /* 🔥 CENTRADO */
+  align-items: center;
 }
 
 .detalle-incidencia__title {
-  font-size: 2.8rem;
-  font-weight: 500;
-  margin-bottom: 0.3rem;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #1e3a5f;
+  margin: 0 0 0.6rem 0;
 }
 
 .detalle-incidencia__subtitle {
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  color: #5f6b7a;
+  margin: 0 0 1.4rem 0;
+  text-align: center;
 }
 
 .detalle-incidencia__back {
+  align-self: flex-start;
+  background: #eef2f7;
+  color: #24364b;
+  border: none;
+  border-radius: 12px;
+  padding: 0.7rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
   margin-bottom: 1.5rem;
+  transition: all 0.2s ease;
 }
 
-/* INFO */
+.detalle-incidencia__back:hover {
+  background: #dfe7f1;
+}
+
 .detalle-incidencia__info {
-  text-align: left;
+  width: 100%;
+  max-width: 420px;
+  background: #f8fbff;
+  border: 1px solid #e4edf7;
+  border-radius: 18px;
+  padding: 1.2rem 1.4rem;
   margin-bottom: 1.5rem;
 }
 
 .detalle-incidencia__info p {
-  margin: 0.3rem 0;
+  margin: 0.45rem 0;
+  font-size: 1rem;
+  color: #506070;
 }
 
-/* MAPA */
+.detalle-incidencia__info strong {
+  color: #1f2f46;
+  font-weight: 700;
+  margin-right: 0.35rem;
+}
+
+.detalle-incidencia__estado-badge {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: white;
+  margin-left: 0.4rem;
+}
+
+.detalle-incidencia__estado-badge--creada {
+  background: #6b7280;
+}
+
+.detalle-incidencia__estado-badge--validada {
+  background: #2563eb;
+}
+
+.detalle-incidencia__estado-badge--asignada {
+  background: #3b82f6;
+}
+
+.detalle-incidencia__estado-badge--en-curso {
+  background: #f59e0b;
+}
+
+.detalle-incidencia__estado-badge--resuelta {
+  background: #10b981;
+}
+
 .detalle-incidencia__map {
-  width: 320px;
-  margin-bottom: 2rem;
-  border-radius: 10px;
+  width: 340px;
+  max-width: 100%;
+  border-radius: 18px;
   overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  margin-bottom: 2rem;
 }
 
-/* SECCIONES */
 .detalle-incidencia__section {
-  width: 500px;
-  max-width: 100%;
-  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 620px;
+  margin-bottom: 1.8rem;
+  background: #fafcff;
+  border: 1px solid #e7eef7;
+  border-radius: 20px;
+  padding: 1.4rem 1.6rem;
 }
 
 .detalle-incidencia__section h3 {
-  margin-bottom: 0.8rem;
+  margin: 0 0 0.9rem 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #1f2f46;
 }
 
-/* TEXTO */
 .detalle-incidencia__text {
-  color: #888;
-  line-height: 1.4;
+  color: #667588;
+  line-height: 1.6;
+  font-size: 1rem;
+  margin: 0;
 }
 
-/* HISTORIAL */
 .detalle-incidencia__history {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  color: #888;
+  gap: 0.7rem;
 }
 
-/* ADJUNTOS */
+.detalle-incidencia__history div {
+  color: #5f6b7a;
+  font-size: 0.98rem;
+  padding-left: 0.2rem;
+}
+
 .detalle-incidencia__attachments {
   display: flex;
-  gap: 2rem;
-}
-
-.detalle-incidencia__attachments .box {
-  width: 130px;
-  height: 130px;
-  background: #eaeaea;
-}
-
-/* BOTONES */
-.detalle-incidencia__actions {
-  display: flex;
-  gap: 2rem;
-  margin-top: 1rem;
-}
-
-.detalle-incidencia__actions button {
-  background: #d9d9d9;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 1rem;
-  cursor: pointer;
-}
-.detalle-incidencia__attachments {
-  display: flex;
-  gap: 1.8rem;
+  gap: 1.2rem;
   flex-wrap: wrap;
 }
 
 .detalle-incidencia__attachment-image {
-  width: 150px;
-  height: 150px;
+  width: 140px;
+  height: 140px;
   object-fit: cover;
-  background-color: #ececec;
-  border-radius: 0;
-  display: block;
+  border-radius: 16px;
+  border: 1px solid #dbe6f2;
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.08);
+  background: #eef2f7;
+}
+
+.detalle-incidencia__actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.detalle-incidencia__actions button,
+.detalle-incidencia__main-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 0.9rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.detalle-incidencia__actions button:first-child {
+  background: #2563eb;
+  color: white;
+}
+
+.detalle-incidencia__actions button:first-child:hover {
+  background: #1e4fd1;
+}
+
+.detalle-incidencia__actions button:last-child {
+  background: #ef4444;
+  color: white;
+}
+
+.detalle-incidencia__actions button:last-child:hover {
+  background: #dc2626;
+}
+
+.detalle-incidencia__main-btn {
+  background: #1f3fff;
+  color: white;
+  margin-top: 1rem;
+}
+
+.detalle-incidencia__main-btn:hover {
+  background: #1732d6;
+}
+
+.detalle-incidencia__asignacion {
+  width: 100%;
+  max-width: 620px;
+  background: #f8fbff;
+  border: 1px solid #e4edf7;
+  border-radius: 20px;
+  padding: 1rem 1.3rem;
+  margin-top: 0.5rem;
+}
+
+.detalle-incidencia__asignacion div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid #dde6f0;
+  color: #24364b;
+  font-weight: 500;
+}
+
+.detalle-incidencia__asignacion div:last-child {
+  border-bottom: none;
+}
+
+.detalle-incidencia__asignacion .delete,
+.detalle-incidencia__asignacion .add {
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+}
+
+.detalle-incidencia__asignacion .delete {
+  background: #ef4444;
+}
+
+.detalle-incidencia__asignacion .add {
+  background: #1e88e5;
+}
+
+@media (max-width: 768px) {
+  .detalle-incidencia__content {
+    margin: 1rem;
+    padding: 1.5rem 1rem;
+    border-radius: 18px;
+  }
+
+  .detalle-incidencia__title {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .detalle-incidencia__section,
+  .detalle-incidencia__asignacion,
+  .detalle-incidencia__info {
+    max-width: 100%;
+  }
+
+  .detalle-incidencia__attachments {
+    justify-content: center;
+  }
+
+  .detalle-incidencia__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .detalle-incidencia__actions button,
+  .detalle-incidencia__main-btn {
+    width: 100%;
+  }
 }

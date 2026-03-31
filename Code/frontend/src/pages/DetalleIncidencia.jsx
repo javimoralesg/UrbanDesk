@@ -51,8 +51,16 @@ export default function DetalleIncidencia() {
           </button>
 
           <div className="detalle-incidencia__info">
-            <p><strong>Estado:</strong> {estado}</p>
-
+            <p>
+                <strong>Estado:</strong>
+                <span
+                    className={`detalle-incidencia__estado-badge detalle-incidencia__estado-badge--${estado
+                    .toLowerCase()
+                    .replace(" ", "-")}`}
+                >
+                    {estado}
+                </span>
+            </p>
             {estado !== "Creada" && (
               <p>
                 <strong>Prioridad:</strong> {prioridad}
