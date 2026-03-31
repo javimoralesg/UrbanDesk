@@ -1,13 +1,29 @@
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import MapLocate from "../components/MapLocate";
-// import "../assets/css/DetalleIncidencia.css";
 import { useParams } from "react-router";
+// import "../assets/css/DetalleIncidencia.css";
 
 export default function DetalleIncidencia() {
 
+  const { id } = useParams(); // 🔥 clave
+
   const rol = "Operador"; // Operador | Tecnico | Ciudadano
-  const estado = "Validada"; // Creada | Validada | Asignada | "En curso" | Resuelta
+
+  const incidenciasMock = {
+    "1": { estado: "Creada", prioridad: "Alta" },
+    "2": { estado: "Validada", prioridad: "Media" },
+    "3": { estado: "Asignada", prioridad: "Media" },
+    "4": { estado: "En curso", prioridad: "Alta" },
+    "5": { estado: "Resuelta", prioridad: "Alta" },
+  };
+
+  const incidencia = incidenciasMock[id] || {
+    estado: "Creada",
+    prioridad: "Media",
+  };
+
+  const { estado, prioridad } = incidencia;
 
   return (
     <>
@@ -16,6 +32,9 @@ export default function DetalleIncidencia() {
         <Sidebar />
 
         <section className="detalle-incidencia__content">
+
+          {/* 👇 añadido para ver qué incidencia es */}
+          <h2>Incidencia {id}</h2>
 
           <p className="detalle-incidencia__subtitle">
             Consulta toda la información relacionada con incidencias urbanas
@@ -28,14 +47,12 @@ export default function DetalleIncidencia() {
             &lt; volver
           </button>
 
-          
           <div className="detalle-incidencia__info">
             <p><strong>Estado:</strong> {estado}</p>
 
             {estado !== "Creada" && (
               <p>
-                <strong>Prioridad:</strong>{" "}
-                {estado === "Resuelta" ? "Alta" : "Media"}
+                <strong>Prioridad:</strong> {prioridad}
               </p>
             )}
 
@@ -44,12 +61,10 @@ export default function DetalleIncidencia() {
             </p>
           </div>
 
-          
           <div className="detalle-incidencia__map">
             <MapLocate width="100%" />
           </div>
 
-          
           <div className="detalle-incidencia__section">
             <h3>Descripción:</h3>
             <p className="detalle-incidencia__text">
@@ -97,8 +112,8 @@ export default function DetalleIncidencia() {
             </div>
           </div>
 
+          {/* ACCIONES */}
 
-          {/* 1️⃣ CREADA → operador valida */}
           {estado === "Creada" && rol === "Operador" && (
             <div className="detalle-incidencia__actions">
               <button>Validar</button>
@@ -106,25 +121,14 @@ export default function DetalleIncidencia() {
             </div>
           )}
 
-          {/* 2️⃣ VALIDADA → asignación */}
           {estado === "Validada" && rol === "Operador" && (
             <>
               <div className="detalle-incidencia__asignacion">
-                <div>
-                  Jardinero <button className="delete">Eliminar</button>
-                </div>
-                <div>
-                  Fontanero <button className="delete">Eliminar</button>
-                </div>
-                <div>
-                  Electricista <button className="delete">Eliminar</button>
-                </div>
-                <div>
-                  Pintor <button className="add">Añadir</button>
-                </div>
-                <div>
-                  Albañil <button className="add">Añadir</button>
-                </div>
+                <div>Jardinero <button className="delete">Eliminar</button></div>
+                <div>Fontanero <button className="delete">Eliminar</button></div>
+                <div>Electricista <button className="delete">Eliminar</button></div>
+                <div>Pintor <button className="add">Añadir</button></div>
+                <div>Albañil <button className="add">Añadir</button></div>
               </div>
 
               <button className="detalle-incidencia__main-btn">
@@ -133,21 +137,12 @@ export default function DetalleIncidencia() {
             </>
           )}
 
-          {/*  ASIGNADA */}
-          {estado === "Asignada" && (
+          {(estado === "Asignada" || estado === "En curso") && (
             <button className="detalle-incidencia__main-btn">
               Editar asignación
             </button>
           )}
 
-          {/* EN CURSO */}
-          {estado === "En curso" && (
-            <button className="detalle-incidencia__main-btn">
-              Editar asignación
-            </button>
-          )}
-
-          {/* RESUELTA */}
           {estado === "Resuelta" && rol === "Operador" && (
             <button className="detalle-incidencia__main-btn">
               Cerrar incidencia
