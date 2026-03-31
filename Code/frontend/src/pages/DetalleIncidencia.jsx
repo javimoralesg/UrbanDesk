@@ -2,7 +2,7 @@ import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import MapLocate from "../components/MapLocate";
 import { useParams } from "react-router";
-// import "../assets/css/DetalleIncidencia.css";
+import "../assets/css/DetalleIncidencia.css";
 
 export default function DetalleIncidencia() {
 
@@ -24,6 +24,10 @@ export default function DetalleIncidencia() {
   };
 
   const { estado, prioridad } = incidencia;
+  const adjuntos = [
+  "/uploads/incidencia1_foto1.jpg",
+  "/uploads/incidencia1_foto2.jpg"
+];  //ejemplo de adjuntos, se consultaría a la bbdd para obtenerlos
 
   return (
     <>
@@ -33,7 +37,6 @@ export default function DetalleIncidencia() {
 
         <section className="detalle-incidencia__content">
 
-          {/* 👇 añadido para ver qué incidencia es */}
           <h2>Incidencia {id}</h2>
 
           <p className="detalle-incidencia__subtitle">
@@ -103,14 +106,16 @@ export default function DetalleIncidencia() {
           </div>
 
           {/* ADJUNTOS */}
-          <div className="detalle-incidencia__section">
-            <h3>Archivos adjuntos:</h3>
-
-            <div className="detalle-incidencia__attachments">
-              <div className="box"></div>
-              <div className="box"></div>
+         <div className="detalle-incidencia__attachments">
+            {adjuntos.map((adjunto, index) => (
+                <img
+                key={index}
+                src={adjunto}
+                alt={`Adjunto ${index + 1} de la incidencia`}
+                className="detalle-incidencia__attachment-image"
+                />
+            ))}
             </div>
-          </div>
 
           {/* ACCIONES */}
 

@@ -5,146 +5,168 @@
 
 .consultar-incidencias__content {
   flex: 1;
-  padding: 2rem 3rem;
+  padding: 2rem;
+  border-left: 3px solid #111;
+  margin-left: 1rem;
 }
 
 .consultar-incidencias__title {
   font-size: 3rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+  font-weight: 700;
+  color: #24364b;
+  margin: 0 0 0.5rem 0;
 }
 
 .consultar-incidencias__subtitle {
-  font-size: 1.4rem;
-  margin-bottom: 2rem;
-}
-
-.consultar-incidencias__topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 2rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
+  font-size: 1.1rem;
+  color: #2b2b2b;
+  margin-bottom: 1.5rem;
 }
 
 .consultar-incidencias__view-buttons {
   display: flex;
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .consultar-incidencias__view-btn {
-  width: 70px;
-  height: 70px;
   border: none;
-  border-radius: 1rem;
-  background-color: #d9d9d9;
+  background: #ececec;
+  color: #1f1f1f;
+  border-radius: 0.8rem;
+  padding: 0.9rem 1.6rem;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.consultar-incidencias__view-btn img {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
 }
 
 .consultar-incidencias__view-btn--active {
-  background-color: #0500ff;
+  background: #1f3fff;
+  color: white;
 }
 
 .consultar-incidencias__filters {
   display: flex;
-  gap: 1rem;
   flex-wrap: wrap;
+  gap: 0.8rem;
+  background: #ececec;
+  border-radius: 0.8rem;
+  padding: 0.7rem;
+  margin-bottom: 1.2rem;
 }
 
 .consultar-incidencias__filter-btn {
   border: none;
-  background-color: #d9d9d9;
-  border-radius: 0.7rem;
-  padding: 0.5rem 1rem;
-  font-size: 1.1rem;
+  background: white;
+  color: #1f1f1f;
+  border-radius: 0.6rem;
+  padding: 0.9rem 1.4rem;
+  font-size: 0.95rem;
   cursor: pointer;
+  min-width: 150px;
 }
 
 .consultar-incidencias__filter-btn--active {
-  background-color: #0500ff;
+  background: #1f3fff;
   color: white;
+  font-weight: 700;
+}
+
+.consultar-incidencias__table-wrapper {
+  max-width: 1050px;
 }
 
 .consultar-incidencias__table {
   width: 100%;
-  margin-bottom: 2rem;
+  border-collapse: collapse;
+  background: transparent;
 }
 
-.consultar-incidencias__header {
-  display: grid;
-  grid-template-columns: 0.6fr 1.5fr 1fr 1fr 0.9fr;
-  align-items: center;
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 1rem;
+.consultar-incidencias__table thead th {
+  text-align: left;
+  font-size: 1rem;
+  color: #24364b;
+  font-weight: 700;
+  padding: 1rem 0.8rem;
+  background: #efefef;
 }
 
-.consultar-incidencias__rows {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.consultar-incidencias__table tbody td {
+  padding: 1rem 0.8rem;
+  border-bottom: 1px solid #d9d9d9;
+  color: #24364b;
+  vertical-align: middle;
 }
 
-.consultar-incidencias__row {
-  display: grid;
-  grid-template-columns: 0.6fr 1.5fr 1fr 1fr 0.9fr;
-  align-items: center;
-  text-align: center;
-  min-height: 95px;
-  background-color: #e5e5e5;
-  border-radius: 2rem;
-  padding: 0 1rem;
+.consultar-incidencias__estado-badge {
+  display: inline-block;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  color: white;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.consultar-incidencias__estado-badge--creada {
+  background: #6b7280;
+}
+
+.consultar-incidencias__estado-badge--validada {
+  background: #3b82f6;
+}
+
+.consultar-incidencias__estado-badge--asignada {
+  background: #2563eb;
+}
+
+.consultar-incidencias__estado-badge--en-curso {
+  background: #f59e0b;
+}
+
+.consultar-incidencias__estado-badge--resuelta {
+  background: #10b981;
 }
 
 .consultar-incidencias__more-btn {
-  background-color: #2196f3;
+  display: inline-block;
+  background: #1e88e5;
   color: white;
   text-decoration: none;
-  border-radius: 1rem;
-  padding: 0.8rem 1rem;
-  display: inline-block;
-  font-size: 1.1rem;
+  border-radius: 0.7rem;
+  padding: 0.8rem 1.3rem;
+  font-weight: 600;
 }
 
 .consultar-incidencias__map-container {
-  margin-top: 2rem;
+  margin-top: 1rem;
+  max-width: 900px;
 }
 
 @media (max-width: 900px) {
   .consultar-incidencias__content {
-    padding: 1.5rem;
+    margin-left: 0;
+    border-left: none;
+    padding: 1rem;
   }
 
   .consultar-incidencias__title {
     font-size: 2.2rem;
   }
 
-  .consultar-incidencias__subtitle {
-    font-size: 1.1rem;
-  }
-
-  .consultar-incidencias__header {
-    display: none;
-  }
-
-  .consultar-incidencias__row {
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
-    padding: 1rem;
-  }
-
-  .consultar-incidencias__topbar {
+  .consultar-incidencias__filters {
     flex-direction: column;
-    align-items: flex-start;
+  }
+
+  .consultar-incidencias__filter-btn {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .consultar-incidencias__table-wrapper {
+    overflow-x: auto;
+  }
+
+  .consultar-incidencias__table {
+    min-width: 700px;
   }
 }
