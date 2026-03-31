@@ -16,6 +16,7 @@ import java.util.NoSuchElementException;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public void eliminar(Long id) {
         if (!usuarioRepository.existsById(id)) {
@@ -39,20 +40,20 @@ public class UsuarioService {
     }
 
     public Usuario registrarCiudadano(String nombre, String email, String password, String codigoPostal) {
-    if (usuarioRepository.existsByEmail(email)) {
-        throw new DomainRuleViolation("El email ya está registrado");
-    }
+        if (usuarioRepository.existsByEmail(email)) {
+            throw new DomainRuleViolation("El email ya está registrado");
+        }
 
-    Ciudadano ciudadano = new Ciudadano(nombre, email, password, codigoPostal);
+        Ciudadano ciudadano = new Ciudadano(nombre, email, password, codigoPostal);
 
-    return usuarioRepository.save(ciudadano);
+        return usuarioRepository.save(ciudadano);
     }
 
     public String hashPassword(String password) {
         return passwordEncoder.encode(password);
     }
 
-    public Usuario modificarPerfil(Long id, String nombre, String email, String password) {
+    public Usuario modificarPerfil(Long id, String nombre, String email, String password, String codigoPostal) {
         Usuario usuario = obtenerUsuarioPorId(id);
 
         if (password != null && !password.isBlank()) {
@@ -60,16 +61,16 @@ public class UsuarioService {
         }
         if (usuario instanceof Ciudadano ciudadano) {
             if (nombre != null && !nombre.isBlank()) {
-                ciudadano.actualizarDatosPersonales(ciudadano.getNombre(), email);
+                ciudadano.actualizarDatosPersonales(ciudadano.getNombre(), null);
             }
             if (email != null && !email.isBlank()) {
-            if (!email.equals(usuario.getEmail()) && usuarioRepository.existsByEmail(email)) {
-                throw new DomainRuleViolation("El email ya está registrado");
+                if (!email.equals(usuario.getEmail()) && usuarioRepository.existsByEmail(email)) {
+                    throw new DomainRuleViolation("El email ya está registrado");
+                }
+                usuario.actualizarDatosPersonales(null, email);
             }
-            usuario.actualizarDatosPersonales(nombre, ciudadano.getEmail());   
-            }  
-            if (ciudadano.getCodigoPostal() != null && !ciudadano.getCodigoPostal().isBlank()) {
-                ciudadano.actualizarCodigoPostal(ciudadano.getCodigoPostal());
+            if (codigoPostal != null && !codigoPostal.isBlank()) {
+                ciudadano.actualizarCodigoPostal(codigoPostal);
             }
         }
         return usuarioRepository.save(usuario);
