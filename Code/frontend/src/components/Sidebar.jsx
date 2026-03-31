@@ -37,7 +37,7 @@ export default function Sidebar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  const opciones = opcionesGlobales.SinRegistro  // Se consulta en la bbdd que usuario esta autenticado
+  const opciones = opcionesGlobales.Operador  // Se consulta en la bbdd que usuario esta autenticado
 
   useEffect(() => {
     const handleResize = () => {
