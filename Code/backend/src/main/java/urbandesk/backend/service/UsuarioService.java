@@ -61,13 +61,13 @@ public class UsuarioService {
         }
         if (usuario instanceof Ciudadano ciudadano) {
             if (nombre != null && !nombre.isBlank()) {
-                ciudadano.actualizarDatosPersonales(ciudadano.getNombre(), null);
+                ciudadano.actualizarDatosPersonales(nombre, ciudadano.getEmail());
             }
             if (email != null && !email.isBlank()) {
                 if (!email.equals(usuario.getEmail()) && usuarioRepository.existsByEmail(email)) {
                     throw new DomainRuleViolation("El email ya está registrado");
                 }
-                usuario.actualizarDatosPersonales(null, email);
+                usuario.actualizarDatosPersonales(ciudadano.getNombre(), email);
             }
             if (codigoPostal != null && !codigoPostal.isBlank()) {
                 ciudadano.actualizarCodigoPostal(codigoPostal);
