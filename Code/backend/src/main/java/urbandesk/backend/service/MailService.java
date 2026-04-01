@@ -29,8 +29,8 @@ public class MailService {
             helper.setSubject(asunto);
             helper.setText(cuerpoHtml, true); // true = es HTML
             mailSender.send(mensaje);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Error al enviar email a " + destinatario, e);
+        } catch (Exception e) {
+            System.err.println("Error al enviar email a " + destinatario + ": " + e.getMessage());
         }
     }
 
