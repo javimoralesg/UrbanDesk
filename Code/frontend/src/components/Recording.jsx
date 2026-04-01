@@ -144,17 +144,41 @@ export default function Recording({ setDescripcion, handleInputChange }) {
             <div
                 onClick={toggleRecording}
                 className={`recording-button ${status === 'recording' ? 'is-recording' : ''} ${isProcessing ? 'is-processing' : ''}`}
-                style={{ cursor: isProcessing ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', minWidth: '100px', padding: '10px', borderRadius: '5px', backgroundColor: status === 'recording' ? '#ff4d4d' : '#eee', color: status === 'recording' ? 'white' : '#333', border: 'none', marginBottom: '10px', height: '37px' }}
+                style={{
+                    cursor: isProcessing ? 'wait' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    minWidth: '100px',
+                    padding: '10px',
+                    borderRadius: '5px',
+                    backgroundColor:
+                        status === 'recording'
+                            ? '#ff4d4d'
+                            : isProcessing
+                                ? '#eee'
+                                : '#1ac2ff84',
+                    color: status === 'recording' ? 'white' : '#333',
+                    border: 'none',
+                    marginBottom: '10px',
+                    height: '37px',
+                }}
             >
                 {status === "recording" ? (
                     <>
                         <span className="recording-time" style={{ fontWeight: 'bold' }}>{recordingTime}s</span>
-                        <span role="img" aria-label="stop" style={{ fontSize: '20px', color: 'red' }}>⏹️</span>
+                        <span role="img" aria-label="stop" style={{ fontSize: '20px', color: 'red', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <img src="/stopRec.png" alt="Stop" style={{ width: '26px', height: '26px' }} />
+                        </span>
                     </>
                 ) : isProcessing ? (
                     <span className="processing-message" style={{ fontSize: '0.9rem' }}>{processingMessage}</span>
                 ) : (
-                    <span role="img" aria-label="microphone" style={{ fontSize: '24px' }}>🎤</span>
+                    <span role="img" aria-label="microphone" style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '5px', color: 'black', fontWeight: 'bold' }}>
+                        <img src="/ai.png" alt="Record" style={{ width: '50px', height: '50px' }} />
+                        Generar incidencia mediante voz
+                    </span>
                 )}
             </div>
             {permissionError && (
