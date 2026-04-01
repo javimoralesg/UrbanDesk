@@ -48,11 +48,13 @@ public class IncidenciaService {
     public List<Incidencia> obtenerPorTecnico(Long tecnicoId) {
         return incidenciaRepository.findByTecnicoId(tecnicoId);
     }
-    public Incidencia crearIncidencia(Incidencia incidencia) {
-        incidencia.setFechaCreacion(LocalDateTime.now());
-        incidencia.setEstado(Estado.CREADA);
+    public Incidencia crearIncidencia(Ubicacion ubicacion, String descripcion, Long ciudadanoId) {
+        Ciudadano ciudadano = (Ciudadano) usuarioRepository.findById(ciudadanoId)
+                .orElseThrow(() -> new DomainRuleViolation("Ciudadano no encontrado"));
+
+        Incidencia incidencia = new Incidencia(ubicacion, descripcion, ciudadano);
         return incidenciaRepository.save(incidencia);
-    }
+}
     public Incidencia actualizarEstado(Long id, Estado nuevoEstado) {
         Incidencia incidencia = getIncidenciaById(id);
         incidencia.setEstado(nuevoEstado);
@@ -82,7 +84,7 @@ public class IncidenciaService {
     public long contarPorEstado(Estado estado) {
         return incidenciaRepository.countByEstado(estado);
     }
-    
+
     /*public Incidencia crearIncidencia(CrearIncidenciaRequest request, Long ciudadanoId) {
 
        if (usuario instanceof Ciudadano ciudadano) {
