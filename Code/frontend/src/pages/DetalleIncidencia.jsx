@@ -1,33 +1,97 @@
+import { useEffect, useState } from "react";
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import MapLocate from "../components/MapLocate";
 import { useParams } from "react-router";
+import { api } from "../services/api";
 import "../assets/css/DetalleIncidencia.css";
 
 export default function DetalleIncidencia() {
 
-  const { id } = useParams(); // 🔥 clave
+  const { id } = useParams(); 
+  const [incidencia, setIncidencia] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const rol = "Operador"; // Operador | Tecnico | Ciudadano
+  const rol = "Operador"; 
 
-  const incidenciasMock = {
-    "1": { estado: "Creada", prioridad: "Alta" },
-    "2": { estado: "Validada", prioridad: "Media" },
-    "3": { estado: "Asignada", prioridad: "Media" },
-    "4": { estado: "En curso", prioridad: "Alta" },
-    "5": { estado: "Resuelta", prioridad: "Alta" },
-  };
+  useEffect(() => {
+    const cargarIncidencia = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const data = await api.obtenerIncidenciaPorId(id);
+        setIncidencia(data);
+      } catch (err) {
+        console.error("Error al cargar incidencia:", err);
+        setError("No se pudo cargar la incidencia.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const incidencia = incidenciasMock[id] || {
-    estado: "Creada",
-    prioridad: "Media",
-  };
+    cargarIncidencia();
+  }, [id]);
 
-  const { estado, prioridad } = incidencia;
-  const adjuntos = [
-  "/uploads/incidencia1_foto1.jpg",
-  "/uploads/incidencia1_foto2.jpg"
-];  //ejemplo de adjuntos, se consultaría a la bbdd para obtenerlos
+  const estado = incidencia?.estado || "CREADA";
+  const prioridad = incidencia?.prioridad || "SIN_ASIGNAR";
+  const descripcion = incidencia?.descripcion || "Sin descripción";
+  const ubicacion = incidencia?.ubicacion?.direccion || "Ubicación no disponible";
+  const latitud = incidencia?.ubicacion?.latitud;
+  const longitud = incidencia?.ubicacion?.longitud;
+
+  const estadoLabel = {
+    CREADA: "Creada",
+    VALIDADA: "Validada",
+    ASIGNADA: "Asignada",
+    EN_CURSO: "En curso",
+    RESUELTA: "Resuelta",
+    RECHAZADA: "Rechazada",
+    CERRADA: "Cerrada",
+  }[estado] || estado;
+
+  const prioridadLabel = {
+    ALTA: "Alta",
+    MEDIA: "Media",
+    BAJA: "Baja",
+    SIN_ASIGNAR: "Sin asignar",
+  }[prioridad] || prioridad;
+
+  const adjuntos = incidencia?.evidencias?.map((ev) => ev.url) || [];
+  const puntosMapa =
+    typeof latitud === "number" && typeof longitud === "number"
+      ? [{ id: incidencia?.id ?? Number(id), lat: latitud, lng: longitud }]
+      : [];
+
+  if (loading) {
+    return (
+      <>
+        <Hero />
+        <main className="detalle-incidencia__layout">
+          <Sidebar />
+          <section className="detalle-incidencia__content">
+            <h2>Incidencia {id}</h2>
+            <p>Cargando incidencia...</p>
+          </section>
+        </main>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <Hero />
+        <main className="detalle-incidencia__layout">
+          <Sidebar />
+          <section className="detalle-incidencia__content">
+            <h2>Incidencia {id}</h2>
+            <p>{error}</p>
+          </section>
+        </main>
+      </>
+    );
+  }
 
   return (
     <>
@@ -56,30 +120,30 @@ export default function DetalleIncidencia() {
                 <span
                     className={`detalle-incidencia__estado-badge detalle-incidencia__estado-badge--${estado
                     .toLowerCase()
-                    .replace(" ", "-")}`}
+                    .replaceAll("_", "-")}`}
                 >
-                    {estado}
+                    {estadoLabel}
                 </span>
             </p>
-            {estado !== "Creada" && (
+            {estado !== "CREADA" && (
               <p>
-                <strong>Prioridad:</strong> {prioridad}
+                <strong>Prioridad:</strong> {prioridadLabel}
               </p>
             )}
 
             <p>
-              <strong>Ubicación:</strong> Avenida Complutense, 30, Madrid
+              <strong>Ubicación:</strong> {ubicacion}
             </p>
           </div>
 
           <div className="detalle-incidencia__map">
-            <MapLocate width="100%" />
+            <MapLocate width="100%" puntos={puntosMapa} />
           </div>
 
           <div className="detalle-incidencia__section">
             <h3>Descripción:</h3>
             <p className="detalle-incidencia__text">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit...
+              {descripcion}
             </p>
           </div>
 
@@ -90,19 +154,19 @@ export default function DetalleIncidencia() {
             <div className="detalle-incidencia__history">
               <div>• 01-01-2024 — Creada</div>
 
-              {(estado === "Validada" || estado === "Asignada" || estado === "En curso" || estado === "Resuelta") && (
+              {(estado === "VALIDADA" || estado === "ASIGNADA" || estado === "EN_CURSO" || estado === "RESUELTA") && (
                 <div>• 03-01-2024 — Validada</div>
               )}
 
-              {(estado === "Asignada" || estado === "En curso" || estado === "Resuelta") && (
+              {(estado === "ASIGNADA" || estado === "EN_CURSO" || estado === "RESUELTA") && (
                 <div>• 03-01-2024 — Asignada</div>
               )}
 
-              {(estado === "En curso" || estado === "Resuelta") && (
+              {(estado === "EN_CURSO" || estado === "RESUELTA") && (
                 <div>• 03-01-2024 — En curso</div>
               )}
 
-              {estado === "Resuelta" && (
+              {estado === "RESUELTA" && (
                 <>
                   <div>✔ Jardinero — 13-01-2024</div>
                   <div>✔ Fontanero — 11-01-2024</div>
@@ -114,27 +178,29 @@ export default function DetalleIncidencia() {
           </div>
 
           {/* ADJUNTOS */}
-         <div className="detalle-incidencia__attachments">
-            {adjuntos.map((adjunto, index) => (
+          {adjuntos.length > 0 && (
+            <div className="detalle-incidencia__attachments">
+              {adjuntos.map((adjunto, index) => (
                 <img
-                key={index}
-                src={adjunto}
-                alt={`Adjunto ${index + 1} de la incidencia`}
-                className="detalle-incidencia__attachment-image"
+                  key={index}
+                  src={adjunto}
+                  alt={`Adjunto ${index + 1} de la incidencia`}
+                  className="detalle-incidencia__attachment-image"
                 />
-            ))}
+              ))}
             </div>
+          )}
 
           {/* ACCIONES */}
 
-          {estado === "Creada" && rol === "Operador" && (
+          {estado === "CREADA" && rol === "Operador" && (
             <div className="detalle-incidencia__actions">
               <button>Validar</button>
               <button>Rechazar</button>
             </div>
           )}
 
-          {estado === "Validada" && rol === "Operador" && (
+          {estado === "VALIDADA" && rol === "Operador" && (
             <>
               <div className="detalle-incidencia__asignacion">
                 <div>Jardinero <button className="delete">Eliminar</button></div>
@@ -150,13 +216,13 @@ export default function DetalleIncidencia() {
             </>
           )}
 
-          {(estado === "Asignada" || estado === "En curso") && (
+          {(estado === "ASIGNADA" || estado === "EN_CURSO") && (
             <button className="detalle-incidencia__main-btn">
               Editar asignación
             </button>
           )}
 
-          {estado === "Resuelta" && rol === "Operador" && (
+          {estado === "RESUELTA" && rol === "Operador" && (
             <button className="detalle-incidencia__main-btn">
               Cerrar incidencia
             </button>

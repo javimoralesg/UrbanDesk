@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useNavigate } from 'react-router';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
@@ -46,10 +46,7 @@ function AutoZoom({ puntos }) {
 
 export default function MapLocate({ width = "100%", height = "500px", puntos = [] }) {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // eliminar esta línea, es solo para pruebas
-  puntos = pruebaPuntos;
+  const puntosVisibles = puntos.length > 0 ? puntos : pruebaPuntos;
 
   return (
     <div style={{ width, height, position: 'relative', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
@@ -60,17 +57,16 @@ export default function MapLocate({ width = "100%", height = "500px", puntos = [
         style={{ height: '100%', width: '100%' }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <AutoZoom puntos={puntos} />
+        <AutoZoom puntos={puntosVisibles} />
 
-        {puntos.map((p, i) => (
+        {puntosVisibles.map((p, i) => (
           <Marker 
             key={i} 
             position={[p.lat, p.lng]} 
             icon={crearIconoColor(COLORES_DISPONIBLES[i % COLORES_DISPONIBLES.length])}
             eventHandlers={{
               click: () => {
-                const currentPath = location.pathname.endsWith('/') ? location.pathname.slice(0, -1) : location.pathname;
-                navigate(`${currentPath}/punto/${p.id}`);
+                navigate(`/incidencias-urbanas/detalle-incidencia/${p.id}`);
               }
             }}
           />
