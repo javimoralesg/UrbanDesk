@@ -19,14 +19,12 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
 
     public void eliminar(Long id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new NoSuchElementException("Usuario no encontrado");
-        }
-        usuarioRepository.deleteById(id);
+        Usuario usuario = obtenerUsuarioPorId(id);
+        usuarioRepository.delete(usuario);
     }
 
-    public List<Usuario> obtenerUsuarios() {
-        return usuarioRepository.findAll();
+    public Boolean existeUsuarioConEmail(String email) {
+        return usuarioRepository.existsByEmail(email);
     }
 
     public Usuario obtenerUsuarioPorId(Long id) {
@@ -39,8 +37,8 @@ public class UsuarioService {
                 .orElseThrow(() -> new DomainRuleViolation("Usuario no encontrado"));
     }
 
-    public Usuario registrarCiudadano(String nombre, String email, String password, String codigoPostal) {
-        if (usuarioRepository.existsByEmail(email)) {
+    public Ciudadano registrarCiudadano(String nombre, String email, String password, String codigoPostal) {
+        if (existeUsuarioConEmail(email)) {
             throw new DomainRuleViolation("El email ya está registrado");
         }
 
@@ -64,10 +62,10 @@ public class UsuarioService {
                 ciudadano.actualizarDatosPersonales(nombre, ciudadano.getEmail());
             }
             if (email != null && !email.isBlank()) {
-                if (!email.equals(usuario.getEmail()) && usuarioRepository.existsByEmail(email)) {
+                if (!email.equals(usuario.getEmail()) && existeUsuarioConEmail(email)) {
                     throw new DomainRuleViolation("El email ya está registrado");
                 }
-                usuario.actualizarDatosPersonales(ciudadano.getNombre(), email);
+                ciudadano.actualizarDatosPersonales(ciudadano.getNombre(), email);
             }
             if (codigoPostal != null && !codigoPostal.isBlank()) {
                 ciudadano.actualizarCodigoPostal(codigoPostal);

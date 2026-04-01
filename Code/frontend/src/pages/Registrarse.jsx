@@ -17,7 +17,7 @@ export default function Registrarse() {
     const usuario = {
       nombre: nombre,
       email: email,
-      passwordHash: password, 
+      password: password, 
       codigoPostal: cp
     };
     try {
@@ -36,7 +36,7 @@ export default function Registrarse() {
       const data = await response.json();
       console.log("Usuario creado:", data);
 
-      navigate("incidencias-urbanas/login");
+      navigate("incidencias-urbanas");
     } catch (error) {
       console.error("Error al registrar usuario:", error);
     }
