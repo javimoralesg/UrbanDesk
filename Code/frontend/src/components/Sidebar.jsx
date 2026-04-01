@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from "react-router";
 import '../assets/css/Sidebar.css';
+import { api } from '../services/api';
 
 const opcionesGlobales = {
     SinRegistro: [
@@ -36,8 +37,21 @@ export default function Sidebar() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [userRole, setUserRole] = useState('SinRegistro');
 
-  const opciones = opcionesGlobales.Operador  // Se consulta en la bbdd que usuario esta autenticado
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.rol) {
+      if (user.rol === 'CIUDADANO') setUserRole('Usuario');
+      else if (user.rol === 'OPERADOR') setUserRole('Operador');
+      else if (user.rol === 'TECNICO') setUserRole('Tecnico');
+      else setUserRole('SinRegistro');
+    } else {
+      setUserRole('SinRegistro');
+    }
+  }, [location.pathname]);
+
+  const opciones = opcionesGlobales[userRole] || opcionesGlobales.SinRegistro;
 
   useEffect(() => {
     const handleResize = () => {
@@ -62,17 +76,28 @@ export default function Sidebar() {
             </button>
           )}
           <nav className={`urban-sidebar__nav${menuOpen ? ' urban-sidebar__nav--open' : ''}`}>
-            {menuOpen && opciones.map((option, index) => (
+             {opciones.map((opcion, index) => (
+              opcion.link !== "/incidencias-urbanas/logout" ? (
               <Link
                 key={index}
-                to={option.link}
+                to={opcion.link}
                 className={`urban-sidebar__sidebar-title ${
-                  location.pathname === option.link ? "urban-sidebar__sidebar-title--active" : ""
+                  location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
                 }`}
                 onClick={() => setMenuOpen(false)}
               >
-                <span>{option.text}</span>
+                <span>{opcion.text}</span>
               </Link>
+            )
+            : (<Link
+                key={index}
+                onClick={() => api.logout()}
+                className={`urban-sidebar__sidebar-title ${
+                  location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                }`}
+              >
+                <span>{opcion.text}</span>
+              </Link>)
             ))}
             {menuOpen && (
               <button
@@ -87,16 +112,27 @@ export default function Sidebar() {
         </>
       ) : (
         <nav className="urban-sidebar__nav">
-          {opciones.map((option, index) => (
-            <Link
+           {opciones.map((opcion, index) => (
+              opcion.link !== "/incidencias-urbanas/logout" ? (
+              <Link
               key={index}
-              to={option.link}
+              to={opcion.link}
               className={`urban-sidebar__sidebar-title ${
-                location.pathname === option.link ? "urban-sidebar__sidebar-title--active" : ""
+                location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
               }`}
             >
-              <span>{option.text}</span>
+              <span>{opcion.text}</span>
             </Link>
+          )
+          : (<Link
+              key={index}
+              onClick={() => api.logout()}
+              className={`urban-sidebar__sidebar-title ${
+                location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+              }`}
+            >
+              <span>{opcion.text}</span>
+            </Link>)
           ))}
         </nav>
       )}

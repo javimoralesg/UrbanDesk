@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from "react-router";
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import "../assets/css/IncidenciasUrbanas.css";
+import { api } from '../services/api';
 
 const opcionesGlobales = {
     SinRegistro: [
@@ -35,8 +37,21 @@ const opcionesGlobales = {
 
 export default function IncidenciasUrbanas() {
   const location = useLocation();
+  const [userRole, setUserRole] = useState('SinRegistro');
 
-  const opciones = opcionesGlobales.SinRegistro  // Se consulta en la bbdd que usuario esta autenticado
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.rol) {
+      if (user.rol === 'CIUDADANO') setUserRole('Usuario');
+      else if (user.rol === 'OPERADOR') setUserRole('Operador');
+      else if (user.rol === 'TECNICO') setUserRole('Tecnico');
+      else setUserRole('SinRegistro');
+    } else {
+      setUserRole('SinRegistro');
+    }
+  }, [location.pathname]);
+
+  const opciones = opcionesGlobales[userRole] || opcionesGlobales.SinRegistro;
 
   return (
     <>
@@ -56,6 +71,7 @@ export default function IncidenciasUrbanas() {
 
           <section className="urban-cards__cards">
             {opciones.map((opcion, index) => (
+              opcion.link !== "/incidencias-urbanas/logout" ? (
               <Link
                 key={index}
                 to={opcion.link}
@@ -65,7 +81,18 @@ export default function IncidenciasUrbanas() {
               >
                 <span>{opcion.text}</span>
               </Link>
+            )
+            : (<Link
+                key={index}
+                onClick={() => api.logout()}
+                className={`urban-cards__action-card ${
+                  location.pathname === opcion.link ? "urban-cards__action-card--active" : ""
+                }`}
+              >
+                <span>{opcion.text}</span>
+              </Link>)
             ))}
+             
           </section>
 
         </section>

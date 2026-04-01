@@ -3,16 +3,28 @@ import { useNavigate } from 'react-router';
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import "../assets/css/IniciarSesion.css";
+import { api } from '../services/api';
 
 export default function IniciarSesion() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí iría la lógica para enviar los datos al backend y autenticar al usuario
-    console.log("Iniciando sesión con:", { email, password });
+    try {
+      
+      await api.login(
+        email,
+        password
+      );
+      
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+    } finally {
+      navigate('/incidencias-urbanas');
+    }
+
   };
 
   return (

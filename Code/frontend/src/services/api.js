@@ -1,10 +1,111 @@
+const BASE_URL = 'http://localhost:8080/api';
 
+
+const getAuthHeaders = () => {
+    try {
+        const raw = localStorage.getItem('user');
+        if (!raw) return {};
+        const user = JSON.parse(raw);
+        if (user && user.authdata) {
+            return { Authorization: 'Basic ' + user.authdata };
+        }
+    } catch {
+        console.error("Error al obtener las credenciales de autenticación");
+    }
+    return {};
+};
+
+async function parseJsonOrThrow(response) {
+    if (response.ok) {
+        const text = await response.text();
+        return text ? JSON.parse(text) : null;
+    }
+    let message = `Error ${response.status}`;
+    try {
+        const data = JSON.parse(await response.text());
+        if (data.error) message = data.error;
+        else if (data.message) message = data.message;
+    } catch {
+        console.error("Error al parsear el mensaje de error:", response.status);
+    }
+}
+
+const INACTIVITY_TIMEOUT_MINUTES = 20;
+let inactivityTimer = null;
+
+function resetInactivityTimer() {
+    if (inactivityTimer) clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+        api.logout();
+        window.location.href = "/incidencias-urbanas";
+    }, INACTIVITY_TIMEOUT_MINUTES * 60 * 1000);
+}
+
+// Escucha eventos de actividad del usuario
+['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(event => {
+    window.addEventListener(event, resetInactivityTimer);
+});
+resetInactivityTimer();
 
 
 export const api = {
     // funciones asíncronas que se usan en los jsx y que hacen las peticiones al backend
 
+    login: async (email, password) => {
+        resetInactivityTimer();
+        const authdata = window.btoa(email + ':' + password);
+        const headers = {
+            'Authorization': 'Basic ' + authdata,
+            'Content-Type': 'application/json',
+        };
+        console.log("Iniciando sesión con email:", email);
+        console.log("Authdata generado:", authdata);
 
+        const response = await fetch(`${BASE_URL}/usuarios/login`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ email, password }),
+        });
+
+        const user = await parseJsonOrThrow(response);
+        user.authdata = authdata;
+        localStorage.setItem('user', JSON.stringify(user));
+        return user;
+    },
+
+    logout: () => {
+        if (inactivityTimer) clearTimeout(inactivityTimer);
+        localStorage.removeItem('user');
+        window.location.href = "/incidencias-urbanas";        
+    },
+
+    register: async (userData) => {
+        resetInactivityTimer();
+        const email = userData.email;
+        const password = userData.password;
+        const response = await fetch(`${BASE_URL}/usuarios/registro`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData),
+        });
+        const user = await parseJsonOrThrow(response);
+        if (email && password) {
+            const authdata = window.btoa(email + ':' + password);
+            user.authdata = authdata;
+            localStorage.setItem('user', JSON.stringify(user));
+        }
+        return user;
+    },
+
+    getIncidents: async () => {
+        resetInactivityTimer();
+        const response = await fetch(`${BASE_URL}/incidencias`, {
+            method: 'GET',
+            headers: getAuthHeaders(),
+        });
+        return parseJsonOrThrow(response);
+    },
+    
 
 
 

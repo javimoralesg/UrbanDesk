@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
+import { api } from '../services/api';
 import "../assets/css/Registrarse.css";
 
 export default function Registrarse() {
@@ -13,32 +14,19 @@ export default function Registrarse() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Registrando usuario:", { nombre, cp, email, password });
-    const usuario = {
-      nombre: nombre,
-      email: email,
-      password: password, 
-      codigoPostal: cp
-    };
     try {
-      const response = await fetch("http://localhost:8080/api/usuarios/registro", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(usuario),
+      
+      await api.register({
+        nombre: nombre,
+        email: email,
+        password: password, 
+        codigoPostal: cp
       });
-
-      if (!response.ok) {
-        throw new Error("Error en el registro");
-      }
-
-      const data = await response.json();
-      console.log("Usuario creado:", data);
-
-      navigate("incidencias-urbanas");
+      
     } catch (error) {
       console.error("Error al registrar usuario:", error);
+    } finally {
+      navigate('/incidencias-urbanas');
     }
   };
 
