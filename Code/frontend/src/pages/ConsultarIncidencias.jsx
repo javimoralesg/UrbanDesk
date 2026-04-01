@@ -27,11 +27,35 @@ export default function ConsultarIncidencias() {
     const cargarIncidencias = async () => {
       try {
         setLoading(true);
-        const data = await api.obtenerTodasIncidencias();
+        setError("");
+
+        const rawUser = localStorage.getItem("user");
+        if (!rawUser) {
+          setIncidencias([]);
+          setError("Debes iniciar sesión para consultar tus incidencias.");
+          return;
+        }
+
+        let user;
+        try {
+          user = JSON.parse(rawUser);
+        } catch {
+          setIncidencias([]);
+          setError("No se pudo leer la sesión de usuario.");
+          return;
+        }
+
+        if (!user?.id) {
+          setIncidencias([]);
+          setError("No se encontró el id del usuario logeado.");
+          return;
+        }
+
+        const data = await api.obtenerIncidenciasPorCiudadano(user.id);
         setIncidencias(data);
       } catch (error) {
         console.error(error);
-        setError("No se pudieron cargar las incidencias");
+        setError("No se pudieron cargar tus incidencias");
       } finally {
         setLoading(false);
       }

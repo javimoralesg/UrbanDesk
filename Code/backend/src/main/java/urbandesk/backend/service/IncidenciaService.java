@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.RequiredArgsConstructor;
 import urbandesk.backend.domain.DomainRuleViolation;
 import urbandesk.backend.domain.incidence.Estado;
@@ -21,6 +20,8 @@ import urbandesk.backend.repository.UsuarioRepository;
 @Service
 @RequiredArgsConstructor
 public class IncidenciaService {
+
+    private static final Long CIUDADANO_POR_DEFECTO_ID = 1L;
 
     private final IncidenciaRepository incidenciaRepository;
     private final UsuarioRepository usuarioRepository;
@@ -63,6 +64,10 @@ public class IncidenciaService {
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
         MailService.enviarIncidenciaCreada(ciudadano.getEmail(), incidenciaGuardada.getId(), ciudadano.getNombre());
         return incidenciaGuardada;
+    }
+
+    public Incidencia crearIncidenciaAnonima(Ubicacion ubicacion, String descripcion) {
+        return crearIncidencia(ubicacion, descripcion, CIUDADANO_POR_DEFECTO_ID);
     }
 
     public Incidencia actualizarIncidencia(Long id, Ubicacion nuevaUbicacion, String nuevaDescripcion) {
