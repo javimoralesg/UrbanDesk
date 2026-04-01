@@ -15,7 +15,6 @@ import urbandesk.backend.domain.user.Operador;
 import urbandesk.backend.domain.user.Tecnico;
 import urbandesk.backend.domain.user.Usuario;
 import urbandesk.backend.repository.IncidenciaRepository;
-import urbandesk.backend.repository.OperadorRepository;
 import urbandesk.backend.repository.UsuarioRepository;
 
 @Service
@@ -24,7 +23,6 @@ public class IncidenciaService {
 
     private final IncidenciaRepository incidenciaRepository;
     private final UsuarioRepository usuarioRepository;
-    private final OperadorRepository operadorRepository;
 
     public List<Incidencia> obtenerTodas() {
         return incidenciaRepository.findAll();
@@ -78,9 +76,14 @@ public class IncidenciaService {
     public Incidencia asignarOperador(Long incidenciaId, Long operadorId) {
         Incidencia incidencia = obtenerPorId(incidenciaId);
 
-        Operador operador = operadorRepository.findById(operadorId)
-                .orElseThrow(() -> new DomainRuleViolation("Operador no encontrado"));
+        Usuario usuario = usuarioRepository.findById(operadorId)
+                .orElseThrow(() -> new DomainRuleViolation("Usuario no encontrado"));
 
+        if (!(usuario instanceof Operador)) {
+            throw new DomainRuleViolation("El usuario no es un operador");
+        }
+
+        Operador operador = (Operador) usuario;
         incidencia.asignarOperador(operador);
         return incidenciaRepository.save(incidencia);
     }
@@ -185,4 +188,4 @@ public class IncidenciaService {
         return guardada;
     }*/
 
-}
+
