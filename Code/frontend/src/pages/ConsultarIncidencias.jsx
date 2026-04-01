@@ -52,6 +52,18 @@ export default function ConsultarIncidencias() {
       ? incidencias
       : incidencias.filter((incidencia) => incidencia.estado === filtroEstado);
 
+  const puntosMapa = incidenciasFiltradas
+    .filter(
+      (incidencia) =>
+        typeof incidencia?.ubicacion?.latitud === "number" &&
+        typeof incidencia?.ubicacion?.longitud === "number"
+    )
+    .map((incidencia) => ({
+      id: incidencia.id,
+      lat: incidencia.ubicacion.latitud,
+      lng: incidencia.ubicacion.longitud,
+    }));
+
   return (
     <>
       <Hero />
@@ -208,7 +220,7 @@ export default function ConsultarIncidencias() {
             </div>
           ) : (
             <div className="consultar-incidencias__map-container">
-              <MapLocate width="100%" />
+              <MapLocate width="100%" puntos={puntosMapa} />
             </div>
           )}
         </div>

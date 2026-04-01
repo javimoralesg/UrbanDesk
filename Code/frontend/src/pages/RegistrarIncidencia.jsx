@@ -8,6 +8,9 @@ import "../assets/css/RegistrarIncidencia.css";
 
 export default function RegistrarIncidencia() {
     const [descripcion, setDescripcion] = useState('');
+    const [centerLocation, setCenterLocation] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [feedback, setFeedback] = useState({ error: '', success: '' });
 
     const {
         address,
@@ -22,6 +25,48 @@ export default function RegistrarIncidencia() {
         addressPopup,
         warningPopup,
     } = useMapRegisterLogic();
+
+    const handleRegisterIncident = async () => {
+        const trimmedDescription = descripcion.trim();
+
+        if (!trimmedDescription) {
+            setFeedback({ error: 'La descripción es obligatoria.', success: '' });
+            return;
+        }
+
+        const latitud = targetLocation?.lat ?? centerLocation?.lat;
+        const longitud = targetLocation?.lon ?? centerLocation?.lon;
+
+        if (!latitud || !longitud) {
+            setFeedback({ error: 'Selecciona una ubicación válida en el mapa.', success: '' });
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            setFeedback({ error: '', success: '' });
+
+            await api.crearIncidencia({
+                direccion: address || 'Ubicación sin dirección textual',
+                latitud,
+                longitud,
+                descripcion: trimmedDescription,
+            });
+
+            setDescripcion('');
+            setFeedback({ error: '', success: 'Incidencia registrada correctamente.' });
+        } catch (error) {
+            console.error('Error al crear incidencia:', error);
+            setFeedback({ error: 'No se pudo registrar la incidencia. Inténtalo de nuevo.', success: '' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleCenterChanged = (center) => {
+        setCenterLocation({ lat: center.lat, lon: center.lng });
+        handleMapCenterChange(center);
+    };
 
     return (
         <>
@@ -95,8 +140,24 @@ export default function RegistrarIncidencia() {
 
                     <button onClick={handleCurrentLocation} style={{ marginTop: '10px', padding: '8px 12px', cursor: 'pointer' }}>Ubicación actual</button>
 
+                    <button
+                        onClick={handleRegisterIncident}
+                        disabled={isSubmitting}
+                        style={{ marginTop: '10px', marginLeft: '10px', padding: '8px 12px', cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+                    >
+                        {isSubmitting ? 'Registrando...' : 'Registrar incidencia'}
+                    </button>
+
+                    {feedback.error && (
+                        <p style={{ color: '#c62828', marginTop: '10px' }}>{feedback.error}</p>
+                    )}
+
+                    {feedback.success && (
+                        <p style={{ color: '#2e7d32', marginTop: '10px' }}>{feedback.success}</p>
+                    )}
+
                     <MapRegister
-                        onCenterChanged={handleMapCenterChange}
+                        onCenterChanged={handleCenterChanged}
                         targetLocation={targetLocation}
                     />
                 </section>

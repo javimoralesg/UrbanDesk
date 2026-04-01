@@ -214,6 +214,7 @@ export const api = {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            ...getAuthHeaders(),
         },
         body: JSON.stringify({
             direccion,
