@@ -44,7 +44,7 @@ public class UsuarioService {
             throw new DomainRuleViolation("El email ya está registrado");
         }
 
-        Ciudadano ciudadano = new Ciudadano(nombre, email, password, codigoPostal);
+        Ciudadano ciudadano = new Ciudadano(nombre, email, hashPassword(password), codigoPostal);
 
         return usuarioRepository.save(ciudadano);
     }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import MapLocate from "../components/MapLocate";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { api } from "../services/api";
 import "../assets/css/ConsultarIncidencias.css";
 
