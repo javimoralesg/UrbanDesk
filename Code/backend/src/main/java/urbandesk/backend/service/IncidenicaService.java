@@ -16,14 +16,16 @@ import urbandesk.backend.domain.user.Ciudadano;
 import urbandesk.backend.domain.user.Operador;
 
 @Service
-public class IncidenicaService {
+@RequiredArgsConstructor
+
+public class IncidenciaService {
     private final IncidenciaRepository incidenciaRepository;
     private final UsuarioRepository    usuarioRepository;
     private final UbicacionRepository  ubicacionRepository;
     private final OperadorRepository   operadorRepository;
 
 
-    public List<Incidencia> getIncidenicaList() {
+    public List<Incidencia> getIncidenciaList() {
         return incidenciaRepository.findAll();
     }
 
@@ -46,7 +48,41 @@ public class IncidenicaService {
     public List<Incidencia> obtenerPorTecnico(Long tecnicoId) {
         return incidenciaRepository.findByTecnicoId(tecnicoId);
     }
+    public Incidencia crearIncidencia(Incidencia incidencia) {
+        incidencia.setFechaCreacion(LocalDateTime.now());
+        incidencia.setEstado(Estado.CREADA);
+        return incidenciaRepository.save(incidencia);
+    }
+    public Incidencia actualizarEstado(Long id, Estado nuevoEstado) {
+        Incidencia incidencia = getIncidenciaById(id);
+        incidencia.setEstado(nuevoEstado);
+        return incidenciaRepository.save(incidencia);
+    }
+    public Incidencia asignarOperador(Long incidenciaId, Long operadorId) {
+        Incidencia incidencia = getIncidenciaById(incidenciaId);
+        Operador operador = operadorRepository.findById(operadorId)
+            .orElseThrow(() -> new DomainRuleViolation("Operador no encontrado"));
 
+        incidencia.setOperador(operador);
+        return incidenciaRepository.save(incidencia);
+    }
+    public void deleteIncidencia(Long id) {
+        Incidencia incidencia = getIncidenciaById(id);
+        incidenciaRepository.delete(incidencia);
+    }
+    public Incidencia asignarTecnico(Long incidenciaId, Long tecnicoId) {
+        Incidencia incidencia = getIncidenciaById(incidenciaId);
+
+        var tecnico = usuarioRepository.findById(tecnicoId)
+            .orElseThrow(() -> new DomainRuleViolation("Técnico no encontrado"));
+
+        incidencia.setTecnico(tecnico);
+        return incidenciaRepository.save(incidencia);
+    }
+    public long contarPorEstado(Estado estado) {
+        return incidenciaRepository.countByEstado(estado);
+    }
+    
     /*public Incidencia crearIncidencia(CrearIncidenciaRequest request, Long ciudadanoId) {
 
        if (usuario instanceof Ciudadano ciudadano) {
