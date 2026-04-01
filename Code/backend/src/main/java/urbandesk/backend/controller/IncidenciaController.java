@@ -71,6 +71,7 @@ public class IncidenciaController {
     public ResponseEntity<?> crearIncidencia(@RequestBody IncidenciaRequest request, Principal principal) {
 
         Usuario usuario = getAuthenticatedUser(principal);
+        Long usuarioId = usuario != null ? usuario.getId() : null;
 
         Ubicacion ubicacion = new Ubicacion(
             request.direccion(),
@@ -78,19 +79,11 @@ public class IncidenciaController {
             request.longitud()
         );
 
-        Incidencia incidencia;
-        if (usuario == null) {
-            incidencia = incidenciaService.crearIncidenciaAnonima(
-                ubicacion,
-                request.descripcion()
-            );
-        } else {
-            incidencia = incidenciaService.crearIncidencia(
-                ubicacion,
-                request.descripcion(),
-                usuario.getId()
-            );
-        }
+        Incidencia incidencia = incidenciaService.crearIncidencia(
+            ubicacion,
+            request.descripcion(),
+            usuarioId
+        );
 
         return ResponseEntity.ok(incidencia);
     }

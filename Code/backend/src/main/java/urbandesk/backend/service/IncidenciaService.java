@@ -21,8 +21,6 @@ import urbandesk.backend.repository.UsuarioRepository;
 @RequiredArgsConstructor
 public class IncidenciaService {
 
-    private static final Long CIUDADANO_POR_DEFECTO_ID = 1L;
-
     private final IncidenciaRepository incidenciaRepository;
     private final UsuarioRepository usuarioRepository;
     private final MailService MailService;
@@ -53,21 +51,27 @@ public class IncidenciaService {
     }
 
     public Incidencia crearIncidencia(Ubicacion ubicacion, String descripcion, Long ciudadanoId) {
-        Usuario usuario = usuarioRepository.findById(ciudadanoId)
-                .orElseThrow(() -> new DomainRuleViolation("Ciudadano no encontrado"));
+        Ciudadano ciudadano = null;
 
-        if (!(usuario instanceof Ciudadano ciudadano)) {
-            throw new DomainRuleViolation("El usuario indicado no es un ciudadano");
+        if (ciudadanoId != null) {
+            Usuario usuario = usuarioRepository.findById(ciudadanoId)
+                    .orElseThrow(() -> new DomainRuleViolation("Ciudadano no encontrado"));
+
+            if (!(usuario instanceof Ciudadano ciudadanoCast)) {
+                throw new DomainRuleViolation("El usuario indicado no es un ciudadano");
+            }
+
+            ciudadano = ciudadanoCast;
         }
 
         Incidencia incidencia = new Incidencia(ubicacion, descripcion, ciudadano);
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
-        MailService.enviarIncidenciaCreada(ciudadano.getEmail(), incidenciaGuardada.getId(), ciudadano.getNombre());
-        return incidenciaGuardada;
-    }
 
-    public Incidencia crearIncidenciaAnonima(Ubicacion ubicacion, String descripcion) {
-        return crearIncidencia(ubicacion, descripcion, CIUDADANO_POR_DEFECTO_ID);
+        if (ciudadano != null) {
+            MailService.enviarIncidenciaCreada(ciudadano.getEmail(), incidenciaGuardada.getId(), ciudadano.getNombre());
+        }
+
+        return incidenciaGuardada;
     }
 
     public Incidencia actualizarIncidencia(Long id, Ubicacion nuevaUbicacion, String nuevaDescripcion) {
