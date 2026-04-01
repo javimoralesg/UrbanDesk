@@ -49,15 +49,19 @@ public class IncidenciaService {
         return incidenciaRepository.findByTecnicoId(tecnicoId);
     }
     public Incidencia crearIncidencia(Ubicacion ubicacion, String descripcion, Long ciudadanoId) {
-        Ciudadano ciudadano = (Ciudadano) usuarioRepository.findById(ciudadanoId)
+        var usuario = usuarioRepository.findById(ciudadanoId)
                 .orElseThrow(() -> new DomainRuleViolation("Ciudadano no encontrado"));
+
+        if (!(usuario instanceof Ciudadano ciudadano)) {
+            throw new DomainRuleViolation("El usuario indicado no es un ciudadano");
+        }
 
         Incidencia incidencia = new Incidencia(ubicacion, descripcion, ciudadano);
         return incidenciaRepository.save(incidencia);
 }
     public Incidencia actualizarEstado(Long id, Estado nuevoEstado) {
         Incidencia incidencia = getIncidenciaById(id);
-        incidencia.setEstado(nuevoEstado);
+        incidencia.actualizarEstado(nuevoEstado);
         return incidenciaRepository.save(incidencia);
     }
     public Incidencia asignarOperador(Long incidenciaId, Long operadorId) {
@@ -65,9 +69,9 @@ public class IncidenciaService {
         Operador operador = operadorRepository.findById(operadorId)
             .orElseThrow(() -> new DomainRuleViolation("Operador no encontrado"));
 
-        incidencia.setOperador(operador);
+        incidencia.asignarOperador(operador);
         return incidenciaRepository.save(incidencia);
-    }
+}
     public void deleteIncidencia(Long id) {
         Incidencia incidencia = getIncidenciaById(id);
         incidenciaRepository.delete(incidencia);
@@ -75,12 +79,16 @@ public class IncidenciaService {
     public Incidencia asignarTecnico(Long incidenciaId, Long tecnicoId) {
         Incidencia incidencia = getIncidenciaById(incidenciaId);
 
-        var tecnico = usuarioRepository.findById(tecnicoId)
+        var usuario = usuarioRepository.findById(tecnicoId)
             .orElseThrow(() -> new DomainRuleViolation("Técnico no encontrado"));
 
-        incidencia.setTecnico(tecnico);
-        return incidenciaRepository.save(incidencia);
+        if (!(usuario instanceof urbandesk.backend.domain.user.Tecnico tecnico)) {
+            throw new DomainRuleViolation("El usuario indicado no es un técnico");
     }
+
+        incidencia.agregarTecnico(tecnico);
+        return incidenciaRepository.save(incidencia);
+}
     public long contarPorEstado(Estado estado) {
         return incidenciaRepository.countByEstado(estado);
     }
