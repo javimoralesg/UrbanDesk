@@ -46,6 +46,18 @@ export default function RegistrarIncidencia() {
             setIsSubmitting(true);
             setFeedback({ error: '', success: '' });
 
+            const response = await api.validateDescription(descripcion);
+            const parsedResponse = JSON.parse(response);
+            if (parsedResponse.valid !== true || parsedResponse.valid !== "true") {
+            
+                setFeedback({ error:  parsedResponse.reason || 'La descripción parece no ser válida para una incidencia urbana. Por favor, revisa y corrige la descripción.' , success: '' });
+                setTimeout(() => {
+                    setFeedback({ error: '', success: '' });
+                }, 4000);
+                setIsSubmitting(false);
+                return;
+            }
+
             await api.crearIncidencia({
                 direccion: address || 'Ubicación sin dirección textual',
                 latitud,
