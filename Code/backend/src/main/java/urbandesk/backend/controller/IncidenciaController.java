@@ -68,9 +68,14 @@ public class IncidenciaController {
     }
 
     @PostMapping
-    public ResponseEntity<Incidencia> crearIncidencia(@RequestBody IncidenciaRequest request, Principal principal) {
+    public ResponseEntity<?> crearIncidencia(@RequestBody IncidenciaRequest request, Principal principal) {
 
         Usuario usuario = getAuthenticatedUser(principal);
+        Long usuarioId = null;
+
+        if (usuario != null ) {
+            usuarioId = usuario.getId();
+        }
 
         Ubicacion ubicacion = new Ubicacion(
             request.direccion(),
@@ -81,7 +86,7 @@ public class IncidenciaController {
         Incidencia incidencia = incidenciaService.crearIncidencia(
             ubicacion,
             request.descripcion(),
-            usuario.getId()
+            usuarioId
         );
 
         return ResponseEntity.ok(incidencia);

@@ -2,6 +2,10 @@ package urbandesk.backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import urbandesk.backend.domain.user.Ciudadano;
@@ -19,6 +23,7 @@ import java.util.Map;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final AuthenticationManager authenticationManager;
 
     public record UsuarioRequest(
         String nombre,
@@ -42,5 +47,13 @@ public class UsuarioController {
         );
 
         return ResponseEntity.ok(ciudadano);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Usuario> login(@RequestBody UsuarioRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return ResponseEntity.ok(usuarioService.obtenerUsuarioPorEmail(request.email()));
     }
 }

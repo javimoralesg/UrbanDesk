@@ -45,9 +45,9 @@ public class UsuarioService {
 
         Ciudadano ciudadano = new Ciudadano(nombre, email, hashPassword(password), codigoPostal);
 
-        Usuario usuarioGuardado = usuarioRepository.save(ciudadano);
+        Ciudadano ciudadanoGuardado = usuarioRepository.save(ciudadano);
         MailService.enviarBienvenida(ciudadano.getEmail(), ciudadano.getNombre(), ciudadano.getEmail());
-        return usuarioGuardado;
+        return ciudadanoGuardado;
     }
 
     public String hashPassword(String password) {
