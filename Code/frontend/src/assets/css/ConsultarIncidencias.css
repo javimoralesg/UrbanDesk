@@ -182,6 +182,14 @@
   background: #10b981;
 }
 
+.consultar-incidencias__estado-badge--cerrada {
+  background: #0f766e;
+}
+
+.consultar-incidencias__estado-badge--rechazada {
+  background: #ef4444;
+}
+
 .consultar-incidencias__more-btn {
   display: inline-flex;
   align-items: center;

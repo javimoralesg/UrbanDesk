@@ -1,68 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import MapLocate from "../components/MapLocate";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
+import { api } from "../services/api";
 import "../assets/css/ConsultarIncidencias.css";
+
+const ESTADOS_LABELS = {
+  CREADA: "Creada",
+  VALIDADA: "Validada",
+  ASIGNADA: "Asignada",
+  EN_CURSO: "En curso",
+  RESUELTA: "Resuelta",
+  CERRADA: "Cerrada",
+  RECHAZADA: "Rechazada",
+};
 
 export default function ConsultarIncidencias() {
   const [vista, setVista] = useState("lista");
-  const [filtroEstado, setFiltroEstado] = useState("Todas");
+  const [filtroEstado, setFiltroEstado] = useState("TODAS");
+  const [incidencias, setIncidencias] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const incidencias = [
-    {
-      id: 1,
-      descripcion: "Farola rota en la calle principal",
-      prioridad: "Alta",
-      estado: "Creada",
-    },
-    {
-      id: 2,
-      descripcion: "Bache en la calzada",
-      prioridad: "Media",
-      estado: "Validada",
-    },
-    {
-      id: 3,
-      descripcion: "Contenedor desbordado",
-      prioridad: "Baja",
-      estado: "Asignada",
-    },
-    {
-      id: 4,
-      descripcion: "Señal de tráfico dañada",
-      prioridad: "Alta",
-      estado: "En curso",
-    },
-    {
-      id: 5,
-      descripcion: "Fuga de agua en acera",
-      prioridad: "Alta",
-      estado: "Resuelta",
-    },
-    {
-      id: 6,
-      descripcion: "Alcantarilla atascada",
-      prioridad: "Media",
-      estado: "Creada",
-    },
-    {
-      id: 7,
-      descripcion: "Banco roto en el parque",
-      prioridad: "Baja",
-      estado: "En curso",
-    },
-  ];
+  useEffect(() => {
+    const cargarIncidencias = async () => {
+      try {
+        setLoading(true);
+        const data = await api.obtenerTodasIncidencias();
+        setIncidencias(data);
+      } catch (error) {
+        console.error(error);
+        setError("No se pudieron cargar las incidencias");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarIncidencias();
+  }, []);
 
   const totalIncidencias = incidencias.length;
-  const totalCreadas = incidencias.filter((inc) => inc.estado === "Creada").length;
-  const totalValidadas = incidencias.filter((inc) => inc.estado === "Validada").length;
-  const totalAsignadas = incidencias.filter((inc) => inc.estado === "Asignada").length;
-  const totalEnCurso = incidencias.filter((inc) => inc.estado === "En curso").length;
-  const totalResueltas = incidencias.filter((inc) => inc.estado === "Resuelta").length;
+  const totalCreadas = incidencias.filter((inc) => inc.estado === "CREADA").length;
+  const totalValidadas = incidencias.filter((inc) => inc.estado === "VALIDADA").length;
+  const totalAsignadas = incidencias.filter((inc) => inc.estado === "ASIGNADA").length;
+  const totalEnCurso = incidencias.filter((inc) => inc.estado === "EN_CURSO").length;
+  const totalResueltas = incidencias.filter((inc) => inc.estado === "RESUELTA").length;
 
   const incidenciasFiltradas =
-    filtroEstado === "Todas"
+    filtroEstado === "TODAS"
       ? incidencias
       : incidencias.filter((incidencia) => incidencia.estado === filtroEstado);
 
@@ -105,11 +91,11 @@ export default function ConsultarIncidencias() {
             <button
               type="button"
               className={`consultar-incidencias__filter-btn ${
-                filtroEstado === "Todas"
+                filtroEstado === "TODAS"
                   ? "consultar-incidencias__filter-btn--active"
                   : ""
               }`}
-              onClick={() => setFiltroEstado("Todas")}
+              onClick={() => setFiltroEstado("TODAS")}
             >
               Todas ({totalIncidencias})
             </button>
@@ -117,11 +103,11 @@ export default function ConsultarIncidencias() {
             <button
               type="button"
               className={`consultar-incidencias__filter-btn ${
-                filtroEstado === "Creada"
+                filtroEstado === "CREADA"
                   ? "consultar-incidencias__filter-btn--active"
                   : ""
               }`}
-              onClick={() => setFiltroEstado("Creada")}
+              onClick={() => setFiltroEstado("CREADA")}
             >
               Creada ({totalCreadas})
             </button>
@@ -129,11 +115,11 @@ export default function ConsultarIncidencias() {
             <button
               type="button"
               className={`consultar-incidencias__filter-btn ${
-                filtroEstado === "Validada"
+                filtroEstado === "VALIDADA"
                   ? "consultar-incidencias__filter-btn--active"
                   : ""
               }`}
-              onClick={() => setFiltroEstado("Validada")}
+              onClick={() => setFiltroEstado("VALIDADA")}
             >
               Validada ({totalValidadas})
             </button>
@@ -141,11 +127,11 @@ export default function ConsultarIncidencias() {
             <button
               type="button"
               className={`consultar-incidencias__filter-btn ${
-                filtroEstado === "Asignada"
+                filtroEstado === "ASIGNADA"
                   ? "consultar-incidencias__filter-btn--active"
                   : ""
               }`}
-              onClick={() => setFiltroEstado("Asignada")}
+              onClick={() => setFiltroEstado("ASIGNADA")}
             >
               Asignada ({totalAsignadas})
             </button>
@@ -153,11 +139,11 @@ export default function ConsultarIncidencias() {
             <button
               type="button"
               className={`consultar-incidencias__filter-btn ${
-                filtroEstado === "En curso"
+                filtroEstado === "EN_CURSO"
                   ? "consultar-incidencias__filter-btn--active"
                   : ""
               }`}
-              onClick={() => setFiltroEstado("En curso")}
+              onClick={() => setFiltroEstado("EN_CURSO")}
             >
               En curso ({totalEnCurso})
             </button>
@@ -165,17 +151,21 @@ export default function ConsultarIncidencias() {
             <button
               type="button"
               className={`consultar-incidencias__filter-btn ${
-                filtroEstado === "Resuelta"
+                filtroEstado === "RESUELTA"
                   ? "consultar-incidencias__filter-btn--active"
                   : ""
               }`}
-              onClick={() => setFiltroEstado("Resuelta")}
+              onClick={() => setFiltroEstado("RESUELTA")}
             >
               Resuelta ({totalResueltas})
             </button>
           </div>
 
-          {vista === "lista" ? (
+          {loading ? (
+            <p>Cargando incidencias...</p>
+          ) : error ? (
+            <p>{error}</p>
+          ) : vista === "lista" ? (
             <div className="consultar-incidencias__table-wrapper">
               <table className="consultar-incidencias__table">
                 <thead>
@@ -197,9 +187,9 @@ export default function ConsultarIncidencias() {
                         <span
                           className={`consultar-incidencias__estado-badge consultar-incidencias__estado-badge--${incidencia.estado
                             .toLowerCase()
-                            .replace(" ", "-")}`}
+                            .replaceAll("_", "-")}`}
                         >
-                          {incidencia.estado}
+                          {ESTADOS_LABELS[incidencia.estado] || incidencia.estado}
                         </span>
                       </td>
                       <td>{incidencia.prioridad}</td>
