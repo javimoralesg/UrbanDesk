@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.RequiredArgsConstructor;
 import urbandesk.backend.domain.DomainRuleViolation;
 import urbandesk.backend.domain.incidence.Estado;
@@ -23,6 +24,7 @@ public class IncidenciaService {
 
     private final IncidenciaRepository incidenciaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final MailService MailService;
 
     public List<Incidencia> obtenerTodas() {
         return incidenciaRepository.findAll();
@@ -58,7 +60,9 @@ public class IncidenciaService {
         }
 
         Incidencia incidencia = new Incidencia(ubicacion, descripcion, ciudadano);
-        return incidenciaRepository.save(incidencia);
+        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+        MailService.enviarIncidenciaCreada(ciudadano.getEmail(), incidenciaGuardada.getId(), ciudadano.getNombre());
+        return incidenciaGuardada;
     }
 
     public Incidencia actualizarIncidencia(Long id, Ubicacion nuevaUbicacion, String nuevaDescripcion) {
@@ -70,7 +74,9 @@ public class IncidenciaService {
     public Incidencia cambiarEstado(Long id, Estado nuevoEstado) {
         Incidencia incidencia = obtenerPorId(id);
         incidencia.actualizarEstado(nuevoEstado);
-        return incidenciaRepository.save(incidencia);
+        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+        MailService.enviarCambioEstado(incidencia.getCiudadano().getEmail(), incidencia.getId(), incidencia.getDescripcion(), nuevoEstado);
+        return incidenciaGuardada;
     }
 
     public Incidencia asignarOperador(Long incidenciaId, Long operadorId) {
