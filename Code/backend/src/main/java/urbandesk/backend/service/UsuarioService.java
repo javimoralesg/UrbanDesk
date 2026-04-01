@@ -17,6 +17,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailService MailService;
 
     public void eliminar(Long id) {
         Usuario usuario = obtenerUsuarioPorId(id);
@@ -44,7 +45,9 @@ public class UsuarioService {
 
         Ciudadano ciudadano = new Ciudadano(nombre, email, hashPassword(password), codigoPostal);
 
-        return usuarioRepository.save(ciudadano);
+        Usuario usuarioGuardado = usuarioRepository.save(ciudadano);
+        MailService.enviarBienvenida(ciudadano.getEmail(), ciudadano.getNombre(), ciudadano.getEmail());
+        return usuarioGuardado;
     }
 
     public String hashPassword(String password) {
