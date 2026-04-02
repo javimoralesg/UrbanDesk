@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import urbandesk.backend.domain.DomainRuleViolation;
 import urbandesk.backend.domain.incidence.Estado;
+import urbandesk.backend.domain.incidence.Historial;
 import urbandesk.backend.domain.incidence.Incidencia;
 import urbandesk.backend.domain.incidence.Prioridad;
 import urbandesk.backend.domain.incidence.Ubicacion;
@@ -67,6 +68,12 @@ public class IncidenciaService {
         }
 
         Incidencia incidencia = new Incidencia(ubicacion, descripcion, ciudadano);
+        incidencia.agregarHistorial(new Historial(
+            incidencia,
+            ciudadano,
+            Estado.CREADA,
+            "Incidencia creada"
+        ));
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
 
         if (ciudadano != null) {
@@ -85,6 +92,12 @@ public class IncidenciaService {
     public Incidencia cambiarEstado(Long id, Estado nuevoEstado) {
         Incidencia incidencia = obtenerPorId(id);
         incidencia.actualizarEstado(nuevoEstado);
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                incidencia.getOperador(),
+                nuevoEstado,
+                "Estado actualizado a " + nuevoEstado.name()
+        ));
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
         MailService.enviarCambioEstado(incidencia.getCiudadano().getEmail(), incidencia.getId(), incidencia.getDescripcion(), nuevoEstado);
         return incidenciaGuardada;

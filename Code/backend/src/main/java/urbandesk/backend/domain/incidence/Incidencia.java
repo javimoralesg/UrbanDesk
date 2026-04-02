@@ -109,6 +109,13 @@ public class Incidencia {
         this.prioridad = prioridad;
     }
 
+    public void agregarHistorial(Historial historial) {
+        if (historial == null) {
+            throw new DomainRuleViolation("El historial no puede ser nulo");
+        }
+        this.historiales.add(historial);
+    }
+
     public void limpiarTecnicos() {
         this.tecnicos.clear();
         this.tecnicosFinalizadosIds.clear();
