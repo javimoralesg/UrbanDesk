@@ -17,6 +17,13 @@ export default function DetalleIncidencia() {
   const rol = "Operador"; // Operador | Tecnico | Ciudadano
   
   useEffect(() => {
+    const verificarSesionYRedirigir = () => {
+      const rawUser = localStorage.getItem("user");
+      if (!rawUser) {
+        navigate("/incidencias-urbanas/login", { replace: true });
+      }
+    };
+
     const cargarIncidencia = async () => {
       try {
         setLoading(true);
@@ -43,6 +50,7 @@ export default function DetalleIncidencia() {
       }
     };
 
+    verificarSesionYRedirigir();
     cargarIncidencia();
   }, [id, navigate]);
 
