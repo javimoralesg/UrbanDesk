@@ -122,6 +122,10 @@ public class MailService {
 
     public void enviarCambioEstado(String destinatario, Long idIncidencia,
                                    String titulo, Estado nuevoEstado) {
+
+        if (nuevoEstado != Estado.VALIDADA && nuevoEstado != Estado.RESUELTA && nuevoEstado != Estado.RECHAZADA) {
+            return; 
+        }
         String html = """
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
                 <div style="background-color: #3b82f6; padding: 24px; text-align: center;">
