@@ -17,7 +17,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/incidencias-urbanas" element={<IncidenciasUrbanas />} />
         <Route path="/incidencias-urbanas/registrar-incidencia" element={<RegistrarIncidencia />} />
-        <Route path="/incidencias-urbanas/detalle-incidencia/:id" element={<DetalleIncidencia />} />
+        <Route path="/incidencias-urbanas/mis-incidencias/:id" element={<DetalleIncidencia />} />
         <Route path="/incidencias-urbanas/login" element={<IniciarSesion />} />
         <Route path="/incidencias-urbanas/register" element={<Registrarse />} />
         <Route path="*" element={<NoMatch />} />

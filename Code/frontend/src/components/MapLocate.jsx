@@ -36,7 +36,7 @@ function AutoZoom({ puntos }) {
   useEffect(() => {
     const allLocations = [];
     puntos.forEach(p => { if (p.lat && p.lng) allLocations.push([p.lat, p.lng]); });
-    
+
     if (allLocations.length === 0) return;
     const bounds = L.latLngBounds(allLocations);
     map.fitBounds(bounds, { padding: [70, 70], maxZoom: 15 });
@@ -50,23 +50,23 @@ export default function MapLocate({ width = "100%", height = "500px", puntos = [
 
   return (
     <div style={{ width, height, position: 'relative', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
-      
-      <MapContainer 
-        center={[40.41, -3.70]} 
-        zoom={13} 
+
+      <MapContainer
+        center={[40.41, -3.70]}
+        zoom={13}
         style={{ height: '100%', width: '100%' }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <AutoZoom puntos={puntosVisibles} />
 
         {puntosVisibles.map((p, i) => (
-          <Marker 
-            key={i} 
-            position={[p.lat, p.lng]} 
+          <Marker
+            key={i}
+            position={[p.lat, p.lng]}
             icon={crearIconoColor(COLORES_DISPONIBLES[i % COLORES_DISPONIBLES.length])}
             eventHandlers={{
               click: () => {
-                navigate(`/incidencias-urbanas/detalle-incidencia/${p.id}`);
+                navigate(`/incidencias-urbanas/mis-incidencias/${p.id}`);
               }
             }}
           />

@@ -348,7 +348,7 @@ export default function MisIncidencias() {
                       <td>{incidencia.prioridad}</td>
                       <td>
                         <Link
-                          to={`/incidencias-urbanas/detalle-incidencia/${incidencia.id}`}
+                          to={`/incidencias-urbanas/mis-incidencias/${incidencia.id}`}
                           className="mis-incidencias__more-btn"
                         >
                           Ver detalle
