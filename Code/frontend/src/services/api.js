@@ -150,7 +150,7 @@ export const api = {
     },
 
     obtenerTodasIncidencias: async () => {
-        const response = await fetch("http://localhost:8080/api/incidencias");
+        const response = await fetch(`${BASE_URL}/incidencias`);
 
         if (!response.ok) {
         throw new Error("Error al obtener todas las incidencias");
@@ -160,7 +160,7 @@ export const api = {
     },
 
     obtenerIncidenciaPorId: async (id) => {
-        const response = await fetch(`http://localhost:8080/api/incidencias/${id}`);
+        const response = await fetch(`${BASE_URL}/incidencias/${id}`);
 
         if (!response.ok) {
         throw new Error("Error al obtener la incidencia");
@@ -170,7 +170,7 @@ export const api = {
     },
 
     obtenerIncidenciasPorEstado: async (estado) => {
-        const response = await fetch(`http://localhost:8080/api/incidencias/estado/${estado}`);
+        const response = await fetch(`${BASE_URL}/incidencias/estado/${estado}`);
 
         if (!response.ok) {
         throw new Error("Error al obtener incidencias por estado");
@@ -180,7 +180,7 @@ export const api = {
     },    
 
     obtenerIncidenciasPorCiudadano: async (idCiudadano) => {
-        const response = await fetch(`http://localhost:8080/api/incidencias/ciudadano/${idCiudadano}`);
+        const response = await fetch(`${BASE_URL}/incidencias/ciudadano/${idCiudadano}`);
 
         if (!response.ok) {
         throw new Error("Error al obtener incidencias del ciudadano");
@@ -190,7 +190,7 @@ export const api = {
     },
 
     obtenerIncidenciasPorOperador: async (idOperador) => {
-        const response = await fetch(`http://localhost:8080/api/incidencias/operador/${idOperador}`);
+        const response = await fetch(`${BASE_URL}/incidencias/operador/${idOperador}`);
 
         if (!response.ok) {
         throw new Error("Error al obtener incidencias del operador");
@@ -200,7 +200,7 @@ export const api = {
     },
 
     obtenerIncidenciasPorPrioridad: async (prioridad) => {
-        const response = await fetch(`http://localhost:8080/api/incidencias/prioridad/${prioridad}`);
+        const response = await fetch(`${BASE_URL}/incidencias/prioridad/${prioridad}`);
 
         if (!response.ok) {
         throw new Error("Error al obtener incidencias por prioridad");
@@ -210,7 +210,7 @@ export const api = {
     },
 
     obtenerIncidenciasPorTecnico: async (tecnicoId) => {
-        const response = await fetch(`http://localhost:8080/api/incidencias/tecnico/${tecnicoId}`);
+        const response = await fetch(`${BASE_URL}/incidencias/tecnico/${tecnicoId}`);
 
         if (!response.ok) {
         throw new Error("Error al obtener incidencias del técnico");
@@ -220,7 +220,7 @@ export const api = {
     },
 
     crearIncidencia: async ({ direccion, latitud, longitud, descripcion, ciudadanoId }) => {
-        const response = await fetch("http://localhost:8080/api/incidencias", {
+        const response = await fetch(`${BASE_URL}/incidencias`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -243,7 +243,7 @@ export const api = {
      },
 
     actualizarIncidencia: async (id, { direccion, latitud, longitud, descripcion }) => {
-        const response = await fetch(`http://localhost:8080/api/incidencias/${id}`, {
+        const response = await fetch(`${BASE_URL}/incidencias/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -265,7 +265,7 @@ export const api = {
 
     cambiarEstadoIncidencia: async (id, nuevoEstado) => {
         const response = await fetch(
-        `http://localhost:8080/api/incidencias/${id}/estado?nuevoEstado=${nuevoEstado}`,
+        `${BASE_URL}/incidencias/${id}/estado?nuevoEstado=${nuevoEstado}`,
         {
             method: "PUT",
         }
@@ -280,7 +280,7 @@ export const api = {
 
     cambiarPrioridadIncidencia: async (id, prioridad) => {
         const response = await fetch(
-        `http://localhost:8080/api/incidencias/${id}/prioridad?prioridad=${prioridad}`,
+        `${BASE_URL}/incidencias/${id}/prioridad?prioridad=${prioridad}`,
         {
             method: "PUT",
         }
@@ -295,8 +295,8 @@ export const api = {
 
     asignarOperadorIncidencia: async (id, operadorId = null) => {
         const endpoint = operadorId == null
-        ? `http://localhost:8080/api/incidencias/${id}/operador`
-        : `http://localhost:8080/api/incidencias/${id}/operador/${operadorId}`;
+        ? `${BASE_URL}/incidencias/${id}/operador`
+        : `${BASE_URL}/incidencias/${id}/operador/${operadorId}`;
 
         const response = await fetch(
         endpoint,
@@ -314,7 +314,7 @@ export const api = {
 
     asignarTecnicoIncidencia: async (id, tecnicoId) => {
         const response = await fetch(
-        `http://localhost:8080/api/incidencias/${id}/tecnico/${tecnicoId}`,
+        `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}`,
         {
             method: "PUT",
         }
@@ -329,7 +329,7 @@ export const api = {
 
     eliminarTecnicoIncidencia: async (id, tecnicoId) => {
         const response = await fetch(
-        `http://localhost:8080/api/incidencias/${id}/tecnico/${tecnicoId}`,
+        `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}`,
         {
             method: "DELETE",
         }
@@ -341,18 +341,4 @@ export const api = {
 
         return await response.json();
     },
-
-    eliminarIncidencia: async (id) => {
-        const response = await fetch(`http://localhost:8080/api/incidencias/${id}`, {
-        method: "DELETE",
-        });
-
-        if (!response.ok) {
-        throw new Error("Error al eliminar incidencia");
-        }
-
-        return true;
-    },
-
-
 }
