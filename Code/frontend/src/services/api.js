@@ -322,26 +322,6 @@ export const api = {
         return await response.json();
     },
 
-    cambiarEstadoIncidencia: async (id, nuevoEstado, comentario = "") => {
-        const response = await fetch(
-        `${BASE_URL}/incidencias/${id}/estado?nuevoEstado=${nuevoEstado}`,
-        {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                ...getAuthHeaders(),
-            },
-            body: JSON.stringify({ comentario }),
-        }
-        );
-
-        if (!response.ok) {
-        throw new Error("Error al cambiar el estado");
-        }
-
-        return await response.json();
-    },
-
     cambiarPrioridadIncidencia: async (id, prioridad) => {
         const response = await fetch(
         `${BASE_URL}/incidencias/${id}/prioridad?prioridad=${prioridad}`,
