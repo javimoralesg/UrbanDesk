@@ -283,11 +283,16 @@ export const api = {
         return await response.json();
     },
 
-    cambiarEstadoIncidencia: async (id, nuevoEstado) => {
+    cambiarEstadoIncidencia: async (id, nuevoEstado, comentario = "") => {
         const response = await fetch(
         `${BASE_URL}/incidencias/${id}/estado?nuevoEstado=${nuevoEstado}`,
         {
             method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeaders(),
+            },
+            body: JSON.stringify({ comentario }),
         }
         );
 

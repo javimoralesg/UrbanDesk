@@ -113,7 +113,36 @@ public class IncidenciaService {
                 "Estado actualizado a " + nuevoEstado.name()
         ));
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
-        MailService.enviarCambioEstado(incidencia.getCiudadano().getEmail(), incidencia.getId(), incidencia.getDescripcion(), nuevoEstado);
+        if (incidencia.getCiudadano() != null) {
+            MailService.enviarCambioEstado(
+                    incidencia.getCiudadano().getEmail(),
+                    incidencia.getId(),
+                    incidencia.getDescripcion(),
+                    nuevoEstado);
+        }
+        return incidenciaGuardada;
+    }
+
+    public Incidencia cambiarEstado(Long id, Estado nuevoEstado, String comentario) {
+        Incidencia incidencia = obtenerPorId(id);
+        incidencia.actualizarEstado(nuevoEstado);
+        String observaciones = comentario == null || comentario.isBlank()
+            ? "Estado actualizado a " + nuevoEstado.name()
+            : comentario;
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                incidencia.getOperador(),
+                nuevoEstado,
+                observaciones
+        ));
+        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+        if (incidencia.getCiudadano() != null) {
+            MailService.enviarCambioEstado(
+                incidencia.getCiudadano().getEmail(),
+                incidencia.getId(),
+                incidencia.getDescripcion(),
+                nuevoEstado);
+        }
         return incidenciaGuardada;
     }
 

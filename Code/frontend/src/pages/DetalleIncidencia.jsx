@@ -158,6 +158,30 @@ export default function DetalleIncidencia() {
     return new Date(fecha).toLocaleString("es-ES");
   };
 
+  const cambiarEstado = async (nuevoEstado) => {
+    try {
+      let comentario = "";
+
+      if (nuevoEstado === "RECHAZADA") {
+        comentario = window.prompt(
+          "Indica el motivo del rechazo:",
+          "Incidencia rechazada por el operador"
+        ) || "";
+      }
+
+      const incidenciaActualizada = await api.cambiarEstadoIncidencia(
+        id,
+        nuevoEstado,
+        comentario
+      );
+
+      setIncidenciaApi(incidenciaActualizada);
+    } catch (err) {
+      console.error("Error al cambiar el estado de la incidencia:", err);
+      setError("No se pudo actualizar el estado de la incidencia.");
+    }
+  };
+
   if (loading) {
     return (
       <>
@@ -265,8 +289,12 @@ export default function DetalleIncidencia() {
 
               {estado === "CREADA" && rol === "Operador" && (
                 <div className="detalle-incidencia__actions">
-                  <button>Validar</button>
-                  <button>Rechazar</button>
+                  <button onClick={() => cambiarEstado("VALIDADA")}>
+                    Validar
+                  </button>
+                  <button onClick={() => cambiarEstado("RECHAZADA")}>
+                    Rechazar
+                  </button>
                 </div>
               )}
 
