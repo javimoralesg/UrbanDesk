@@ -5,6 +5,8 @@ import MapLocate from "../components/MapLocate";
 import { Link } from "react-router";
 import { api } from "../services/api";
 import "../assets/css/MisIncidencias.css";
+import Popups from '../components/Popups';
+
 
 const ESTADOS_LABELS = {
   CREADA: "Creada",
@@ -73,14 +75,32 @@ export default function MisIncidencias() {
   const [filtroEstado, setFiltroEstado] = useState("TODAS");
   const [misIncidencias, setMisIncidencias] = useState([]);
   const [rolUsuario, setRolUsuario] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [incidenceList, setIncidenceList] = useState([]);
+
+  useEffect(() => {
+    if (loading) {
+      setIncidenceList(prev => ([...prev, { id: 'loading', message: 'Cargando incidencias', type: 'waiting' }]));
+    }
+    if (!loading) {
+      setIncidenceList(prev => prev.filter(m => m.id !== 'loading'));
+    }
+    if (error) {
+      setIncidenceList(prev => ([...prev, { id: 'error', message: error, type: 'error' }]));
+      setTimeout(() => {
+        setIncidenceList(prev => prev.filter(m => m.id !== 'error'));
+        setError(null);
+      }, 5000);
+    }
+  }, [loading, error]);
 
   useEffect(() => {
     const cargarMisIncidencias = async () => {
       try {
         setLoading(true);
-        setError("");
+        setError(null);
 
         const rawUser = localStorage.getItem("user");
         if (!rawUser) {
@@ -194,6 +214,7 @@ export default function MisIncidencias() {
 
   return (
     <>
+      <Popups list={incidenceList} />
       <Hero />
       <main className="mis-incidencias__layout">
         <Sidebar />
@@ -208,9 +229,8 @@ export default function MisIncidencias() {
           <div className="mis-incidencias__view-buttons">
             <button
               type="button"
-              className={`mis-incidencias__view-btn ${
-                vista === "lista" ? "mis-incidencias__view-btn--active" : ""
-              }`}
+              className={`mis-incidencias__view-btn ${vista === "lista" ? "mis-incidencias__view-btn--active" : ""
+                }`}
               onClick={() => setVista("lista")}
             >
               Lista
@@ -218,9 +238,8 @@ export default function MisIncidencias() {
 
             <button
               type="button"
-              className={`mis-incidencias__view-btn ${
-                vista === "mapa" ? "mis-incidencias__view-btn--active" : ""
-              }`}
+              className={`mis-incidencias__view-btn ${vista === "mapa" ? "mis-incidencias__view-btn--active" : ""
+                }`}
               onClick={() => setVista("mapa")}
             >
               Mapa
@@ -232,11 +251,10 @@ export default function MisIncidencias() {
               <button
                 key={filtro.key}
                 type="button"
-                className={`mis-incidencias__filter-btn ${
-                  filtroEstado === filtro.key
-                    ? "mis-incidencias__filter-btn--active"
-                    : ""
-                }`}
+                className={`mis-incidencias__filter-btn ${filtroEstado === filtro.key
+                  ? "mis-incidencias__filter-btn--active"
+                  : ""
+                  }`}
                 onClick={() => setFiltroEstado(filtro.key)}
               >
                 {filtro.label} ({filtro.total})
@@ -248,8 +266,6 @@ export default function MisIncidencias() {
             <p>Cargando incidencias...</p>
           ) : vista === "lista" ? (
             <div className="mis-incidencias__table-wrapper">
-              {error && <p>{error}</p>}
-
               <table className="mis-incidencias__table">
                 <thead>
                   <tr>
@@ -291,7 +307,6 @@ export default function MisIncidencias() {
             </div>
           ) : (
             <div className="mis-incidencias__map-container">
-              {error && <p>{error}</p>}
               <MapLocate width="100%" puntos={puntosMapa} />
             </div>
           )}

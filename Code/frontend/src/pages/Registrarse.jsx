@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import { api } from '../services/api';
 import "../assets/css/Registrarse.css";
+import Popups from '../components/Popups';
+
 
 export default function Registrarse() {
   const navigate = useNavigate();
@@ -12,32 +14,58 @@ export default function Registrarse() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [incidenceList, setIncidenceList] = useState([]);
+
+  useEffect(() => {
+    if (loading) {
+      setIncidenceList(prev => ([...prev, { id: 'loading', message: 'Registrando usuario', type: 'waiting' }]));
+    }
+    if (!loading) {
+      setIncidenceList(prev => prev.filter(m => m.id !== 'loading'));
+    }
+    if (error) {
+      setIncidenceList(prev => ([...prev, { id: 'error', message: error, type: 'error' }]));
+      setTimeout(() => {
+        setIncidenceList(prev => prev.filter(m => m.id !== 'error'));
+        setError(null);
+      }, 5000);
+    }
+  }, [loading, error]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      
+      setLoading(true);
+      setError(null);
+
       await api.register({
         nombre: nombre,
         email: email,
-        password: password, 
+        password: password,
         codigoPostal: cp
       });
-      
-    } catch (error) {
-      console.error("Error al registrar usuario:", error);
-    } finally {
+
+      setLoading(false);
       navigate('/incidencias-urbanas');
+
+    } catch (error) {
+      setLoading(false);
+      setError("Error al registrar usuario");
     }
   };
 
   return (
     <>
+      <Popups list={incidenceList} />
       <Hero />
 
       <main className="urban-register__layout">
-        <Sidebar/>
+        <Sidebar />
 
-        
+
         <section className="urban-register__content">
           <h2 className="urban-register__title">
             Registrarse
@@ -114,7 +142,7 @@ export default function Registrarse() {
             </div>
           </form>
         </section>
-       
+
       </main>
     </>
   );

@@ -156,6 +156,8 @@ export function useMapRegisterLogic() {
 
   const [addressPopup, setAddressPopup] = useState(null);
   const [warningPopup, setWarningPopup] = useState(false);
+  const [isLocationValid, setIsLocationValid] = useState(null);
+  const [geolocationError, setGeolocationError] = useState(null);
 
   const searchTimeoutRef = useRef(null);
   const reverseDebounceRef = useRef(null);
@@ -171,13 +173,6 @@ export function useMapRegisterLogic() {
     timeout: 10000,
     maximumAge: 10,
   };
-
-  useEffect(() => {
-    if (address.trim() === '') {
-      setWarningPopup(false);
-      setAddressPopup(null);
-    }
-  }, [address]);
 
   const clearReverseLookup = () => {
     if (reverseDebounceRef.current) {
@@ -199,6 +194,7 @@ export function useMapRegisterLogic() {
       if (!isInsideMadrid(lat, lon)) {
         setAddressPopup('Ubicación fuera de los distritos de Madrid');
         setWarningPopup(true);
+        setIsLocationValid(false);
         return;
       }
 
@@ -219,6 +215,7 @@ export function useMapRegisterLogic() {
 
       setWarningPopup(false);
       setAddressPopup(null);
+      setIsLocationValid(true);
 
       if (requestId !== reverseRequestIdRef.current) return;
       if (data.display_name) setAddress(data.display_name);
@@ -325,7 +322,14 @@ export function useMapRegisterLogic() {
     setShowSuggestions(false);
 
     const query = queryAddress.trim();
-    if (!query) return;
+    if (!query) {
+      setIsLocationValid(null);
+      setWarningPopup(false);
+      setAddressPopup(null);
+      return;
+    }
+
+    setIsLocationValid(null);
 
     try {
       const res = await fetch(
@@ -336,14 +340,16 @@ export function useMapRegisterLogic() {
       if (data.length > 0) {
         const { lat, lon, display_name, boundingbox } = data[0];
 
-        if (!isInsideMadrid(lat, lon)) {            
-            setAddressPopup('Ubicación fuera de los distritos de Madrid');
-            setWarningPopup(true);
-            return;
+        if (!isInsideMadrid(lat, lon)) {
+          setAddressPopup('Ubicación fuera de los distritos de Madrid');
+          setWarningPopup(true);
+          setIsLocationValid(false);
+          return;
         }
 
         setWarningPopup(false);
         setAddressPopup(null);
+        setIsLocationValid(true);
 
         setAddress(display_name);
         setTargetLocation({
@@ -355,6 +361,7 @@ export function useMapRegisterLogic() {
       else {
         setAddressPopup('Ubicación no encontrada, por favor intenta con otra dirección');
         setWarningPopup(true);
+        setIsLocationValid(false);
       }
     } catch (err) {
       console.error(err);
@@ -364,6 +371,10 @@ export function useMapRegisterLogic() {
   const handleInputChange = (e) => {
     const val = e && e.target ? e.target.value : e;
     setAddress(val);
+
+    setIsLocationValid(null);
+    setWarningPopup(false);
+    setAddressPopup(null);
 
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
 
@@ -380,7 +391,7 @@ export function useMapRegisterLogic() {
         setTargetLocation({ lat: latitude, lon: longitude });
       },
       () => {
-        alert('No se pudo obtener la ubicación. Asegúrate de haber dado permiso.');
+        setGeolocationError('No se pudo obtener la ubicación. Asegúrate de haber dado permiso.');
       },
       opcionesLocalizacionActual
     );
@@ -398,7 +409,10 @@ export function useMapRegisterLogic() {
     handleCurrentLocation,
     addressPopup,
     warningPopup,
-    };
+    isLocationValid,
+    geolocationError,
+    clearGeolocationError: () => setGeolocationError(null),
+  };
 }
 
 export default function MapRegister({
@@ -428,31 +442,31 @@ export default function MapRegister({
 
       <MapContainer center={[40.41, -3.7]} zoom={13} style={{ height: '100%', width: '100%' }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        
+
         {/* Renderiza el exterior con rayas rojas */}
         {!!invertedMadridBoundary && (
-          <GeoJSON 
-            data={invertedMadridBoundary} 
-            style={{ 
-              stroke: false, 
-              fillColor: 'url(#red-stripes)', 
-              fillOpacity: 1 
-            }} 
+          <GeoJSON
+            data={invertedMadridBoundary}
+            style={{
+              stroke: false,
+              fillColor: 'url(#red-stripes)',
+              fillOpacity: 1
+            }}
           />
         )}
 
         {/* Renderiza el borde interior de Madrid sin relleno */}
         {!!madridBoundary?.features?.length && (
-          <GeoJSON 
-            data={madridBoundary} 
-            style={{ 
-              color: '#d33', 
-              weight: 2, 
-              fillOpacity: 0 
-            }} 
+          <GeoJSON
+            data={madridBoundary}
+            style={{
+              color: '#d33',
+              weight: 2,
+              fillOpacity: 0
+            }}
           />
         )}
-        
+
         <CenterController onCenterChanged={onCenterChanged} targetLocation={targetLocation} />
       </MapContainer>
 

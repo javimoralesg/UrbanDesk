@@ -1,39 +1,67 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import "../assets/css/IniciarSesion.css";
 import { api } from '../services/api';
+import Popups from '../components/Popups';
+
 
 export default function IniciarSesion() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [incidenceList, setIncidenceList] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      
+      setLoading(true);
+      setError(null);
+
       await api.login(
         email,
         password
       );
-      
-    } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-    } finally {
+
+      setLoading(false);
+
       navigate('/incidencias-urbanas');
+
+    } catch (error) {
+      setLoading(false);
+      setError("Error al iniciar sesión");
     }
 
   };
 
+  useEffect(() => {
+    if (loading) {
+      setIncidenceList(prev => ([...prev, { id: 'loading', message: 'Iniciando sesión', type: 'waiting' }]));
+    }
+    if (!loading) {
+      setIncidenceList(prev => prev.filter(m => m.id !== 'loading'));
+    }
+    if (error) {
+      setIncidenceList(prev => ([...prev, { id: 'error', message: error, type: 'error' }]));
+      setTimeout(() => {
+        setIncidenceList(prev => prev.filter(m => m.id !== 'error'));
+        setError(null);
+      }, 5000);
+    }
+  }, [loading, error]);
+
   return (
     <>
+      <Popups list={incidenceList} />
       <Hero />
       <main className="urban-login__layout">
         <Sidebar />
 
-        
+
         <section className="urban-login__content">
           <h2 className="urban-login__title">
             Iniciar sesión
@@ -75,7 +103,7 @@ export default function IniciarSesion() {
             </div>
           </form>
         </section>
-        
+
       </main>
     </>
   );

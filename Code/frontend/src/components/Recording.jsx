@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useReactMediaRecorder } from "react-media-recorder";
-import PermissionPopup from './PermissionPopup';
 import { api } from "../services/api";
+import Popups from './Popups';
 
 export default function Recording({ setDescripcion, handleInputChange }) {
     const [recordingTime, setRecordingTime] = useState(0);
-    const [permissionError, setPermissionError] = useState(null);
     const [processingMessage, setProcessingMessage] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
-    const [error, setError] = useState(null);
+
+    const [incidenceList, setIncidenceList] = useState([]);
+
+    const showError = (msg) => {
+        setIncidenceList([{ message: msg, type: 'error' }]);
+        setTimeout(() => setIncidenceList([]), 5000);
+    };
 
     const blobToBase64 = (blob) => {
         return new Promise((resolve, _) => {
@@ -59,25 +64,24 @@ export default function Recording({ setDescripcion, handleInputChange }) {
                                     handleInputChange(parsedReply.ubicacion);
                                 }
                             } catch (e) {
+                                showError("Error al procesar la transcripción");
                                 console.error("Error parsing reply:", e);
                             }
 
                         } else if (data.status === "error") {
                             console.error("Error backend:", data.message);
-                            setError(data.message);
-                            setProcessingMessage("Error: " + data.message);
+                            showError("Error: " + data.message);
                         }
                     } catch (e) {
                         console.error("Error parseando línea NDJSON:", e);
-                        setError(e.message);
+                        showError("Error al procesar la transcripción");
                     }
                 }
             }
 
         } catch (error) {
             console.error("Error enviando audio:", error);
-            setProcessingMessage("Error de conexión");
-            setError(error.message);
+            showError("Error de conexión");
         } finally {
             setIsProcessing(false);
             setProcessingMessage('');
@@ -100,9 +104,9 @@ export default function Recording({ setDescripcion, handleInputChange }) {
     useEffect(() => {
         if (recordingError) {
             if (recordingError === 'permission_denied' || recordingError === 'not_allowed_error' || recordingError === 'NotFoundError') {
-                setPermissionError("Microphone access denied or not found.");
+                showError("Aceso a micrófono denegado o no encontrado.");
             } else {
-                setPermissionError("Error accessing microphone.");
+                showError("Error al acceder al micrófono");
             }
         }
     }, [recordingError]);
@@ -122,25 +126,20 @@ export default function Recording({ setDescripcion, handleInputChange }) {
 
     const toggleRecording = () => {
         if (isProcessing) return;
-        setPermissionError(null);
         if (status === "recording") {
             stopRecording();
         } else {
             try {
                 startRecording();
             } catch (err) {
-                setPermissionError("Error starting microphone.");
+                showError("Error al iniciar el micrófono.");
             }
         }
     };
 
     return (
         <>
-            {error && (
-                <div style={{ color: 'red', marginBottom: '10px' }}>
-                    {error}
-                </div>
-            )}
+            <Popups list={incidenceList} />
             <div
                 onClick={toggleRecording}
                 className={`recording-button ${status === 'recording' ? 'is-recording' : ''} ${isProcessing ? 'is-processing' : ''}`}
@@ -181,12 +180,6 @@ export default function Recording({ setDescripcion, handleInputChange }) {
                     </span>
                 )}
             </div>
-            {permissionError && (
-                <PermissionPopup
-                    message={permissionError}
-                    onClose={() => setPermissionError(null)}
-                />
-            )}
         </>
     );
 }

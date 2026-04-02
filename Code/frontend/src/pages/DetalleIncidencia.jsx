@@ -5,22 +5,25 @@ import MapLocate from "../components/MapLocate";
 import { useParams, useNavigate } from "react-router";
 import { api } from "../services/api";
 import "../assets/css/DetalleIncidencia.css";
+import Popups from '../components/Popups';
 
 export default function DetalleIncidencia() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [incidenciaApi, setIncidenciaApi] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [incidenceList, setIncidenceList] = useState([]);
 
   const rol = "Operador"; // Operador | Tecnico | Ciudadano
-  
+
   useEffect(() => {
     const cargarIncidencia = async () => {
       try {
         setLoading(true);
-        setError("");
+        setError(null);
 
         const data = await api.obtenerIncidenciaPorId(id);
 
@@ -46,8 +49,24 @@ export default function DetalleIncidencia() {
     cargarIncidencia();
   }, [id, navigate]);
 
+  useEffect(() => {
+    if (loading) {
+      setIncidenceList(prev => ([...prev, { id: 'loading', message: 'Cargando incidencia', type: 'waiting' }]));
+    }
+    if (!loading) {
+      setIncidenceList(prev => prev.filter(m => m.id !== 'loading'));
+    }
+    if (error) {
+      setIncidenceList(prev => ([...prev, { id: 'error', message: error, type: 'error' }]));
+      setTimeout(() => {
+        setIncidenceList(prev => prev.filter(m => m.id !== 'error'));
+        setError(null);
+      }, 5000);
+    }
+  }, [loading, error]);
+
   const incidencia = useMemo(() => {
-    return incidenciaApi ;
+    return incidenciaApi;
   }, [incidenciaApi, id]);
 
   const estado = incidencia?.estado;
@@ -55,7 +74,7 @@ export default function DetalleIncidencia() {
   const descripcion = incidencia?.descripcion;
   const fechaCreacion = incidencia?.fechaCreacion;
 
-  const ubicacion =incidencia?.ubicacion?.direccion;
+  const ubicacion = incidencia?.ubicacion?.direccion;
   const latitud = incidencia?.ubicacion?.latitud;
   const longitud = incidencia?.ubicacion?.longitud;
 
@@ -101,46 +120,46 @@ export default function DetalleIncidencia() {
       observaciones: "Incidencia reportada por ciudadano anónimo.",
     },
     ...(estado === "VALIDADA" ||
-    estado === "ASIGNADA" ||
-    estado === "EN_CURSO" ||
-    estado === "RESUELTA"
+      estado === "ASIGNADA" ||
+      estado === "EN_CURSO" ||
+      estado === "RESUELTA"
       ? [
-          {
-            fechaCreacion: "2026-04-01T09:30:00",
-            estadoNuevo: "VALIDADA",
-            observaciones:
-              "La incidencia ha sido revisada y validada por el operador.",
-          },
-        ]
+        {
+          fechaCreacion: "2026-04-01T09:30:00",
+          estadoNuevo: "VALIDADA",
+          observaciones:
+            "La incidencia ha sido revisada y validada por el operador.",
+        },
+      ]
       : []),
     ...(estado === "ASIGNADA" || estado === "EN_CURSO" || estado === "RESUELTA"
       ? [
-          {
-            fechaCreacion: "2026-04-01T12:00:00",
-            estadoNuevo: "ASIGNADA",
-            observaciones:
-              "Incidencia asignada a los operarios correspondientes.",
-          },
-        ]
+        {
+          fechaCreacion: "2026-04-01T12:00:00",
+          estadoNuevo: "ASIGNADA",
+          observaciones:
+            "Incidencia asignada a los operarios correspondientes.",
+        },
+      ]
       : []),
     ...(estado === "EN_CURSO" || estado === "RESUELTA"
       ? [
-          {
-            fechaCreacion: "2026-04-02T08:15:00",
-            estadoNuevo: "EN_CURSO",
-            observaciones: "Los trabajos de intervención ya han comenzado.",
-          },
-        ]
+        {
+          fechaCreacion: "2026-04-02T08:15:00",
+          estadoNuevo: "EN_CURSO",
+          observaciones: "Los trabajos de intervención ya han comenzado.",
+        },
+      ]
       : []),
     ...(estado === "RESUELTA"
       ? [
-          {
-            fechaCreacion: "2026-04-02T16:45:00",
-            estadoNuevo: "RESUELTA",
-            observaciones:
-              "La incidencia ha quedado resuelta correctamente.",
-          },
-        ]
+        {
+          fechaCreacion: "2026-04-02T16:45:00",
+          estadoNuevo: "RESUELTA",
+          observaciones:
+            "La incidencia ha quedado resuelta correctamente.",
+        },
+      ]
       : []),
   ];
 
@@ -199,6 +218,7 @@ export default function DetalleIncidencia() {
 
   return (
     <>
+      <Popups list={incidenceList} />
       <Hero />
 
       <main className="detalle-incidencia__layout">
@@ -392,7 +412,7 @@ export default function DetalleIncidencia() {
             </div>
           </div>
 
-          
+
         </section>
       </main>
     </>

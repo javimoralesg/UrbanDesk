@@ -1,17 +1,94 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MapRegister, { useMapRegisterLogic } from '../components/MapRegister';
 import Recording from '../components/Recording';
 import Sidebar from '../components/Sidebar';
 import Hero from "../components/Hero";
 import { api } from "../services/api";
 import "../assets/css/RegistrarIncidencia.css";
+import Popups from '../components/Popups';
+
 
 export default function RegistrarIncidencia() {
     const [descripcion, setDescripcion] = useState('');
     const [imagenes, setImagenes] = useState([]);
     const [centerLocation, setCenterLocation] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [feedback, setFeedback] = useState({ error: '', success: '' });
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
+
+    const [incidenceList, setIncidenceList] = useState([]);
+
+    const {
+        address,
+        suggestions,
+        showSuggestions,
+        setShowSuggestions,
+        targetLocation,
+        handleInputChange,
+        seleccionarSugerencia,
+        handleMapCenterChange,
+        handleCurrentLocation,
+        addressPopup,
+        warningPopup,
+        isLocationValid,
+        geolocationError,
+        clearGeolocationError,
+    } = useMapRegisterLogic();
+
+    useEffect(() => {
+        if (geolocationError) {
+            setError(geolocationError);
+            clearGeolocationError();
+        }
+    }, [geolocationError]);
+
+    useEffect(() => {
+        if (isSubmitting) {
+            const msg = 'Registrando incidencia';
+            setIncidenceList(prev => {
+                if (prev.some(m => m.id === 'loading' || m.message === msg)) return prev;
+                return [...prev, { id: 'loading', message: msg, type: 'waiting' }];
+            });
+        }
+        if (!isSubmitting) {
+            setIncidenceList(prev => prev.filter(m => m.id !== 'loading'));
+        }
+        if (!error) {
+            setIncidenceList(prev => prev.filter(m => m.id !== 'error1'));
+        }
+        if (error) {
+            setIncidenceList(prev => {
+                const filtered = prev.filter(m => m.id !== 'error1' && m.message !== error);
+                return [...filtered, { id: 'error1', message: error, type: 'error' }];
+            });
+            setTimeout(() => {
+                setIncidenceList(prev => prev.filter(m => m.id !== 'error1'));
+                setError(null);
+            }, 5000);
+        }
+        if (!success) {
+            setIncidenceList(prev => prev.filter(m => m.id !== 'success'));
+        }
+        if (success) {
+            setIncidenceList(prev => {
+                const filtered = prev.filter(m => m.id !== 'success' && m.message !== success);
+                return [...filtered, { id: 'success', message: success, type: 'success' }];
+            });
+            setTimeout(() => {
+                setIncidenceList(prev => prev.filter(m => m.id !== 'success'));
+                setSuccess(null);
+            }, 5000);
+        }
+        if (warningPopup) {
+            setIncidenceList(prev => {
+                const filtered = prev.filter(m => m.id !== 'error2' && m.message !== addressPopup);
+                return [...filtered, { id: 'error2', message: addressPopup, type: 'error' }];
+            });
+        }
+        if (!warningPopup) {
+            setIncidenceList(prev => prev.filter(m => m.id !== 'error2'));
+        }
+    }, [isSubmitting, error, success, warningPopup, addressPopup]);
 
     const MAX_IMAGE_SIZE_MB = 5;
 
@@ -28,41 +105,26 @@ export default function RegistrarIncidencia() {
 
         const imagenesInvalidas = archivos.some((archivo) => !archivo.type.startsWith('image/'));
         if (imagenesInvalidas) {
-            setFeedback({ error: 'Solo puedes adjuntar archivos de imagen.', success: '' });
+            setError('Solo puedes adjuntar archivos de imagen.');
             event.target.value = '';
             return;
         }
 
         const imagenesGrandes = archivos.some((archivo) => archivo.size > MAX_IMAGE_SIZE_MB * 1024 * 1024);
         if (imagenesGrandes) {
-            setFeedback({ error: `Cada imagen debe pesar menos de ${MAX_IMAGE_SIZE_MB} MB.`, success: '' });
+            setError(`Cada imagen debe pesar menos de ${MAX_IMAGE_SIZE_MB} MB.`);
             event.target.value = '';
             return;
         }
 
         setImagenes(archivos);
-        setFeedback((prev) => ({ ...prev, error: '' }));
     };
-
-    const {
-        address,
-        suggestions,
-        showSuggestions,
-        setShowSuggestions,
-        targetLocation,
-        handleInputChange,
-        seleccionarSugerencia,
-        handleMapCenterChange,
-        handleCurrentLocation,
-        addressPopup,
-        warningPopup,
-    } = useMapRegisterLogic();
 
     const handleRegisterIncident = async () => {
         const trimmedDescription = descripcion.trim();
 
         if (!trimmedDescription) {
-            setFeedback({ error: 'La descripción es obligatoria.', success: '' });
+            setError('La descripción es obligatoria.');
             return;
         }
 
@@ -70,22 +132,30 @@ export default function RegistrarIncidencia() {
         const longitud = targetLocation?.lon ?? centerLocation?.lon;
 
         if (!latitud || !longitud) {
-            setFeedback({ error: 'Selecciona una ubicación válida en el mapa.', success: '' });
+            setError('Selecciona una ubicación válida en el mapa.');
+            return;
+        }
+
+        if (isLocationValid === false) {
+            setError(addressPopup || 'La ubicación introducida no es válida.');
+            return;
+        }
+
+        if (address.trim() && isLocationValid === null && !targetLocation) {
+            setError('Espera a que se valide la dirección o selecciona una sugerencia.');
             return;
         }
 
         try {
             setIsSubmitting(true);
-            setFeedback({ error: '', success: '' });
+            setError(null);
+            setSuccess(null);
 
             const response = await api.validateDescription(descripcion);
             const parsedResponse = JSON.parse(response);
             if (!parsedResponse.valid) {
 
-                setFeedback({ error: parsedResponse.reason || 'La descripción parece no ser válida para una incidencia urbana. Por favor, revisa y corrige la descripción.', success: '' });
-                setTimeout(() => {
-                    setFeedback({ error: '', success: '' });
-                }, 4000);
+                setError(parsedResponse.reason || 'La descripción parece no ser válida para una incidencia urbana. Por favor, revisa y corrige la descripción.');
                 setIsSubmitting(false);
                 return;
             }
@@ -103,23 +173,20 @@ export default function RegistrarIncidencia() {
             if (incidenciaCreada?.id != null) {
                 try {
                     await api.asignarOperadorIncidencia(incidenciaCreada.id);
-                    setFeedback({ error: '', success: 'Incidencia registrada y operador asignado automáticamente.' });
+                    setSuccess('Incidencia registrada y operador asignado automáticamente.');
                 } catch (assignError) {
                     console.error('Incidencia creada, pero no se pudo asignar operador automáticamente:', assignError);
-                    setFeedback({
-                        error: '',
-                        success: 'Incidencia registrada, pero no se pudo asignar operador automáticamente.'
-                    });
+                    setSuccess('Incidencia registrada, pero no se pudo asignar operador automáticamente.');
                 }
             } else {
-                setFeedback({ error: '', success: 'Incidencia registrada correctamente.' });
+                setError('No se pudo registrar la incidencia. Inténtalo de nuevo.');
             }
 
             setDescripcion('');
             setImagenes([]);
         } catch (error) {
             console.error('Error al crear incidencia:', error);
-            setFeedback({ error: 'No se pudo registrar la incidencia. Inténtalo de nuevo.', success: '' });
+            setError('No se pudo registrar la incidencia. Inténtalo de nuevo.');
         } finally {
             setIsSubmitting(false);
         }
@@ -132,6 +199,7 @@ export default function RegistrarIncidencia() {
 
     return (
         <>
+            <Popups list={incidenceList} />
             <Hero />
 
             <main className="registrar-incidencia__layout">
@@ -168,12 +236,6 @@ export default function RegistrarIncidencia() {
                         )}
 
 
-                        {warningPopup && (
-                            <div style={{ top: '50%', left: '10px', color: '#888' }}>
-                                <h3>{addressPopup}</h3>
-                            </div>
-                        )}
-
                         <div style={{ display: 'flex', flexDirection: 'row', gap: '10px', position: 'relative' }}>
                             <input
                                 type="text"
@@ -184,10 +246,6 @@ export default function RegistrarIncidencia() {
                                 placeholder="Escribe una dirección..."
                                 style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
                             />
-
-                            {warningPopup && (
-                                <img src="/warning.png" alt="Warning" style={{ width: '20px', height: '20px' }} />
-                            )}
                         </div>
 
 
@@ -221,16 +279,8 @@ export default function RegistrarIncidencia() {
                         disabled={isSubmitting}
                         style={{ marginTop: '10px', marginLeft: '10px', padding: '8px 12px', cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
                     >
-                        {isSubmitting ? 'Registrando...' : 'Registrar incidencia'}
+                        Registrar incidencia
                     </button>
-
-                    {feedback.error && (
-                        <p style={{ color: '#c62828', marginTop: '10px' }}>{feedback.error}</p>
-                    )}
-
-                    {feedback.success && (
-                        <p style={{ color: '#2e7d32', marginTop: '10px' }}>{feedback.success}</p>
-                    )}
 
                     <MapRegister
                         onCenterChanged={handleCenterChanged}
