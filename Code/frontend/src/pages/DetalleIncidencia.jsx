@@ -8,196 +8,14 @@ import "../assets/css/DetalleIncidencia.css";
 
 export default function DetalleIncidencia() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [incidenciaApi, setIncidenciaApi] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const rol = "Operador"; // Operador | Tecnico | Ciudadano
-
-  // MOCK DE RESPALDO PARA PODER VISUALIZAR LA PANTALLA
-  const incidenciasMock = {
-    "1": {
-      id: 1,
-      estado: "CREADA",
-      prioridad: "SIN_ASIGNAR",
-      descripcion:
-        "Hay un problema en el alcantarillado que hace que se inunde la carretera.",
-      fechaCreacion: "2026-03-31T07:37:20",
-      ciudadano: { nombre: "Anónimo" },
-      operador: null,
-      ubicacion: {
-        direccion: "Avenida Complutense, 30, Madrid",
-        latitud: 40.444,
-        longitud: -3.726,
-      },
-      evidencias: [
-        { url: "/uploads/incidencia1_foto1.jpg" },
-        { url: "/uploads/incidencia1_foto2.jpg" },
-      ],
-      historial: [
-        {
-          fechaCreacion: "2026-03-31T07:37:20",
-          estadoNuevo: "CREADA",
-          observaciones: "Incidencia reportada por ciudadano anónimo.",
-        },
-      ],
-    },
-    "2": {
-      id: 2,
-      estado: "VALIDADA",
-      prioridad: "MEDIA",
-      descripcion:
-        "La farola de la calle principal no funciona desde hace dos días.",
-      fechaCreacion: "2026-03-30T10:15:00",
-      ciudadano: { nombre: "Anónimo" },
-      operador: { nombre: "Operador Principal" },
-      ubicacion: {
-        direccion: "Calle Mayor, 12, Madrid",
-        latitud: 40.4168,
-        longitud: -3.7038,
-      },
-      evidencias: [
-        { url: "/uploads/incidencia1_foto1.jpg" },
-        { url: "/uploads/incidencia1_foto2.jpg" },
-      ],
-      historial: [
-        {
-          fechaCreacion: "2026-03-30T10:15:00",
-          estadoNuevo: "CREADA",
-          observaciones: "Incidencia reportada por ciudadano anónimo.",
-        },
-        {
-          fechaCreacion: "2026-03-31T09:30:00",
-          estadoNuevo: "VALIDADA",
-          observaciones:
-            "La incidencia ha sido revisada y validada por el operador.",
-        },
-      ],
-    },
-    "3": {
-      id: 3,
-      estado: "ASIGNADA",
-      prioridad: "MEDIA",
-      descripcion: "Rotura de tubería en la vía pública.",
-      fechaCreacion: "2026-03-28T11:20:00",
-      ciudadano: { nombre: "Anónimo" },
-      operador: { nombre: "Operador Principal" },
-      ubicacion: {
-        direccion: "Paseo de la Castellana, 100, Madrid",
-        latitud: 40.445,
-        longitud: -3.691,
-      },
-      evidencias: [{ url: "/uploads/incidencia1_foto1.jpg" }],
-      historial: [
-        {
-          fechaCreacion: "2026-03-28T11:20:00",
-          estadoNuevo: "CREADA",
-          observaciones: "Incidencia reportada por ciudadano anónimo.",
-        },
-        {
-          fechaCreacion: "2026-03-29T09:30:00",
-          estadoNuevo: "VALIDADA",
-          observaciones:
-            "La incidencia ha sido revisada y validada por el operador.",
-        },
-        {
-          fechaCreacion: "2026-03-29T12:00:00",
-          estadoNuevo: "ASIGNADA",
-          observaciones:
-            "Incidencia asignada a los operarios correspondientes.",
-        },
-      ],
-    },
-    "4": {
-      id: 4,
-      estado: "EN_CURSO",
-      prioridad: "ALTA",
-      descripcion: "Avería eléctrica en alumbrado urbano.",
-      fechaCreacion: "2026-03-25T08:00:00",
-      ciudadano: { nombre: "Anónimo" },
-      operador: { nombre: "Operador Principal" },
-      ubicacion: {
-        direccion: "Avenida de América, 45, Madrid",
-        latitud: 40.438,
-        longitud: -3.676,
-      },
-      evidencias: [{ url: "/uploads/incidencia1_foto1.jpg" }],
-      historial: [
-        {
-          fechaCreacion: "2026-03-25T08:00:00",
-          estadoNuevo: "CREADA",
-          observaciones: "Incidencia reportada por ciudadano anónimo.",
-        },
-        {
-          fechaCreacion: "2026-03-26T09:30:00",
-          estadoNuevo: "VALIDADA",
-          observaciones:
-            "La incidencia ha sido revisada y validada por el operador.",
-        },
-        {
-          fechaCreacion: "2026-03-26T12:00:00",
-          estadoNuevo: "ASIGNADA",
-          observaciones:
-            "Incidencia asignada a los operarios correspondientes.",
-        },
-        {
-          fechaCreacion: "2026-03-27T08:15:00",
-          estadoNuevo: "EN_CURSO",
-          observaciones: "Los trabajos de intervención ya han comenzado.",
-        },
-      ],
-    },
-    "5": {
-      id: 5,
-      estado: "RESUELTA",
-      prioridad: "ALTA",
-      descripcion: "Bache peligroso en la calzada principal.",
-      fechaCreacion: "2026-03-20T09:00:00",
-      ciudadano: { nombre: "Anónimo" },
-      operador: { nombre: "Operador Principal" },
-      ubicacion: {
-        direccion: "Gran Vía, 20, Madrid",
-        latitud: 40.42,
-        longitud: -3.705,
-      },
-      evidencias: [
-        { url: "/uploads/incidencia1_foto1.jpg" },
-        { url: "/uploads/incidencia1_foto2.jpg" },
-      ],
-      historial: [
-        {
-          fechaCreacion: "2026-03-20T09:00:00",
-          estadoNuevo: "CREADA",
-          observaciones: "Incidencia reportada por ciudadano anónimo.",
-        },
-        {
-          fechaCreacion: "2026-03-21T09:30:00",
-          estadoNuevo: "VALIDADA",
-          observaciones:
-            "La incidencia ha sido revisada y validada por el operador.",
-        },
-        {
-          fechaCreacion: "2026-03-21T12:00:00",
-          estadoNuevo: "ASIGNADA",
-          observaciones:
-            "Incidencia asignada a los operarios correspondientes.",
-        },
-        {
-          fechaCreacion: "2026-03-22T08:15:00",
-          estadoNuevo: "EN_CURSO",
-          observaciones: "Los trabajos de intervención ya han comenzado.",
-        },
-        {
-          fechaCreacion: "2026-03-23T16:45:00",
-          estadoNuevo: "RESUELTA",
-          observaciones:
-            "La incidencia ha quedado resuelta correctamente.",
-        },
-      ],
-    },
-  };
-
+  
   useEffect(() => {
     const cargarIncidencia = async () => {
       try {
@@ -213,6 +31,11 @@ export default function DetalleIncidencia() {
         }
       } catch (err) {
         console.error("Error al cargar incidencia:", err);
+        if (err?.status === 404) {
+          navigate("/incidencias-urbanas/no-match", { replace: true });
+          return;
+        }
+
         setError("No se pudo cargar la incidencia desde la API. Mostrando datos de ejemplo.");
         setIncidenciaApi(null);
       } finally {
@@ -221,20 +44,18 @@ export default function DetalleIncidencia() {
     };
 
     cargarIncidencia();
-  }, [id]);
+  }, [id, navigate]);
 
-  // FALLBACK: si no viene nada de API, usamos mock
   const incidencia = useMemo(() => {
-    return incidenciaApi || incidenciasMock[id] || incidenciasMock["1"];
+    return incidenciaApi ;
   }, [incidenciaApi, id]);
 
-  const estado = incidencia?.estado || "CREADA";
-  const prioridad = incidencia?.prioridad || "SIN_ASIGNAR";
-  const descripcion = incidencia?.descripcion || "Sin descripción";
-  const fechaCreacion = incidencia?.fechaCreacion || null;
+  const estado = incidencia?.estado;
+  const prioridad = incidencia?.prioridad;
+  const descripcion = incidencia?.descripcion;
+  const fechaCreacion = incidencia?.fechaCreacion;
 
-  const ubicacion =
-    incidencia?.ubicacion?.direccion || "Ubicación no disponible";
+  const ubicacion =incidencia?.ubicacion?.direccion;
   const latitud = incidencia?.ubicacion?.latitud;
   const longitud = incidencia?.ubicacion?.longitud;
 
@@ -519,7 +340,7 @@ export default function DetalleIncidencia() {
               )}
             </div>
           </div>
-          
+
           <div className="detalle-incidencia__section">
             <h3>Historial</h3>
 

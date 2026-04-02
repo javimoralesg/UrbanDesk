@@ -4,7 +4,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
 import urbandesk.backend.domain.DomainRuleViolation;
@@ -35,7 +37,7 @@ public class IncidenciaService {
 
     public Incidencia obtenerPorId(Long id) {
         return incidenciaRepository.findById(id)
-                .orElseThrow(() -> new DomainRuleViolation("Incidencia no encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Incidencia no encontrada"));
     }
 
     public List<Incidencia> obtenerPorEstado(Estado estado) {
