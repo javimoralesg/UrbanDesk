@@ -283,9 +283,13 @@ export const api = {
         return await response.json();
     },
 
-    asignarOperadorIncidencia: async (id, operadorId) => {
+    asignarOperadorIncidencia: async (id, operadorId = null) => {
+        const endpoint = operadorId == null
+        ? `http://localhost:8080/api/incidencias/${id}/operador`
+        : `http://localhost:8080/api/incidencias/${id}/operador/${operadorId}`;
+
         const response = await fetch(
-        `http://localhost:8080/api/incidencias/${id}/operador/${operadorId}`,
+        endpoint,
         {
             method: "PUT",
         }

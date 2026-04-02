@@ -109,6 +109,11 @@ public class IncidenciaController {
         return ResponseEntity.ok(incidenciaService.asignarOperador(id, operadorId));
     }
 
+    @PutMapping("/{id}/operador")
+    public ResponseEntity<Incidencia> asignarOperadorAutomatico(@PathVariable Long id) {
+        return ResponseEntity.ok(incidenciaService.asignarOperadorAutomatico(id));
+    }
+
     @PutMapping("/{id}/tecnico/{tecnicoId}")
     public ResponseEntity<Incidencia> asignarTecnico(
             @PathVariable Long id,

@@ -1,6 +1,8 @@
 package urbandesk.backend.service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
@@ -99,7 +101,44 @@ public class IncidenciaService {
         }
 
         Operador operador = (Operador) usuario;
-        incidencia.asignarOperador(operador);
+        if (!operador.tieneDisponibilidad()) {
+            throw new DomainRuleViolation("El operador ha alcanzado su capacidad máxima de trabajo.");
+        }
+
+        return reasignarOperador(incidencia, operador);
+    }
+
+    public Incidencia asignarOperadorAutomatico(Long incidenciaId) {
+        Incidencia incidencia = obtenerPorId(incidenciaId);
+
+        Operador operadorConMenorCarga = usuarioRepository.findAll().stream()
+                .filter(Operador.class::isInstance)
+                .map(Operador.class::cast)
+                .filter(Operador::tieneDisponibilidad)
+                .min(Comparator
+                        .comparing(Operador::getCargaActual, Comparator.nullsFirst(Integer::compareTo))
+                        .thenComparing(Operador::getId))
+                .orElseThrow(() -> new DomainRuleViolation("No hay operadores disponibles para asignar"));
+
+        return reasignarOperador(incidencia, operadorConMenorCarga);
+    }
+
+    private Incidencia reasignarOperador(Incidencia incidencia, Operador nuevoOperador) {
+        Operador operadorActual = incidencia.getOperador();
+
+        if (operadorActual != null && Objects.equals(operadorActual.getId(), nuevoOperador.getId())) {
+            return incidencia;
+        }
+
+        if (operadorActual != null) {
+            operadorActual.decrementarCarga();
+            usuarioRepository.save(operadorActual);
+        }
+
+        nuevoOperador.incrementarCarga();
+        usuarioRepository.save(nuevoOperador);
+
+        incidencia.asignarOperador(nuevoOperador);
         return incidenciaRepository.save(incidencia);
     }
 

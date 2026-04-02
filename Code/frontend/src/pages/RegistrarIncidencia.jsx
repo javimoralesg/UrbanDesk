@@ -58,15 +58,29 @@ export default function RegistrarIncidencia() {
                 return;
             }
 
-            await api.crearIncidencia({
+            const incidenciaCreada = await api.crearIncidencia({
                 direccion: address || 'Ubicación sin dirección textual',
                 latitud,
                 longitud,
                 descripcion: trimmedDescription,
             });
 
+            if (incidenciaCreada?.id != null) {
+                try {
+                    await api.asignarOperadorIncidencia(incidenciaCreada.id);
+                    setFeedback({ error: '', success: 'Incidencia registrada y operador asignado automáticamente.' });
+                } catch (assignError) {
+                    console.error('Incidencia creada, pero no se pudo asignar operador automáticamente:', assignError);
+                    setFeedback({
+                        error: '',
+                        success: 'Incidencia registrada, pero no se pudo asignar operador automáticamente.'
+                    });
+                }
+            } else {
+                setFeedback({ error: '', success: 'Incidencia registrada correctamente.' });
+            }
+
             setDescripcion('');
-            setFeedback({ error: '', success: 'Incidencia registrada correctamente.' });
         } catch (error) {
             console.error('Error al crear incidencia:', error);
             setFeedback({ error: 'No se pudo registrar la incidencia. Inténtalo de nuevo.', success: '' });
