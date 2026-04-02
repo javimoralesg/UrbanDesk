@@ -1,0 +1,3 @@
+DB_URL=urlDeLaBBDDPostgreSQL
+DB_PASSWORD=contraseñaDeLaBBDDPostgreSQL
+DB_USER=usuarioDeLaBBDDPostgreSQL
