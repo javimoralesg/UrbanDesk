@@ -68,6 +68,47 @@ const MIS_INCIDENCIAS_MOCK = [
   },
 ];
 
+const ORDEN_ESTADOS = {
+  CREADA: 1,
+  VALIDADA: 2,
+  ASIGNADA: 3,
+  EN_CURSO: 4,
+  RESUELTA: 5,
+  CERRADA: 6,
+  RECHAZADA: 7,
+};
+
+const ORDEN_PRIORIDADES = {
+  URGENTE: 1,
+  ALTA: 2,
+  MEDIA: 3,
+  BAJA: 4,
+  SIN_ASIGNAR: 5,
+};
+
+const ordenarIncidencias = (incidencias) => {
+  return [...incidencias].sort((a, b) => {
+    // Primero por estado
+    const ordenEstadoA = ORDEN_ESTADOS[a.estado] || 99;
+    const ordenEstadoB = ORDEN_ESTADOS[b.estado] || 99;
+    if (ordenEstadoA !== ordenEstadoB) {
+      return ordenEstadoA - ordenEstadoB;
+    }
+
+    // Luego por prioridad
+    const ordenPrioridadA = ORDEN_PRIORIDADES[a.prioridad] || 99;
+    const ordenPrioridadB = ORDEN_PRIORIDADES[b.prioridad] || 99;
+    if (ordenPrioridadA !== ordenPrioridadB) {
+      return ordenPrioridadA - ordenPrioridadB;
+    }
+
+    // Finalmente por fecha de creación (más nueva primero)
+    const fechaA = new Date(a.fechaCreacion || 0).getTime();
+    const fechaB = new Date(b.fechaCreacion || 0).getTime();
+    return fechaA - fechaB;
+  });
+};
+
 export default function MisIncidencias() {
   const [vista, setVista] = useState("lista");
   const [filtroEstado, setFiltroEstado] = useState("TODAS");
@@ -185,10 +226,13 @@ export default function MisIncidencias() {
     totalRechazadas,
   ]);
 
-  const incidenciasFiltradas =
-    filtroEstado === "TODAS"
-      ? misIncidencias
-      : misIncidencias.filter((inc) => inc.estado === filtroEstado);
+  const incidenciasFiltradas = useMemo(() => {
+    const filtradas =
+      filtroEstado === "TODAS"
+        ? misIncidencias
+        : misIncidencias.filter((inc) => inc.estado === filtroEstado);
+    return ordenarIncidencias(filtradas);
+  }, [filtroEstado, misIncidencias]);
 
   const puntosMapa = incidenciasFiltradas
     .filter(
