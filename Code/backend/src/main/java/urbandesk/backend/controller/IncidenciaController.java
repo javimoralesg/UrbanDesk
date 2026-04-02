@@ -137,10 +137,4 @@ public class IncidenciaController {
             @PathVariable Long tecnicoId) {
         return ResponseEntity.ok(incidenciaService.eliminarTecnico(id, tecnicoId));
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarIncidencia(@PathVariable Long id) {
-        incidenciaService.eliminarIncidencia(id);
-        return ResponseEntity.noContent().build();
-    }
 }
