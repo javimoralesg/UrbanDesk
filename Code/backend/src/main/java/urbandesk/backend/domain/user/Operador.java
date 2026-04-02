@@ -49,4 +49,11 @@ public class Operador extends Usuario {
             this.cargaActual--;
         }
     }
+
+    public void forzarCarga(int nuevaCarga) {
+        if (nuevaCarga < 0 || nuevaCarga > cargaMaxima) {
+            throw new DomainRuleViolation("La nueva carga debe estar entre 0 y la carga máxima.");
+        }
+        this.cargaActual = nuevaCarga;
+    }
 }
