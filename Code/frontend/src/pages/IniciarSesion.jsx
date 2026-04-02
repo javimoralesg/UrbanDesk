@@ -68,7 +68,7 @@ export default function IniciarSesion() {
             </div>
 
             <div className="urban-login__actions">
-              <button type="button" className="urban-login__button" onClick={() => navigate(-1)}>Cancelar</button>
+              <button type="button" className="urban-login__button" onClick={() => navigate("/incidencias-urbanas")}>Cancelar</button>
               <button type="submit" className="urban-login__button" onClick={handleSubmit}>
                 Iniciar sesión
               </button>
