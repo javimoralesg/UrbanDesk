@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import MapLocate from "../components/MapLocate";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { api } from "../services/api";
 import "../assets/css/DetalleIncidencia.css";
 
