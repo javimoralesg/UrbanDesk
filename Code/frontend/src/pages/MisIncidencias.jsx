@@ -1,73 +1,159 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import MapLocate from "../components/MapLocate";
 import { Link } from "react-router";
+import { api } from "../services/api";
 import "../assets/css/MisIncidencias.css";
+
+const ESTADOS_LABELS = {
+  CREADA: "Creada",
+  VALIDADA: "Validada",
+  ASIGNADA: "Asignada",
+  EN_CURSO: "En curso",
+  RESUELTA: "Resuelta",
+  CERRADA: "Cerrada",
+  RECHAZADA: "Rechazada",
+};
+
+const MIS_INCIDENCIAS_MOCK = [
+  {
+    id: 1,
+    descripcion: "Farola rota en la calle principal",
+    prioridad: "Alta",
+    estado: "CREADA",
+    ubicacion: { latitud: 40.4168, longitud: -3.7038 },
+  },
+  {
+    id: 2,
+    descripcion: "Bache en la calzada",
+    prioridad: "Media",
+    estado: "VALIDADA",
+    ubicacion: { latitud: 40.4175, longitud: -3.7045 },
+  },
+  {
+    id: 3,
+    descripcion: "Contenedor desbordado",
+    prioridad: "Baja",
+    estado: "ASIGNADA",
+    ubicacion: { latitud: 40.4182, longitud: -3.7051 },
+  },
+  {
+    id: 4,
+    descripcion: "Señal de tráfico dañada",
+    prioridad: "Alta",
+    estado: "EN_CURSO",
+    ubicacion: { latitud: 40.419, longitud: -3.7029 },
+  },
+  {
+    id: 5,
+    descripcion: "Fuga de agua en acera",
+    prioridad: "Alta",
+    estado: "RESUELTA",
+    ubicacion: { latitud: 40.4159, longitud: -3.7018 },
+  },
+  {
+    id: 6,
+    descripcion: "Papelera rota en el parque",
+    prioridad: "Media",
+    estado: "RECHAZADA",
+    ubicacion: { latitud: 40.4148, longitud: -3.7062 },
+  },
+  {
+    id: 7,
+    descripcion: "Acera levantada",
+    prioridad: "Baja",
+    estado: "CERRADA",
+    ubicacion: { latitud: 40.4201, longitud: -3.707 },
+  },
+];
 
 export default function MisIncidencias() {
   const [vista, setVista] = useState("lista");
-  const [filtroEstado, setFiltroEstado] = useState("Todas");
+  const [filtroEstado, setFiltroEstado] = useState("TODAS");
+  const [misIncidencias, setMisIncidencias] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Simulación temporal. Luego esto vendrá del backend
-  const misIncidencias = [
-    {
-      id: 1,
-      descripcion: "Farola rota en la calle principal",
-      prioridad: "Alta",
-      estado: "Creada",
-    },
-    {
-      id: 2,
-      descripcion: "Bache en la calzada",
-      prioridad: "Media",
-      estado: "Validada",
-    },
-    {
-      id: 3,
-      descripcion: "Contenedor desbordado",
-      prioridad: "Baja",
-      estado: "Asignada",
-    },
-    {
-      id: 4,
-      descripcion: "Señal de tráfico dañada",
-      prioridad: "Alta",
-      estado: "En curso",
-    },
-    {
-      id: 5,
-      descripcion: "Fuga de agua en acera",
-      prioridad: "Alta",
-      estado: "Resuelta",
-    },
-    {
-      id: 6,
-      descripcion: "Papelera rota en el parque",
-      prioridad: "Media",
-      estado: "Rechazada",
-    },
-    {
-      id: 7,
-      descripcion: "Acera levantada",
-      prioridad: "Baja",
-      estado: "Cerrada",
-    },
-  ];
+  useEffect(() => {
+    const cargarMisIncidencias = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const rawUser = localStorage.getItem("user");
+        if (!rawUser) {
+          setMisIncidencias(MIS_INCIDENCIAS_MOCK);
+          setError("No se encontró sesión. Mostrando incidencias de ejemplo.");
+          return;
+        }
+
+        let user;
+        try {
+          user = JSON.parse(rawUser);
+        } catch {
+          setMisIncidencias(MIS_INCIDENCIAS_MOCK);
+          setError("No se pudo leer la sesión. Mostrando incidencias de ejemplo.");
+          return;
+        }
+
+        if (!user?.id) {
+          setMisIncidencias(MIS_INCIDENCIAS_MOCK);
+          setError("No se encontró el id del usuario. Mostrando incidencias de ejemplo.");
+          return;
+        }
+
+        let data = [];
+
+        if (user.rol === "OPERADOR") {
+          data = await api.obtenerIncidenciasPorOperador(user.id);
+        } else {
+          data = await api.obtenerIncidenciasPorCiudadano(user.id);
+        }
+
+        if (Array.isArray(data) && data.length > 0) {
+          setMisIncidencias(data);
+        } else {
+          setMisIncidencias(MIS_INCIDENCIAS_MOCK);
+          setError("La API no devolvió incidencias. Mostrando incidencias de ejemplo.");
+        }
+      } catch (err) {
+        console.error("Error al cargar mis incidencias:", err);
+        setMisIncidencias(MIS_INCIDENCIAS_MOCK);
+        setError("No se pudieron cargar tus incidencias desde la API. Mostrando incidencias de ejemplo.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarMisIncidencias();
+  }, []);
 
   const totalTodas = misIncidencias.length;
-  const totalCreadas = misIncidencias.filter((inc) => inc.estado === "Creada").length;
-  const totalValidadas = misIncidencias.filter((inc) => inc.estado === "Validada").length;
-  const totalAsignadas = misIncidencias.filter((inc) => inc.estado === "Asignada").length;
-  const totalEnCurso = misIncidencias.filter((inc) => inc.estado === "En curso").length;
-  const totalResueltas = misIncidencias.filter((inc) => inc.estado === "Resuelta").length;
-  const totalCerradas = misIncidencias.filter((inc) => inc.estado === "Cerrada").length;
-  const totalRechazadas = misIncidencias.filter((inc) => inc.estado === "Rechazada").length;
+  const totalCreadas = misIncidencias.filter((inc) => inc.estado === "CREADA").length;
+  const totalValidadas = misIncidencias.filter((inc) => inc.estado === "VALIDADA").length;
+  const totalAsignadas = misIncidencias.filter((inc) => inc.estado === "ASIGNADA").length;
+  const totalEnCurso = misIncidencias.filter((inc) => inc.estado === "EN_CURSO").length;
+  const totalResueltas = misIncidencias.filter((inc) => inc.estado === "RESUELTA").length;
+  const totalCerradas = misIncidencias.filter((inc) => inc.estado === "CERRADA").length;
+  const totalRechazadas = misIncidencias.filter((inc) => inc.estado === "RECHAZADA").length;
 
   const incidenciasFiltradas =
-    filtroEstado === "Todas"
+    filtroEstado === "TODAS"
       ? misIncidencias
       : misIncidencias.filter((inc) => inc.estado === filtroEstado);
+
+  const puntosMapa = incidenciasFiltradas
+    .filter(
+      (incidencia) =>
+        typeof incidencia?.ubicacion?.latitud === "number" &&
+        typeof incidencia?.ubicacion?.longitud === "number"
+    )
+    .map((incidencia) => ({
+      id: incidencia.id,
+      lat: incidencia.ubicacion.latitud,
+      lng: incidencia.ubicacion.longitud,
+    }));
 
   return (
     <>
@@ -108,9 +194,9 @@ export default function MisIncidencias() {
             <button
               type="button"
               className={`mis-incidencias__filter-btn ${
-                filtroEstado === "Todas" ? "mis-incidencias__filter-btn--active" : ""
+                filtroEstado === "TODAS" ? "mis-incidencias__filter-btn--active" : ""
               }`}
-              onClick={() => setFiltroEstado("Todas")}
+              onClick={() => setFiltroEstado("TODAS")}
             >
               Todas ({totalTodas})
             </button>
@@ -118,9 +204,9 @@ export default function MisIncidencias() {
             <button
               type="button"
               className={`mis-incidencias__filter-btn ${
-                filtroEstado === "Creada" ? "mis-incidencias__filter-btn--active" : ""
+                filtroEstado === "CREADA" ? "mis-incidencias__filter-btn--active" : ""
               }`}
-              onClick={() => setFiltroEstado("Creada")}
+              onClick={() => setFiltroEstado("CREADA")}
             >
               Creada ({totalCreadas})
             </button>
@@ -128,9 +214,9 @@ export default function MisIncidencias() {
             <button
               type="button"
               className={`mis-incidencias__filter-btn ${
-                filtroEstado === "Validada" ? "mis-incidencias__filter-btn--active" : ""
+                filtroEstado === "VALIDADA" ? "mis-incidencias__filter-btn--active" : ""
               }`}
-              onClick={() => setFiltroEstado("Validada")}
+              onClick={() => setFiltroEstado("VALIDADA")}
             >
               Validada ({totalValidadas})
             </button>
@@ -138,9 +224,9 @@ export default function MisIncidencias() {
             <button
               type="button"
               className={`mis-incidencias__filter-btn ${
-                filtroEstado === "Asignada" ? "mis-incidencias__filter-btn--active" : ""
+                filtroEstado === "ASIGNADA" ? "mis-incidencias__filter-btn--active" : ""
               }`}
-              onClick={() => setFiltroEstado("Asignada")}
+              onClick={() => setFiltroEstado("ASIGNADA")}
             >
               Asignada ({totalAsignadas})
             </button>
@@ -148,9 +234,9 @@ export default function MisIncidencias() {
             <button
               type="button"
               className={`mis-incidencias__filter-btn ${
-                filtroEstado === "En curso" ? "mis-incidencias__filter-btn--active" : ""
+                filtroEstado === "EN_CURSO" ? "mis-incidencias__filter-btn--active" : ""
               }`}
-              onClick={() => setFiltroEstado("En curso")}
+              onClick={() => setFiltroEstado("EN_CURSO")}
             >
               En curso ({totalEnCurso})
             </button>
@@ -158,9 +244,9 @@ export default function MisIncidencias() {
             <button
               type="button"
               className={`mis-incidencias__filter-btn ${
-                filtroEstado === "Resuelta" ? "mis-incidencias__filter-btn--active" : ""
+                filtroEstado === "RESUELTA" ? "mis-incidencias__filter-btn--active" : ""
               }`}
-              onClick={() => setFiltroEstado("Resuelta")}
+              onClick={() => setFiltroEstado("RESUELTA")}
             >
               Resuelta ({totalResueltas})
             </button>
@@ -168,9 +254,9 @@ export default function MisIncidencias() {
             <button
               type="button"
               className={`mis-incidencias__filter-btn ${
-                filtroEstado === "Cerrada" ? "mis-incidencias__filter-btn--active" : ""
+                filtroEstado === "CERRADA" ? "mis-incidencias__filter-btn--active" : ""
               }`}
-              onClick={() => setFiltroEstado("Cerrada")}
+              onClick={() => setFiltroEstado("CERRADA")}
             >
               Cerrada ({totalCerradas})
             </button>
@@ -178,16 +264,20 @@ export default function MisIncidencias() {
             <button
               type="button"
               className={`mis-incidencias__filter-btn ${
-                filtroEstado === "Rechazada" ? "mis-incidencias__filter-btn--active" : ""
+                filtroEstado === "RECHAZADA" ? "mis-incidencias__filter-btn--active" : ""
               }`}
-              onClick={() => setFiltroEstado("Rechazada")}
+              onClick={() => setFiltroEstado("RECHAZADA")}
             >
               Rechazada ({totalRechazadas})
             </button>
           </div>
 
-          {vista === "lista" ? (
+          {loading ? (
+            <p>Cargando incidencias...</p>
+          ) : vista === "lista" ? (
             <div className="mis-incidencias__table-wrapper">
+              {error && <p>{error}</p>}
+
               <table className="mis-incidencias__table">
                 <thead>
                   <tr>
@@ -208,9 +298,9 @@ export default function MisIncidencias() {
                         <span
                           className={`mis-incidencias__estado-badge mis-incidencias__estado-badge--${incidencia.estado
                             .toLowerCase()
-                            .replace(" ", "-")}`}
+                            .replaceAll("_", "-")}`}
                         >
-                          {incidencia.estado}
+                          {ESTADOS_LABELS[incidencia.estado] || incidencia.estado}
                         </span>
                       </td>
                       <td>{incidencia.prioridad}</td>
@@ -229,7 +319,8 @@ export default function MisIncidencias() {
             </div>
           ) : (
             <div className="mis-incidencias__map-container">
-              <MapLocate width="100%" />
+              {error && <p>{error}</p>}
+              <MapLocate width="100%" puntos={puntosMapa} />
             </div>
           )}
         </div>
