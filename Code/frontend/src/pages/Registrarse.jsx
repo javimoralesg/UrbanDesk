@@ -133,7 +133,7 @@ export default function Registrarse() {
             </div>
 
             <div className="urban-register__actions">
-              <button type="button" className="urban-register__button" onClick={() => navigate(-1)}>
+              <button type="button" className="urban-register__button" onClick={() => navigate("/incidencias-urbanas")}>
                 Cancelar
               </button>
               <button type="submit" className="urban-register__button">

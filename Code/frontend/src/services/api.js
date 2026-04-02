@@ -160,7 +160,9 @@ export const api = {
     },
 
     obtenerIncidenciaPorId: async (id) => {
-        const response = await fetch(`${BASE_URL}/incidencias/${id}`);
+        const response = await fetch(`${BASE_URL}/incidencias/${id}`, {
+            headers: getAuthHeaders(),
+        });
 
         if (response.ok) {
         return await response.json();
@@ -199,7 +201,9 @@ export const api = {
     },    
 
     obtenerIncidenciasPorCiudadano: async (idCiudadano) => {
-        const response = await fetch(`${BASE_URL}/incidencias/ciudadano/${idCiudadano}`);
+        const response = await fetch(`${BASE_URL}/incidencias/ciudadano/${idCiudadano}`, {
+            headers: getAuthHeaders(),
+        });
 
         if (!response.ok) {
         throw new Error("Error al obtener incidencias del ciudadano");
@@ -209,7 +213,9 @@ export const api = {
     },
 
     obtenerIncidenciasPorOperador: async (idOperador) => {
-        const response = await fetch(`${BASE_URL}/incidencias/operador/${idOperador}`);
+        const response = await fetch(`${BASE_URL}/incidencias/operador/${idOperador}`, {
+            headers: getAuthHeaders(),
+        });
 
         if (!response.ok) {
         throw new Error("Error al obtener incidencias del operador");
@@ -229,7 +235,9 @@ export const api = {
     },
 
     obtenerIncidenciasPorTecnico: async (tecnicoId) => {
-        const response = await fetch(`${BASE_URL}/incidencias/tecnico/${tecnicoId}`);
+        const response = await fetch(`${BASE_URL}/incidencias/tecnico/${tecnicoId}`, {
+            headers: getAuthHeaders(),
+        });
 
         if (!response.ok) {
         throw new Error("Error al obtener incidencias del técnico");
@@ -263,10 +271,11 @@ export const api = {
      },
 
     actualizarIncidencia: async (id, { direccion, latitud, longitud, descripcion }) => {
-        const response = await fetch(`${BASE_URL}/incidencias/${id}`, {
+        const response = await fetch(`${BASE_URL}/incidencias/${id}/editar`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
+            ...getAuthHeaders(),
         },
         body: JSON.stringify({
             direccion,
@@ -283,21 +292,31 @@ export const api = {
         return await response.json();
     },
 
-    cambiarEstadoIncidencia: async (id, nuevoEstado, comentario = "") => {
-        const response = await fetch(
-        `${BASE_URL}/incidencias/${id}/estado?nuevoEstado=${nuevoEstado}`,
-        {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                ...getAuthHeaders(),
-            },
-            body: JSON.stringify({ comentario }),
-        }
-        );
+    validarIncidencia: async (id) => {
+        const response = await fetch(`${BASE_URL}/incidencias/${id}/validar`, {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        });
 
         if (!response.ok) {
-        throw new Error("Error al cambiar el estado");
+        throw new Error("Error al validar la incidencia");
+        }
+
+        return await response.json();
+    },
+
+    rechazarIncidencia: async (id, comentario = "") => {
+        const response = await fetch(`${BASE_URL}/incidencias/${id}/rechazar`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders(),
+        },
+        body: JSON.stringify({ comentario }),
+        });
+
+        if (!response.ok) {
+        throw new Error("Error al rechazar la incidencia");
         }
 
         return await response.json();
@@ -308,6 +327,7 @@ export const api = {
         `${BASE_URL}/incidencias/${id}/prioridad?prioridad=${prioridad}`,
         {
             method: "PUT",
+            headers: getAuthHeaders(),
         }
         );
 
@@ -327,6 +347,7 @@ export const api = {
         endpoint,
         {
             method: "PUT",
+            headers: getAuthHeaders(),
         }
         );
 
@@ -342,6 +363,7 @@ export const api = {
         `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}`,
         {
             method: "PUT",
+            headers: getAuthHeaders(),
         }
         );
 
@@ -357,6 +379,7 @@ export const api = {
         `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}`,
         {
             method: "DELETE",
+            headers: getAuthHeaders(),
         }
         );
 

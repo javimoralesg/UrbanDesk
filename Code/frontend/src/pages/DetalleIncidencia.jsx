@@ -20,6 +20,13 @@ export default function DetalleIncidencia() {
   const rol = "Operador"; // Operador | Tecnico | Ciudadano
 
   useEffect(() => {
+    const verificarSesionYRedirigir = () => {
+      const rawUser = localStorage.getItem("user");
+      if (!rawUser) {
+        navigate("/incidencias-urbanas/login", { replace: true });
+      }
+    };
+
     const cargarIncidencia = async () => {
       try {
         setLoading(true);
@@ -46,6 +53,7 @@ export default function DetalleIncidencia() {
       }
     };
 
+    verificarSesionYRedirigir();
     cargarIncidencia();
   }, [id, navigate]);
 
@@ -177,27 +185,45 @@ export default function DetalleIncidencia() {
     return new Date(fecha).toLocaleString("es-ES");
   };
 
-  const cambiarEstado = async (nuevoEstado) => {
+  const validarIncidencia = async () => {
     try {
-      let comentario = "";
-
-      if (nuevoEstado === "RECHAZADA") {
-        comentario = window.prompt(
-          "Indica el motivo del rechazo:",
-          "Incidencia rechazada por el operador"
-        ) || "";
-      }
-
-      const incidenciaActualizada = await api.cambiarEstadoIncidencia(
-        id,
-        nuevoEstado,
-        comentario
-      );
-
-      setIncidenciaApi(incidenciaActualizada);
+      await api.validarIncidencia(id, "Validada por el operador.");
+      setIncidenciaApi((prev) => ({
+        ...prev,
+        estado: "VALIDADA",
+        historial: [
+          ...(prev.historial || []),
+          {
+            fechaCreacion: new Date().toISOString(),
+            estadoNuevo: "VALIDADA",
+            observaciones: "Validada por el operador.",
+          },
+        ],
+      }));
     } catch (err) {
-      console.error("Error al cambiar el estado de la incidencia:", err);
-      setError("No se pudo actualizar el estado de la incidencia.");
+      console.error("Error al validar incidencia:", err);
+      setError("No se pudo validar la incidencia. Inténtalo de nuevo.");
+    }
+  };
+
+  const rechazarIncidencia = async () => {
+    try {
+      await api.rechazarIncidencia(id, "La incidencia ha sido rechazada por el operador.");
+      setIncidenciaApi((prev) => ({
+        ...prev,
+        estado: "RECHAZADA",
+        historial: [
+          ...(prev.historial || []),
+          {
+            fechaCreacion: new Date().toISOString(),
+            estadoNuevo: "RECHAZADA",
+            observaciones: "Rechazada por el operador.",
+          },
+        ],
+      }));
+    } catch (err) {
+      console.error("Error al rechazar incidencia:", err);
+      setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
     }
   };
 
@@ -309,10 +335,10 @@ export default function DetalleIncidencia() {
 
               {estado === "CREADA" && rol === "Operador" && (
                 <div className="detalle-incidencia__actions">
-                  <button onClick={() => cambiarEstado("VALIDADA")}>
+                  <button onClick={() => validarIncidencia()}>
                     Validar
                   </button>
-                  <button onClick={() => cambiarEstado("RECHAZADA")}>
+                  <button onClick={() => rechazarIncidencia()}>
                     Rechazar
                   </button>
                 </div>
