@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import MapLocate from "../components/MapLocate";
@@ -72,6 +72,7 @@ export default function MisIncidencias() {
   const [vista, setVista] = useState("lista");
   const [filtroEstado, setFiltroEstado] = useState("TODAS");
   const [misIncidencias, setMisIncidencias] = useState([]);
+  const [rolUsuario, setRolUsuario] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -103,11 +104,16 @@ export default function MisIncidencias() {
           return;
         }
 
+        const rol = user?.rol?.toUpperCase?.() || "";
+        setRolUsuario(rol);
+
         let data = [];
 
-        if (user.rol === "OPERADOR") {
+        if (rol === "OPERADOR") {
           data = await api.obtenerIncidenciasPorOperador(user.id);
-        } else {
+        } else if (rol === "TECNICO") {
+          data = await api.obtenerIncidenciasPorTecnico(user.id);
+        } else if (rol === "CIUDADANO") {
           data = await api.obtenerIncidenciasPorCiudadano(user.id);
         }
 
@@ -138,6 +144,37 @@ export default function MisIncidencias() {
   const totalCerradas = misIncidencias.filter((inc) => inc.estado === "CERRADA").length;
   const totalRechazadas = misIncidencias.filter((inc) => inc.estado === "RECHAZADA").length;
 
+  const filtrosVisibles = useMemo(() => {
+    if (rolUsuario === "TECNICO") {
+      return [
+        { key: "TODAS", label: "Todas", total: totalTodas },
+        { key: "ASIGNADA", label: "Asignada", total: totalAsignadas },
+        { key: "EN_CURSO", label: "En curso", total: totalEnCurso },
+      ];
+    }
+
+    return [
+      { key: "TODAS", label: "Todas", total: totalTodas },
+      { key: "CREADA", label: "Creada", total: totalCreadas },
+      { key: "VALIDADA", label: "Validada", total: totalValidadas },
+      { key: "ASIGNADA", label: "Asignada", total: totalAsignadas },
+      { key: "EN_CURSO", label: "En curso", total: totalEnCurso },
+      { key: "RESUELTA", label: "Resuelta", total: totalResueltas },
+      { key: "CERRADA", label: "Cerrada", total: totalCerradas },
+      { key: "RECHAZADA", label: "Rechazada", total: totalRechazadas },
+    ];
+  }, [
+    rolUsuario,
+    totalTodas,
+    totalCreadas,
+    totalValidadas,
+    totalAsignadas,
+    totalEnCurso,
+    totalResueltas,
+    totalCerradas,
+    totalRechazadas,
+  ]);
+
   const incidenciasFiltradas =
     filtroEstado === "TODAS"
       ? misIncidencias
@@ -165,7 +202,7 @@ export default function MisIncidencias() {
           <h2 className="mis-incidencias__title">Mis Incidencias</h2>
 
           <p className="mis-incidencias__subtitle">
-            Consulta todas las incidencias que has creado y revisa su estado
+            Consulta todas las incidencias asociadas a tu usuario y revisa su estado
           </p>
 
           <div className="mis-incidencias__view-buttons">
@@ -191,85 +228,20 @@ export default function MisIncidencias() {
           </div>
 
           <div className="mis-incidencias__filters">
-            <button
-              type="button"
-              className={`mis-incidencias__filter-btn ${
-                filtroEstado === "TODAS" ? "mis-incidencias__filter-btn--active" : ""
-              }`}
-              onClick={() => setFiltroEstado("TODAS")}
-            >
-              Todas ({totalTodas})
-            </button>
-
-            <button
-              type="button"
-              className={`mis-incidencias__filter-btn ${
-                filtroEstado === "CREADA" ? "mis-incidencias__filter-btn--active" : ""
-              }`}
-              onClick={() => setFiltroEstado("CREADA")}
-            >
-              Creada ({totalCreadas})
-            </button>
-
-            <button
-              type="button"
-              className={`mis-incidencias__filter-btn ${
-                filtroEstado === "VALIDADA" ? "mis-incidencias__filter-btn--active" : ""
-              }`}
-              onClick={() => setFiltroEstado("VALIDADA")}
-            >
-              Validada ({totalValidadas})
-            </button>
-
-            <button
-              type="button"
-              className={`mis-incidencias__filter-btn ${
-                filtroEstado === "ASIGNADA" ? "mis-incidencias__filter-btn--active" : ""
-              }`}
-              onClick={() => setFiltroEstado("ASIGNADA")}
-            >
-              Asignada ({totalAsignadas})
-            </button>
-
-            <button
-              type="button"
-              className={`mis-incidencias__filter-btn ${
-                filtroEstado === "EN_CURSO" ? "mis-incidencias__filter-btn--active" : ""
-              }`}
-              onClick={() => setFiltroEstado("EN_CURSO")}
-            >
-              En curso ({totalEnCurso})
-            </button>
-
-            <button
-              type="button"
-              className={`mis-incidencias__filter-btn ${
-                filtroEstado === "RESUELTA" ? "mis-incidencias__filter-btn--active" : ""
-              }`}
-              onClick={() => setFiltroEstado("RESUELTA")}
-            >
-              Resuelta ({totalResueltas})
-            </button>
-
-            <button
-              type="button"
-              className={`mis-incidencias__filter-btn ${
-                filtroEstado === "CERRADA" ? "mis-incidencias__filter-btn--active" : ""
-              }`}
-              onClick={() => setFiltroEstado("CERRADA")}
-            >
-              Cerrada ({totalCerradas})
-            </button>
-
-            <button
-              type="button"
-              className={`mis-incidencias__filter-btn ${
-                filtroEstado === "RECHAZADA" ? "mis-incidencias__filter-btn--active" : ""
-              }`}
-              onClick={() => setFiltroEstado("RECHAZADA")}
-            >
-              Rechazada ({totalRechazadas})
-            </button>
+            {filtrosVisibles.map((filtro) => (
+              <button
+                key={filtro.key}
+                type="button"
+                className={`mis-incidencias__filter-btn ${
+                  filtroEstado === filtro.key
+                    ? "mis-incidencias__filter-btn--active"
+                    : ""
+                }`}
+                onClick={() => setFiltroEstado(filtro.key)}
+              >
+                {filtro.label} ({filtro.total})
+              </button>
+            ))}
           </div>
 
           {loading ? (

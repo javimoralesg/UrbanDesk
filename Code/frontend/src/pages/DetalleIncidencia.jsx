@@ -501,7 +501,25 @@ export default function DetalleIncidencia() {
               </div>
             </div>
           </div>
+          <div className="detalle-incidencia__section">
+            <h3>Adjuntos</h3>
 
+            <div className="detalle-incidencia__attachments">
+              {adjuntos.length > 0 ? (
+                adjuntos.map((adjunto, index) => (
+                  <img
+                    key={index}
+                    src={adjunto}
+                    alt={`Adjunto ${index + 1} de la incidencia`}
+                    className="detalle-incidencia__attachment-image"
+                  />
+                ))
+              ) : (
+                <p>No hay adjuntos disponibles.</p>
+              )}
+            </div>
+          </div>
+          
           <div className="detalle-incidencia__section">
             <h3>Historial</h3>
 
@@ -525,24 +543,7 @@ export default function DetalleIncidencia() {
             </div>
           </div>
 
-          <div className="detalle-incidencia__section">
-            <h3>Adjuntos</h3>
-
-            <div className="detalle-incidencia__attachments">
-              {adjuntos.length > 0 ? (
-                adjuntos.map((adjunto, index) => (
-                  <img
-                    key={index}
-                    src={adjunto}
-                    alt={`Adjunto ${index + 1} de la incidencia`}
-                    className="detalle-incidencia__attachment-image"
-                  />
-                ))
-              ) : (
-                <p>No hay adjuntos disponibles.</p>
-              )}
-            </div>
-          </div>
+          
         </section>
       </main>
     </>
