@@ -197,14 +197,29 @@ public class IncidenciaController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "La incidencia no está asignada a este operador");
         }
-        
+
         return ResponseEntity.ok(incidenciaService.asignarTecnico(id, tecnicoId));
     }
 
     @DeleteMapping("/{id}/tecnico/{tecnicoId}")
     public ResponseEntity<Incidencia> eliminarTecnico(
             @PathVariable Long id,
-            @PathVariable Long tecnicoId) {
+            @PathVariable Long tecnicoId,
+            Principal principal) {
+
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (!(usuario instanceof Operador operador)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Solo un operador autenticado puede eliminar técnicos de una incidencia");
+        }
+
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        if (incidencia.getOperador() == null
+                || !Objects.equals(incidencia.getOperador().getId(), operador.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "La incidencia no está asignada a este operador");
+        }
+
         return ResponseEntity.ok(incidenciaService.eliminarTecnico(id, tecnicoId));
     }
 }
