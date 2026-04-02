@@ -31,17 +31,9 @@ public class IncidenciaService {
     private final UsuarioRepository usuarioRepository;
     private final MailService MailService;
 
-    public List<Incidencia> obtenerTodas() {
-        return incidenciaRepository.findAll();
-    }
-
     public Incidencia obtenerPorId(Long id) {
         return incidenciaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Incidencia no encontrada"));
-    }
-
-    public List<Incidencia> obtenerPorEstado(Estado estado) {
-        return incidenciaRepository.findByEstado(estado);
     }
 
     public List<Incidencia> obtenerPorCiudadano(Long ciudadanoId) {
@@ -50,10 +42,6 @@ public class IncidenciaService {
 
     public List<Incidencia> obtenerPorOperador(Long operadorId) {
         return incidenciaRepository.findByOperadorId(operadorId);
-    }
-
-    public List<Incidencia> obtenerPorPrioridad(Prioridad prioridad) {
-        return incidenciaRepository.findByPrioridad(prioridad);
     }
 
     public List<Incidencia> obtenerPorTecnico(Long tecnicoId) {
@@ -101,26 +89,6 @@ public class IncidenciaService {
         Incidencia incidencia = obtenerPorId(id);
         incidencia.modificarIncidencia(nuevaUbicacion, nuevaDescripcion);
         return incidenciaRepository.save(incidencia);
-    }
-
-    public Incidencia cambiarEstado(Long id, Estado nuevoEstado) {
-        Incidencia incidencia = obtenerPorId(id);
-        incidencia.actualizarEstado(nuevoEstado);
-        incidencia.agregarHistorial(new Historial(
-                incidencia,
-                incidencia.getOperador(),
-                nuevoEstado,
-                "Estado actualizado a " + nuevoEstado.name()
-        ));
-        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
-        if (incidencia.getCiudadano() != null) {
-            MailService.enviarCambioEstado(
-                    incidencia.getCiudadano().getEmail(),
-                    incidencia.getId(),
-                    incidencia.getDescripcion(),
-                    nuevoEstado);
-        }
-        return incidenciaGuardada;
     }
 
     public Incidencia validarIncidencia(Long id) {
@@ -250,10 +218,6 @@ public class IncidenciaService {
         Incidencia incidencia = obtenerPorId(id);
         incidencia.asignarPrioridad(prioridad);
         return incidenciaRepository.save(incidencia);
-    }
-
-    public long contarPorEstado(Estado estado) {
-        return incidenciaRepository.countByEstado(estado);
     }
 }
 
