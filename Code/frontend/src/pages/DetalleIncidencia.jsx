@@ -233,36 +233,6 @@ export default function DetalleIncidencia() {
     }
   };
 
-  if (loading) {
-    return (
-      <>
-        <Hero />
-        <main className="detalle-incidencia__layout">
-          <Sidebar />
-          <section className="detalle-incidencia__content">
-            <h2 className="detalle-incidencia__title">Incidencia #{id}</h2>
-            <p>Cargando incidencia...</p>
-          </section>
-        </main>
-      </>
-    );
-  }
-
-  if (!incidencia) {
-    return (
-      <>
-        <Popups list={incidenceList} />
-        <Hero />
-        <main className="detalle-incidencia__layout">
-          <Sidebar />
-          <section className="detalle-incidencia__content">
-            <h2 className="detalle-incidencia__title">Incidencia #{id}</h2>
-            <p>No se pudo cargar la incidencia o no existe.</p>
-          </section>
-        </main>
-      </>
-    );
-  }
 
   return (
     <>
@@ -295,12 +265,6 @@ export default function DetalleIncidencia() {
           <p className="detalle-incidencia__subtitle">
             Consulta toda la información relacionada con incidencias urbanas
           </p>
-
-          {error && (
-            <p className="detalle-incidencia__api-warning">
-              {error}
-            </p>
-          )}
 
           <div className="detalle-incidencia__top">
             <div className="detalle-incidencia__card">
