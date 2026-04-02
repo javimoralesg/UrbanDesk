@@ -14,7 +14,17 @@ export default function DetalleIncidencia() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const rol = "Operador"; // Operador | Tecnico | Ciudadano
+  const rol = useMemo(() => {
+    const rawUser = localStorage.getItem("user");
+    if (!rawUser) return "";
+    try {
+      const user = JSON.parse(rawUser);
+      console.log("Usuario cargado desde localStorage:", user);
+      return user?.rol?.toUpperCase?.() || "";
+    } catch {
+      return "";
+    }
+  }, []);
   
   useEffect(() => {
     const verificarSesionYRedirigir = () => {
@@ -313,7 +323,7 @@ export default function DetalleIncidencia() {
                 </div>
               </div>
 
-              {estado === "CREADA" && rol === "Operador" && (
+              {estado === "CREADA" && rol === "OPERADOR" && (
                 <div className="detalle-incidencia__actions">
                   <button onClick={() => validarIncidencia()}>
                     Validar
@@ -324,7 +334,7 @@ export default function DetalleIncidencia() {
                 </div>
               )}
 
-              {estado === "VALIDADA" && rol === "Operador" && (
+              {estado === "VALIDADA" && rol === "OPERADOR" && (
                 <>
                   <div className="detalle-incidencia__asignacion">
                     <div>
@@ -351,13 +361,13 @@ export default function DetalleIncidencia() {
               )}
 
               {(estado === "ASIGNADA" || estado === "EN_CURSO") &&
-                rol === "Operador" && (
+                rol === "OPERADOR" && (
                   <button className="detalle-incidencia__main-btn">
                     Editar asignación
                   </button>
                 )}
 
-              {estado === "RESUELTA" && rol === "Operador" && (
+              {estado === "RESUELTA" && rol === "OPERADOR" && (
                 <button className="detalle-incidencia__main-btn">
                   Cerrar incidencia
                 </button>
