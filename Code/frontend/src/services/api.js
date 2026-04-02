@@ -269,10 +269,11 @@ export const api = {
      },
 
     actualizarIncidencia: async (id, { direccion, latitud, longitud, descripcion }) => {
-        const response = await fetch(`${BASE_URL}/incidencias/${id}`, {
+        const response = await fetch(`${BASE_URL}/incidencias/${id}/editar`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
+            ...getAuthHeaders(),
         },
         body: JSON.stringify({
             direccion,
@@ -314,6 +315,7 @@ export const api = {
         `${BASE_URL}/incidencias/${id}/prioridad?prioridad=${prioridad}`,
         {
             method: "PUT",
+            headers: getAuthHeaders(),
         }
         );
 
@@ -333,6 +335,7 @@ export const api = {
         endpoint,
         {
             method: "PUT",
+            headers: getAuthHeaders(),
         }
         );
 
@@ -348,6 +351,7 @@ export const api = {
         `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}`,
         {
             method: "PUT",
+            headers: getAuthHeaders(),
         }
         );
 
@@ -363,6 +367,7 @@ export const api = {
         `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}`,
         {
             method: "DELETE",
+            headers: getAuthHeaders(),
         }
         );
 

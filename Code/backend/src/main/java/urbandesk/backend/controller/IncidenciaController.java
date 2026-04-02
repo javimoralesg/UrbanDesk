@@ -128,21 +128,36 @@ public class IncidenciaController {
         return ResponseEntity.ok(incidencia);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/editar")
     public ResponseEntity<Incidencia> actualizarIncidencia(
             @PathVariable Long id,
-            @RequestBody IncidenciaRequest request) {
+            @RequestBody IncidenciaRequest request,
+            Principal principal) {
+
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (usuario == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Debes estar autenticado para editar una incidencia");
+        }
+
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        if (incidencia.getCiudadano() == null || !Objects.equals(incidencia.getCiudadano().getId(), usuario.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para editar esta incidencia");
+        }
+
+        if (incidencia.getEstado() != Estado.CREADA) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solo se pueden editar las incidencias en estado CREADA");
+        }
 
         Ubicacion nuevaUbicacion = new Ubicacion(
-                request.direccion(),
-                request.latitud(),
-                request.longitud()
+                request.direccion() != null && !request.direccion().isBlank() ? request.direccion() : incidencia.getUbicacion().getDireccion(),
+                request.latitud() != null ? request.latitud() : incidencia.getUbicacion().getLatitud(),
+                request.longitud() != null ? request.longitud() : incidencia.getUbicacion().getLongitud()
         );
 
         Incidencia incidenciaActualizada = incidenciaService.actualizarIncidencia(
                 id,
                 nuevaUbicacion,
-                request.descripcion()
+                request.descripcion() != null && !request.descripcion().isBlank() ? request.descripcion() : incidencia.getDescripcion()
         );
 
         return ResponseEntity.ok(incidenciaActualizada);
