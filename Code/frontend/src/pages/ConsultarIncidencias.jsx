@@ -16,6 +16,58 @@ const ESTADOS_LABELS = {
   RECHAZADA: "Rechazada",
 };
 
+const INCIDENCIAS_MOCK = [
+  {
+    id: 1,
+    descripcion: "Farola rota en la calle principal",
+    prioridad: "Alta",
+    estado: "CREADA",
+    ubicacion: { latitud: 40.4168, longitud: -3.7038 },
+  },
+  {
+    id: 2,
+    descripcion: "Bache en la calzada",
+    prioridad: "Media",
+    estado: "VALIDADA",
+    ubicacion: { latitud: 40.4175, longitud: -3.7045 },
+  },
+  {
+    id: 3,
+    descripcion: "Contenedor desbordado",
+    prioridad: "Baja",
+    estado: "ASIGNADA",
+    ubicacion: { latitud: 40.4182, longitud: -3.7051 },
+  },
+  {
+    id: 4,
+    descripcion: "Señal de tráfico dañada",
+    prioridad: "Alta",
+    estado: "EN_CURSO",
+    ubicacion: { latitud: 40.419, longitud: -3.7029 },
+  },
+  {
+    id: 5,
+    descripcion: "Fuga de agua en acera",
+    prioridad: "Alta",
+    estado: "RESUELTA",
+    ubicacion: { latitud: 40.4159, longitud: -3.7018 },
+  },
+  {
+    id: 6,
+    descripcion: "Alcantarilla atascada",
+    prioridad: "Media",
+    estado: "CREADA",
+    ubicacion: { latitud: 40.4148, longitud: -3.7062 },
+  },
+  {
+    id: 7,
+    descripcion: "Banco roto en el parque",
+    prioridad: "Baja",
+    estado: "EN_CURSO",
+    ubicacion: { latitud: 40.4201, longitud: -3.707 },
+  },
+];
+
 export default function ConsultarIncidencias() {
   const [vista, setVista] = useState("lista");
   const [filtroEstado, setFiltroEstado] = useState("TODAS");
@@ -31,8 +83,8 @@ export default function ConsultarIncidencias() {
 
         const rawUser = localStorage.getItem("user");
         if (!rawUser) {
-          setIncidencias([]);
-          setError("Debes iniciar sesión para consultar tus incidencias.");
+          setIncidencias(INCIDENCIAS_MOCK);
+          setError("No se encontró sesión. Mostrando incidencias de ejemplo.");
           return;
         }
 
@@ -40,14 +92,14 @@ export default function ConsultarIncidencias() {
         try {
           user = JSON.parse(rawUser);
         } catch {
-          setIncidencias([]);
-          setError("No se pudo leer la sesión de usuario.");
+          setIncidencias(INCIDENCIAS_MOCK);
+          setError("No se pudo leer la sesión. Mostrando incidencias de ejemplo.");
           return;
         }
 
         if (!user?.id) {
-          setIncidencias([]);
-          setError("No se encontró el id del usuario logeado.");
+          setIncidencias(INCIDENCIAS_MOCK);
+          setError("No se encontró el id del usuario. Mostrando incidencias de ejemplo.");
           return;
         }
 
@@ -57,10 +109,17 @@ export default function ConsultarIncidencias() {
         } else {
           data = await api.obtenerIncidenciasPorCiudadano(user.id);
         }
-        setIncidencias(data);
+
+        if (Array.isArray(data) && data.length > 0) {
+          setIncidencias(data);
+        } else {
+          setIncidencias(INCIDENCIAS_MOCK);
+          setError("La API no devolvió incidencias. Mostrando incidencias de ejemplo.");
+        }
       } catch (error) {
         console.error(error);
-        setError("No se pudieron cargar tus incidencias");
+        setIncidencias(INCIDENCIAS_MOCK);
+        setError("No se pudieron cargar tus incidencias desde la API. Mostrando incidencias de ejemplo.");
       } finally {
         setLoading(false);
       }
@@ -204,10 +263,10 @@ export default function ConsultarIncidencias() {
 
           {loading ? (
             <p>Cargando incidencias...</p>
-          ) : error ? (
-            <p>{error}</p>
           ) : vista === "lista" ? (
             <div className="consultar-incidencias__table-wrapper">
+              {error && <p>{error}</p>}
+
               <table className="consultar-incidencias__table">
                 <thead>
                   <tr>
@@ -249,6 +308,7 @@ export default function ConsultarIncidencias() {
             </div>
           ) : (
             <div className="consultar-incidencias__map-container">
+              {error && <p>{error}</p>}
               <MapLocate width="100%" puntos={puntosMapa} />
             </div>
           )}
