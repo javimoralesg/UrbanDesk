@@ -14,6 +14,8 @@ export default function DetalleIncidencia() {
   const [incidencia, setIncidencia] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [working, setWorking] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const [incidenceList, setIncidenceList] = useState([]);
 
@@ -80,7 +82,20 @@ export default function DetalleIncidencia() {
         setError(null);
       }, 5000);
     }
-  }, [loading, error]);
+    if (success) {
+      setIncidenceList(prev => ([...prev, { id: 'success', message: success, type: 'success' }]));
+      setTimeout(() => {
+        setIncidenceList(prev => prev.filter(m => m.id !== 'success'));
+        setSuccess(null);
+      }, 5000);
+    }
+    if (working) {
+      setIncidenceList(prev => ([...prev, { id: 'working', message: working, type: 'waiting' }]));
+    }
+    if (!working) {
+      setIncidenceList(prev => prev.filter(m => m.id !== 'working'));
+    }
+  }, [loading, error, success, working]);
 
 
   const estado = incidencia?.estado;
@@ -193,7 +208,10 @@ export default function DetalleIncidencia() {
 
   const validarIncidencia = async () => {
     try {
+      setWorking("Validando incidencia");
       await api.validarIncidencia(id, "Validada por el operador.");
+      setWorking(null);
+      setSuccess("Incidencia validada correctamente.");
       setIncidencia((prev) => ({
         ...prev,
         estado: "VALIDADA",
@@ -214,7 +232,10 @@ export default function DetalleIncidencia() {
 
   const rechazarIncidencia = async () => {
     try {
+      setWorking("Rechazando incidencia");
       await api.rechazarIncidencia(id, "La incidencia ha sido rechazada por el operador.");
+      setWorking(null);
+      setSuccess("Incidencia rechazada correctamente.");
       setIncidencia((prev) => ({
         ...prev,
         estado: "RECHAZADA",
