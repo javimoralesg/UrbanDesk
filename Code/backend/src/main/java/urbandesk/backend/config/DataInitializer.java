@@ -18,7 +18,9 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         crearCiudadano();
-        crearOperador();
+        crearOperador("operador1@urbandesk.com");
+        crearOperador("operador2@urbandesk.com");
+        crearOperador("operador3@urbandesk.com");
         crearTecnicoElectricista();
         crearTecnicoFontanero();
         crearTecnicoJardinero();
@@ -33,8 +35,7 @@ public class DataInitializer implements ApplicationRunner {
         }
     }
 
-    private void crearOperador() {
-        String email = "operador@urbandesk.com";
+    private void crearOperador(String email) {
         if (usuarioRepository.findByEmail(email).isEmpty()) {
             usuarioService.registrarOperador("Operador", email, "operador");
         }
