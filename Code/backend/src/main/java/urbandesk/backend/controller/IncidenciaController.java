@@ -45,23 +45,33 @@ public class IncidenciaController {
         return usuarioService.obtenerUsuarioPorEmail(principal.getName());
     }
 
+    //¿CUANDO USAMOS ESTO? ¿LO BORRAMOS?
     @GetMapping
     public ResponseEntity<List<Incidencia>> obtenerTodas() {
         return ResponseEntity.ok(incidenciaService.obtenerTodas());
     }
 
+    //¿CUANDO USAMOS ESTO? ¿LO BORRAMOS?
     @GetMapping("/{id}")
     public ResponseEntity<Incidencia> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(incidenciaService.obtenerPorId(id));
     }
 
     @GetMapping("/ciudadano/{ciudadanoId}")
-    public ResponseEntity<List<Incidencia>> obtenerPorCiudadano(@PathVariable Long ciudadanoId) {
+    public ResponseEntity<List<Incidencia>> obtenerPorCiudadano(@PathVariable Long ciudadanoId, Principal principal) {
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (usuario == null || !Objects.equals(usuario.getId(), ciudadanoId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver las incidencias de otro usuario");
+        }
         return ResponseEntity.ok(incidenciaService.obtenerPorCiudadano(ciudadanoId));
     }
 
     @GetMapping("/operador/{operadorId}")
-    public ResponseEntity<List<Incidencia>> obtenerPorOperador(@PathVariable Long operadorId) {
+    public ResponseEntity<List<Incidencia>> obtenerPorOperador(@PathVariable Long operadorId, Principal principal) {
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (usuario == null || !Objects.equals(usuario.getId(), operadorId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver las incidencias de otro operador");
+        }
         return ResponseEntity.ok(incidenciaService.obtenerPorOperador(operadorId));
     }
 
