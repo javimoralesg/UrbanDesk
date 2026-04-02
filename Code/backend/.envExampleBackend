@@ -1,3 +1,6 @@
 DB_URL=urlDeLaBBDDPostgreSQL
 DB_PASSWORD=contraseñaDeLaBBDDPostgreSQL
 DB_USER=usuarioDeLaBBDDPostgreSQL
+
+MAIL_USERNAME=correoElectronico
+MAIL_PASSWORD=contraseñaCorreoElectronico
