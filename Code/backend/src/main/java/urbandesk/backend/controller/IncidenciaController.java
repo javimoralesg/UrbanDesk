@@ -16,6 +16,7 @@ import urbandesk.backend.domain.incidence.Prioridad;
 import urbandesk.backend.domain.incidence.Ubicacion;
 import urbandesk.backend.domain.user.Ciudadano;
 import urbandesk.backend.domain.user.Operador;
+import urbandesk.backend.domain.user.Tecnico;
 import urbandesk.backend.domain.user.Usuario;
 import urbandesk.backend.service.IncidenciaService;
 import urbandesk.backend.service.UsuarioService;
@@ -49,6 +50,9 @@ public class IncidenciaController {
     @GetMapping
     public ResponseEntity<List<Incidencia>> obtenerTodas(Principal principal) {
         Usuario usuario = getAuthenticatedUser(principal);
+        if (usuario == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Debes estar autenticado para ver las incidencias");
+        }
         if (usuario instanceof Ciudadano) {
             return ResponseEntity.ok(incidenciaService.obtenerPorCiudadano(usuario.getId()));
         }
@@ -60,7 +64,27 @@ public class IncidenciaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Incidencia> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<Incidencia> obtenerPorId(@PathVariable Long id, Principal principal) {
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (usuario == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Debes estar autenticado para ver las incidencias");
+        }
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        if (usuario instanceof Ciudadano ciudadano) {
+            if (incidencia.getCiudadano() == null || !Objects.equals(incidencia.getCiudadano().getId(), ciudadano.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta incidencia");
+            }
+        } else if (usuario instanceof Operador operador) {
+            if (incidencia.getOperador() == null || !Objects.equals(incidencia.getOperador().getId(), operador.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta incidencia");
+            }
+        } else if (usuario instanceof Tecnico tecnico) {
+            boolean asignado = incidencia.getTecnicos().stream()
+                    .anyMatch(t -> Objects.equals(t.getId(), tecnico.getId()));
+            if (!asignado) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta incidencia");
+            }
+        }
         return ResponseEntity.ok(incidenciaService.obtenerPorId(id));
     }
 
