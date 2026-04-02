@@ -182,7 +182,22 @@ public class IncidenciaController {
     @PutMapping("/{id}/tecnico/{tecnicoId}")
     public ResponseEntity<Incidencia> asignarTecnico(
             @PathVariable Long id,
-            @PathVariable Long tecnicoId) {
+            @PathVariable Long tecnicoId,
+            Principal principal) {
+
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (!(usuario instanceof Operador operador)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Solo un operador autenticado puede asignar técnicos a una incidencia");
+        }
+
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        if (incidencia.getOperador() == null
+                || !Objects.equals(incidencia.getOperador().getId(), operador.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "La incidencia no está asignada a este operador");
+        }
+        
         return ResponseEntity.ok(incidenciaService.asignarTecnico(id, tecnicoId));
     }
 
