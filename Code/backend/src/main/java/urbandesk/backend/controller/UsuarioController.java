@@ -9,12 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import urbandesk.backend.domain.user.Ciudadano;
-import urbandesk.backend.domain.user.Especialidad;
 import urbandesk.backend.domain.user.Usuario;
 import urbandesk.backend.service.UsuarioService;
-
-import java.util.Map;
-
 
 @RestController
 @RequestMapping("/api/usuarios")
