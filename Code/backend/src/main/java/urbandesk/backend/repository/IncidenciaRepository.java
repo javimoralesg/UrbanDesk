@@ -16,7 +16,9 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia, Long> {
     List<Incidencia> findByEstado(Estado estado);
 
     List<Incidencia> findByPrioridad(Prioridad prioridad);
-
+    
+    List<Incidencia> findByOperadorId(Long operadorId);
+    
     List<Incidencia> findByTecnicos_Id(Long tecnicoId);    
     long countByEstado(Estado estado);
 

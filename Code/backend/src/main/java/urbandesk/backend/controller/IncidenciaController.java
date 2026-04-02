@@ -47,6 +47,16 @@ public class IncidenciaController {
         return ResponseEntity.ok(incidenciaService.obtenerPorId(id));
     }
 
+    @GetMapping("/ciudadano/{ciudadanoId}")
+    public ResponseEntity<List<Incidencia>> obtenerPorCiudadano(@PathVariable Long ciudadanoId) {
+        return ResponseEntity.ok(incidenciaService.obtenerPorCiudadano(ciudadanoId));
+    }
+
+    @GetMapping("/operador/{operadorId}")
+    public ResponseEntity<List<Incidencia>> obtenerPorOperador(@PathVariable Long operadorId) {
+        return ResponseEntity.ok(incidenciaService.obtenerPorOperador(operadorId));
+    }
+
     @PostMapping
     public ResponseEntity<?> crearIncidencia(@RequestBody IncidenciaRequest request, Principal principal) {
 

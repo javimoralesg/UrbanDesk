@@ -189,6 +189,16 @@ export const api = {
         return await response.json();
     },
 
+    obtenerIncidenciasPorOperador: async (idOperador) => {
+        const response = await fetch(`http://localhost:8080/api/incidencias/operador/${idOperador}`);
+
+        if (!response.ok) {
+        throw new Error("Error al obtener incidencias del operador");
+        }
+
+        return await response.json();
+    },
+
     obtenerIncidenciasPorPrioridad: async (prioridad) => {
         const response = await fetch(`http://localhost:8080/api/incidencias/prioridad/${prioridad}`);
 

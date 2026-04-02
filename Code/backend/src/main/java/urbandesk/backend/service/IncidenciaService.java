@@ -45,6 +45,10 @@ public class IncidenciaService {
         return incidenciaRepository.findByCiudadanoId(ciudadanoId);
     }
 
+    public List<Incidencia> obtenerPorOperador(Long operadorId) {
+        return incidenciaRepository.findByOperadorId(operadorId);
+    }
+
     public List<Incidencia> obtenerPorPrioridad(Prioridad prioridad) {
         return incidenciaRepository.findByPrioridad(prioridad);
     }

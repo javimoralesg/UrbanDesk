@@ -51,7 +51,12 @@ export default function ConsultarIncidencias() {
           return;
         }
 
-        const data = await api.obtenerIncidenciasPorCiudadano(user.id);
+        let data = [];
+        if (user.rol === "OPERADOR") {
+          data = await api.obtenerIncidenciasPorOperador(user.id);
+        } else {
+          data = await api.obtenerIncidenciasPorCiudadano(user.id);
+        }
         setIncidencias(data);
       } catch (error) {
         console.error(error);
