@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import MapLocate from "../components/MapLocate";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { api } from "../services/api";
 import "../assets/css/MisIncidencias.css";
 
@@ -75,8 +75,17 @@ export default function MisIncidencias() {
   const [rolUsuario, setRolUsuario] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const verificarSesionYRedirigir = () => {
+      const rawUser = localStorage.getItem("user");
+      if (!rawUser) {
+        navigate("/incidencias-urbanas/login");
+      }
+    };
+
     const cargarMisIncidencias = async () => {
       try {
         setLoading(true);
@@ -132,6 +141,7 @@ export default function MisIncidencias() {
       }
     };
 
+    verificarSesionYRedirigir();
     cargarMisIncidencias();
   }, []);
 
