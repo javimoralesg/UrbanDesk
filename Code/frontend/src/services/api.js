@@ -199,7 +199,9 @@ export const api = {
     },    
 
     obtenerIncidenciasPorCiudadano: async (idCiudadano) => {
-        const response = await fetch(`${BASE_URL}/incidencias/ciudadano/${idCiudadano}`);
+        const response = await fetch(`${BASE_URL}/incidencias/ciudadano/${idCiudadano}`, {
+            headers: getAuthHeaders(),
+        });
 
         if (!response.ok) {
         throw new Error("Error al obtener incidencias del ciudadano");
@@ -209,7 +211,9 @@ export const api = {
     },
 
     obtenerIncidenciasPorOperador: async (idOperador) => {
-        const response = await fetch(`${BASE_URL}/incidencias/operador/${idOperador}`);
+        const response = await fetch(`${BASE_URL}/incidencias/operador/${idOperador}`, {
+            headers: getAuthHeaders(),
+        });
 
         if (!response.ok) {
         throw new Error("Error al obtener incidencias del operador");
@@ -229,7 +233,9 @@ export const api = {
     },
 
     obtenerIncidenciasPorTecnico: async (tecnicoId) => {
-        const response = await fetch(`${BASE_URL}/incidencias/tecnico/${tecnicoId}`);
+        const response = await fetch(`${BASE_URL}/incidencias/tecnico/${tecnicoId}`, {
+            headers: getAuthHeaders(),
+        });
 
         if (!response.ok) {
         throw new Error("Error al obtener incidencias del técnico");

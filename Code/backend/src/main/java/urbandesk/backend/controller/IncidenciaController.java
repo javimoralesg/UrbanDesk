@@ -14,6 +14,7 @@ import urbandesk.backend.domain.incidence.Estado;
 import urbandesk.backend.domain.incidence.Incidencia;
 import urbandesk.backend.domain.incidence.Prioridad;
 import urbandesk.backend.domain.incidence.Ubicacion;
+import urbandesk.backend.domain.user.Ciudadano;
 import urbandesk.backend.domain.user.Operador;
 import urbandesk.backend.domain.user.Usuario;
 import urbandesk.backend.service.IncidenciaService;
@@ -45,13 +46,19 @@ public class IncidenciaController {
         return usuarioService.obtenerUsuarioPorEmail(principal.getName());
     }
 
-    //¿CUANDO USAMOS ESTO? ¿LO BORRAMOS?
     @GetMapping
-    public ResponseEntity<List<Incidencia>> obtenerTodas() {
-        return ResponseEntity.ok(incidenciaService.obtenerTodas());
+    public ResponseEntity<List<Incidencia>> obtenerTodas(Principal principal) {
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (usuario instanceof Ciudadano) {
+            return ResponseEntity.ok(incidenciaService.obtenerPorCiudadano(usuario.getId()));
+        }
+        else if (usuario instanceof Operador) {
+            return ResponseEntity.ok(incidenciaService.obtenerPorOperador(usuario.getId()));
+        } else{
+            return ResponseEntity.ok(incidenciaService.obtenerPorTecnico(usuario.getId()));
+        }
     }
 
-    //¿CUANDO USAMOS ESTO? ¿LO BORRAMOS?
     @GetMapping("/{id}")
     public ResponseEntity<Incidencia> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(incidenciaService.obtenerPorId(id));
