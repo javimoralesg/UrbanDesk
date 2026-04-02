@@ -162,11 +162,30 @@ export const api = {
     obtenerIncidenciaPorId: async (id) => {
         const response = await fetch(`${BASE_URL}/incidencias/${id}`);
 
-        if (!response.ok) {
-        throw new Error("Error al obtener la incidencia");
+        if (response.ok) {
+        return await response.json();
         }
 
-        return await response.json();
+        let message = "Error al obtener la incidencia";
+        try {
+        const errorData = await response.json();
+        message = errorData?.message || errorData?.error || message;
+        } catch {
+        try {
+            message = (await response.text()) || message;
+        } catch {
+            // Ignorar fallos al leer el cuerpo de error.
+        }
+        }
+
+        const error = new Error(
+        response.status === 404 || /incidencia no encontrada/i.test(message)
+            ? "Incidencia no encontrada"
+            : "Error al obtener la incidencia"
+        );
+        error.status = response.status;
+        error.message = message;
+        throw error;
     },
 
     obtenerIncidenciasPorEstado: async (estado) => {
