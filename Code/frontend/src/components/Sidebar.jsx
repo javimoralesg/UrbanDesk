@@ -21,7 +21,7 @@ const opcionesGlobales = {
         { text: "Portada", link: "/incidencias-urbanas" },
         { text: "Cerrar sesión", link: "/incidencias-urbanas/logout" },
         { text: "Editar perfil", link: "/incidencias-urbanas/editar-perfil " },
-        { text: "Consultar incidencias", link: "/incidencias-urbanas/consultar-incidencias" },
+        { text: "Consultar incidencias", link: "/incidencias-urbanas/mis-incidencias" },
         { text: "Buscar incidencias cercanas", link: "/incidencias-urbanas/buscar-incidencias-cercanas" },
         { text: "Generar informe", link: "/incidencias-urbanas/generar-informe" },
     ],
@@ -29,7 +29,7 @@ const opcionesGlobales = {
         { text: "Portada", link: "/incidencias-urbanas" },
         { text: "Cerrar sesión", link: "/incidencias-urbanas/logout" },
         { text: "Editar perfil", link: "/incidencias-urbanas/editar-perfil " },
-        { text: "Consultar incidencias", link: "/incidencias-urbanas/consultar-incidencias" },
+        { text: "Consultar incidencias", link: "/incidencias-urbanas/mis-incidencias" },
     ]
   };
 
