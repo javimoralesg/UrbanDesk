@@ -11,7 +11,7 @@ export default function DetalleIncidencia() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [incidenciaApi, setIncidenciaApi] = useState(null);
+  const [incidencia, setIncidencia] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -22,7 +22,6 @@ export default function DetalleIncidencia() {
     if (!rawUser) return "";
     try {
       const user = JSON.parse(rawUser);
-      console.log("Usuario cargado desde localStorage:", user);
       return user?.rol?.toUpperCase?.() || "";
     } catch {
       return "";
@@ -45,9 +44,9 @@ export default function DetalleIncidencia() {
         const data = await api.obtenerIncidenciaPorId(id);
 
         if (data && Object.keys(data).length > 0) {
-          setIncidenciaApi(data);
+          setIncidencia(data);
         } else {
-          setIncidenciaApi(null);
+          setIncidencia(null);
         }
       } catch (err) {
         console.error("Error al cargar incidencia:", err);
@@ -57,7 +56,7 @@ export default function DetalleIncidencia() {
         }
 
         setError("No se pudo cargar la incidencia desde la API. Mostrando datos de ejemplo.");
-        setIncidenciaApi(null);
+        setIncidencia(null);
       } finally {
         setLoading(false);
       }
@@ -83,9 +82,6 @@ export default function DetalleIncidencia() {
     }
   }, [loading, error]);
 
-  const incidencia = useMemo(() => {
-    return incidenciaApi;
-  }, [incidenciaApi, id]);
 
   const estado = incidencia?.estado;
   const prioridad = incidencia?.prioridad;
@@ -198,7 +194,7 @@ export default function DetalleIncidencia() {
   const validarIncidencia = async () => {
     try {
       await api.validarIncidencia(id, "Validada por el operador.");
-      setIncidenciaApi((prev) => ({
+      setIncidencia((prev) => ({
         ...prev,
         estado: "VALIDADA",
         historial: [
@@ -219,7 +215,7 @@ export default function DetalleIncidencia() {
   const rechazarIncidencia = async () => {
     try {
       await api.rechazarIncidencia(id, "La incidencia ha sido rechazada por el operador.");
-      setIncidenciaApi((prev) => ({
+      setIncidencia((prev) => ({
         ...prev,
         estado: "RECHAZADA",
         historial: [
@@ -252,6 +248,22 @@ export default function DetalleIncidencia() {
     );
   }
 
+  if (!incidencia) {
+    return (
+      <>
+        <Popups list={incidenceList} />
+        <Hero />
+        <main className="detalle-incidencia__layout">
+          <Sidebar />
+          <section className="detalle-incidencia__content">
+            <h2 className="detalle-incidencia__title">Incidencia #{id}</h2>
+            <p>No se pudo cargar la incidencia o no existe.</p>
+          </section>
+        </main>
+      </>
+    );
+  }
+
   return (
     <>
       <Popups list={incidenceList} />
@@ -273,10 +285,10 @@ export default function DetalleIncidencia() {
 
             <span
               className={`detalle-incidencia__estado-badge detalle-incidencia__estado-badge--${estado
-                .toLowerCase()
-                .replaceAll("_", "-")}`}
+                ?.toLowerCase()
+                ?.replaceAll("_", "-") ?? "desconocido"}`}
             >
-              {estadoLabel.toUpperCase()}
+              {estadoLabel?.toUpperCase?.() ?? ""}
             </span>
           </div>
 

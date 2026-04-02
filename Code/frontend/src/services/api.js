@@ -28,6 +28,9 @@ async function parseJsonOrThrow(response) {
     } catch {
         console.error("Error al parsear el mensaje de error:", response.status);
     }
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
 }
 
 const INACTIVITY_TIMEOUT_MINUTES = 20;
@@ -58,8 +61,6 @@ export const api = {
             'Authorization': 'Basic ' + authdata,
             'Content-Type': 'application/json',
         };
-        console.log("Iniciando sesión con email:", email);
-        console.log("Authdata generado:", authdata);
 
         const response = await fetch(`${BASE_URL}/usuarios/login`, {
             method: 'POST',
@@ -76,7 +77,7 @@ export const api = {
     logout: () => {
         if (inactivityTimer) clearTimeout(inactivityTimer);
         localStorage.removeItem('user');
-        window.location.href = "/incidencias-urbanas";        
+        window.location.href = "/incidencias-urbanas";
     },
 
     register: async (userData) => {
@@ -105,7 +106,7 @@ export const api = {
         });
         return parseJsonOrThrow(response);
     },
-    
+
 
 
 
@@ -153,7 +154,7 @@ export const api = {
         const response = await fetch(`${BASE_URL}/incidencias`);
 
         if (!response.ok) {
-        throw new Error("Error al obtener todas las incidencias");
+            throw new Error("Error al obtener todas las incidencias");
         }
 
         return await response.json();
@@ -165,25 +166,25 @@ export const api = {
         });
 
         if (response.ok) {
-        return await response.json();
+            return await response.json();
         }
 
         let message = "Error al obtener la incidencia";
         try {
-        const errorData = await response.json();
-        message = errorData?.message || errorData?.error || message;
+            const errorData = await response.json();
+            message = errorData?.message || errorData?.error || message;
         } catch {
-        try {
-            message = (await response.text()) || message;
-        } catch {
-            // Ignorar fallos al leer el cuerpo de error.
-        }
+            try {
+                message = (await response.text()) || message;
+            } catch {
+                // Ignorar fallos al leer el cuerpo de error.
+            }
         }
 
         const error = new Error(
-        response.status === 404 || /incidencia no encontrada/i.test(message)
-            ? "Incidencia no encontrada"
-            : "Error al obtener la incidencia"
+            response.status === 404 || /incidencia no encontrada/i.test(message)
+                ? "Incidencia no encontrada"
+                : "Error al obtener la incidencia"
         );
         error.status = response.status;
         error.message = message;
@@ -194,11 +195,11 @@ export const api = {
         const response = await fetch(`${BASE_URL}/incidencias/estado/${estado}`);
 
         if (!response.ok) {
-        throw new Error("Error al obtener incidencias por estado");
+            throw new Error("Error al obtener incidencias por estado");
         }
 
         return await response.json();
-    },    
+    },
 
     obtenerIncidenciasPorCiudadano: async (idCiudadano) => {
         const response = await fetch(`${BASE_URL}/incidencias/ciudadano/${idCiudadano}`, {
@@ -206,7 +207,7 @@ export const api = {
         });
 
         if (!response.ok) {
-        throw new Error("Error al obtener incidencias del ciudadano");
+            throw new Error("Error al obtener incidencias del ciudadano");
         }
 
         return await response.json();
@@ -218,7 +219,7 @@ export const api = {
         });
 
         if (!response.ok) {
-        throw new Error("Error al obtener incidencias del operador");
+            throw new Error("Error al obtener incidencias del operador");
         }
 
         return await response.json();
@@ -228,7 +229,7 @@ export const api = {
         const response = await fetch(`${BASE_URL}/incidencias/prioridad/${prioridad}`);
 
         if (!response.ok) {
-        throw new Error("Error al obtener incidencias por prioridad");
+            throw new Error("Error al obtener incidencias por prioridad");
         }
 
         return await response.json();
@@ -240,7 +241,7 @@ export const api = {
         });
 
         if (!response.ok) {
-        throw new Error("Error al obtener incidencias del técnico");
+            throw new Error("Error al obtener incidencias del técnico");
         }
 
         return await response.json();
@@ -248,45 +249,45 @@ export const api = {
 
     crearIncidencia: async ({ direccion, latitud, longitud, descripcion, ciudadanoId, imagenes = [] }) => {
         const response = await fetch(`${BASE_URL}/incidencias`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...getAuthHeaders(),
-        },
-        body: JSON.stringify({
-            direccion,
-            latitud,
-            longitud,
-            descripcion,
-            ciudadanoId,
-            imagenes,
-        }),
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeaders(),
+            },
+            body: JSON.stringify({
+                direccion,
+                latitud,
+                longitud,
+                descripcion,
+                ciudadanoId,
+                imagenes,
+            }),
         });
 
         if (!response.ok) {
-        throw new Error("Error al crear la incidencia");
+            throw new Error("Error al crear la incidencia");
         }
 
         return await response.json();
-     },
+    },
 
     actualizarIncidencia: async (id, { direccion, latitud, longitud, descripcion }) => {
         const response = await fetch(`${BASE_URL}/incidencias/${id}/editar`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            ...getAuthHeaders(),
-        },
-        body: JSON.stringify({
-            direccion,
-            latitud,
-            longitud,
-            descripcion,
-        }),
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeaders(),
+            },
+            body: JSON.stringify({
+                direccion,
+                latitud,
+                longitud,
+                descripcion,
+            }),
         });
 
         if (!response.ok) {
-        throw new Error("Error al actualizar la incidencia");
+            throw new Error("Error al actualizar la incidencia");
         }
 
         return await response.json();
@@ -294,12 +295,12 @@ export const api = {
 
     validarIncidencia: async (id) => {
         const response = await fetch(`${BASE_URL}/incidencias/${id}/validar`, {
-        method: "PUT",
-        headers: getAuthHeaders(),
+            method: "PUT",
+            headers: getAuthHeaders(),
         });
 
         if (!response.ok) {
-        throw new Error("Error al validar la incidencia");
+            throw new Error("Error al validar la incidencia");
         }
 
         return await response.json();
@@ -307,16 +308,16 @@ export const api = {
 
     rechazarIncidencia: async (id, comentario = "") => {
         const response = await fetch(`${BASE_URL}/incidencias/${id}/rechazar`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            ...getAuthHeaders(),
-        },
-        body: JSON.stringify({ comentario }),
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeaders(),
+            },
+            body: JSON.stringify({ comentario }),
         });
 
         if (!response.ok) {
-        throw new Error("Error al rechazar la incidencia");
+            throw new Error("Error al rechazar la incidencia");
         }
 
         return await response.json();
@@ -324,15 +325,15 @@ export const api = {
 
     cambiarPrioridadIncidencia: async (id, prioridad) => {
         const response = await fetch(
-        `${BASE_URL}/incidencias/${id}/prioridad?prioridad=${prioridad}`,
-        {
-            method: "PUT",
-            headers: getAuthHeaders(),
-        }
+            `${BASE_URL}/incidencias/${id}/prioridad?prioridad=${prioridad}`,
+            {
+                method: "PUT",
+                headers: getAuthHeaders(),
+            }
         );
 
         if (!response.ok) {
-        throw new Error("Error al cambiar la prioridad");
+            throw new Error("Error al cambiar la prioridad");
         }
 
         return await response.json();
@@ -340,19 +341,19 @@ export const api = {
 
     asignarOperadorIncidencia: async (id, operadorId = null) => {
         const endpoint = operadorId == null
-        ? `${BASE_URL}/incidencias/${id}/operador`
-        : `${BASE_URL}/incidencias/${id}/operador/${operadorId}`;
+            ? `${BASE_URL}/incidencias/${id}/operador`
+            : `${BASE_URL}/incidencias/${id}/operador/${operadorId}`;
 
         const response = await fetch(
-        endpoint,
-        {
-            method: "PUT",
-            headers: getAuthHeaders(),
-        }
+            endpoint,
+            {
+                method: "PUT",
+                headers: getAuthHeaders(),
+            }
         );
 
         if (!response.ok) {
-        throw new Error("Error al asignar operador");
+            throw new Error("Error al asignar operador");
         }
 
         return await response.json();
@@ -360,15 +361,15 @@ export const api = {
 
     asignarTecnicoIncidencia: async (id, tecnicoId) => {
         const response = await fetch(
-        `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}`,
-        {
-            method: "PUT",
-            headers: getAuthHeaders(),
-        }
+            `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}`,
+            {
+                method: "PUT",
+                headers: getAuthHeaders(),
+            }
         );
 
         if (!response.ok) {
-        throw new Error("Error al asignar técnico");
+            throw new Error("Error al asignar técnico");
         }
 
         return await response.json();
@@ -376,15 +377,15 @@ export const api = {
 
     eliminarTecnicoIncidencia: async (id, tecnicoId) => {
         const response = await fetch(
-        `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}`,
-        {
-            method: "DELETE",
-            headers: getAuthHeaders(),
-        }
+            `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}`,
+            {
+                method: "DELETE",
+                headers: getAuthHeaders(),
+            }
         );
 
         if (!response.ok) {
-        throw new Error("Error al eliminar técnico");
+            throw new Error("Error al eliminar técnico");
         }
 
         return await response.json();
