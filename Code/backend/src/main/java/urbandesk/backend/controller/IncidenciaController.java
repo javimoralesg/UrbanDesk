@@ -28,7 +28,8 @@ public class IncidenciaController {
         String direccion,
         Double latitud,
         Double longitud,
-        String descripcion) {
+        String descripcion,
+        List<String> imagenes) {
     }
 
     private Usuario getAuthenticatedUser(Principal principal) {
@@ -72,7 +73,8 @@ public class IncidenciaController {
         Incidencia incidencia = incidenciaService.crearIncidencia(
             ubicacion,
             request.descripcion(),
-            usuarioId
+            usuarioId,
+            request.imagenes()
         );
 
         return ResponseEntity.ok(incidencia);

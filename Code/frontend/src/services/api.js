@@ -219,7 +219,7 @@ export const api = {
         return await response.json();
     },
 
-    crearIncidencia: async ({ direccion, latitud, longitud, descripcion, ciudadanoId }) => {
+    crearIncidencia: async ({ direccion, latitud, longitud, descripcion, ciudadanoId, imagenes = [] }) => {
         const response = await fetch(`${BASE_URL}/incidencias`, {
         method: "POST",
         headers: {
@@ -232,6 +232,7 @@ export const api = {
             longitud,
             descripcion,
             ciudadanoId,
+            imagenes,
         }),
         });
 

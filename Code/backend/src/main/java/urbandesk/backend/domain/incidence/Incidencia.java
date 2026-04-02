@@ -116,6 +116,13 @@ public class Incidencia {
         this.historiales.add(historial);
     }
 
+    public void agregarEvidencia(Evidencia evidencia) {
+        if (evidencia == null) {
+            throw new DomainRuleViolation("La evidencia no puede ser nula");
+        }
+        this.evidencias.add(evidencia);
+    }
+
     public void limpiarTecnicos() {
         this.tecnicos.clear();
         this.tecnicosFinalizadosIds.clear();

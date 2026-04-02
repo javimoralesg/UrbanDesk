@@ -19,6 +19,7 @@ public class Evidencia {
     private Long id;
 
     @NotBlank
+    @Lob
     private String url;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

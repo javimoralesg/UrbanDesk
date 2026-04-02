@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import urbandesk.backend.domain.DomainRuleViolation;
 import urbandesk.backend.domain.incidence.Estado;
+import urbandesk.backend.domain.incidence.Evidencia;
 import urbandesk.backend.domain.incidence.Historial;
 import urbandesk.backend.domain.incidence.Incidencia;
 import urbandesk.backend.domain.incidence.Prioridad;
@@ -57,7 +58,7 @@ public class IncidenciaService {
         return incidenciaRepository.findByTecnicos_Id(tecnicoId);
     }
 
-    public Incidencia crearIncidencia(Ubicacion ubicacion, String descripcion, Long ciudadanoId) {
+    public Incidencia crearIncidencia(Ubicacion ubicacion, String descripcion, Long ciudadanoId, List<String> imagenes) {
         Ciudadano ciudadano = null;
 
         if (ciudadanoId != null) {
@@ -72,6 +73,13 @@ public class IncidenciaService {
         }
 
         Incidencia incidencia = new Incidencia(ubicacion, descripcion, ciudadano);
+        if (imagenes != null) {
+            for (String imagen : imagenes) {
+                if (imagen != null && !imagen.isBlank()) {
+                    incidencia.agregarEvidencia(new Evidencia(imagen, incidencia, ciudadano));
+                }
+            }
+        }
         incidencia.agregarHistorial(new Historial(
             incidencia,
             ciudadano,

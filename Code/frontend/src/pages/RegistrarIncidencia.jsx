@@ -8,9 +8,41 @@ import "../assets/css/RegistrarIncidencia.css";
 
 export default function RegistrarIncidencia() {
     const [descripcion, setDescripcion] = useState('');
+    const [imagenes, setImagenes] = useState([]);
     const [centerLocation, setCenterLocation] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [feedback, setFeedback] = useState({ error: '', success: '' });
+
+    const MAX_IMAGE_SIZE_MB = 5;
+
+    const fileToBase64 = (file) =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(new Error('No se pudo leer la imagen seleccionada.'));
+            reader.readAsDataURL(file);
+        });
+
+    const handleImagenesChange = (event) => {
+        const archivos = Array.from(event.target.files || []);
+
+        const imagenesInvalidas = archivos.some((archivo) => !archivo.type.startsWith('image/'));
+        if (imagenesInvalidas) {
+            setFeedback({ error: 'Solo puedes adjuntar archivos de imagen.', success: '' });
+            event.target.value = '';
+            return;
+        }
+
+        const imagenesGrandes = archivos.some((archivo) => archivo.size > MAX_IMAGE_SIZE_MB * 1024 * 1024);
+        if (imagenesGrandes) {
+            setFeedback({ error: `Cada imagen debe pesar menos de ${MAX_IMAGE_SIZE_MB} MB.`, success: '' });
+            event.target.value = '';
+            return;
+        }
+
+        setImagenes(archivos);
+        setFeedback((prev) => ({ ...prev, error: '' }));
+    };
 
     const {
         address,
@@ -58,11 +90,14 @@ export default function RegistrarIncidencia() {
                 return;
             }
 
+            const imagenesBase64 = await Promise.all(imagenes.map((imagen) => fileToBase64(imagen)));
+
             const incidenciaCreada = await api.crearIncidencia({
                 direccion: address || 'Ubicación sin dirección textual',
                 latitud,
                 longitud,
                 descripcion: trimmedDescription,
+                imagenes: imagenesBase64,
             });
 
             if (incidenciaCreada?.id != null) {
@@ -81,6 +116,7 @@ export default function RegistrarIncidencia() {
             }
 
             setDescripcion('');
+            setImagenes([]);
         } catch (error) {
             console.error('Error al crear incidencia:', error);
             setFeedback({ error: 'No se pudo registrar la incidencia. Inténtalo de nuevo.', success: '' });
@@ -116,6 +152,20 @@ export default function RegistrarIncidencia() {
 
 
                         <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Descripción de la incidencia..." style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '10px' }} rows={6} />
+
+                        <label style={{ display: 'block', marginBottom: '6px', fontWeight: 600 }}>Adjuntar imágenes</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleImagenesChange}
+                            style={{ marginBottom: '8px' }}
+                        />
+                        {imagenes.length > 0 && (
+                            <p style={{ margin: '0 0 10px 0', color: '#555', fontSize: '13px' }}>
+                                {imagenes.length} imagen(es) seleccionada(s)
+                            </p>
+                        )}
 
 
                         {warningPopup && (
