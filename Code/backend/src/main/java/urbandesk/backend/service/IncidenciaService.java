@@ -193,11 +193,6 @@ public class IncidenciaService {
         return incidenciaRepository.save(incidencia);
     }
 
-    public void eliminarIncidencia(Long id) {
-        Incidencia incidencia = obtenerPorId(id);
-        incidenciaRepository.delete(incidencia);
-    }
-
     public long contarPorEstado(Estado estado) {
         return incidenciaRepository.countByEstado(estado);
     }
