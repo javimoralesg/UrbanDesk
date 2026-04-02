@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -38,7 +39,7 @@ public class IncidenciaController {
         List<String> imagenes) {
     }
 
-    public record CambioEstadoRequest(String comentario) {
+    public record Comentario(String comentario) {
     }
 
     private Usuario getAuthenticatedUser(Principal principal) {
@@ -163,42 +164,34 @@ public class IncidenciaController {
         return ResponseEntity.ok(incidenciaActualizada);
     }
 
-    @PutMapping("/{id}/estado")
-    public ResponseEntity<Incidencia> cambiarEstado(
-            @PathVariable Long id,
-            @RequestParam Estado nuevoEstado,
-            @RequestBody(required = false) CambioEstadoRequest request,
-            Principal principal) {
-
-        String comentario = request != null ? request.comentario() : null;
-
-        if (nuevoEstado == Estado.VALIDADA || nuevoEstado == Estado.RECHAZADA) {
-            Usuario usuario = getAuthenticatedUser(principal);
-
-            if (!(usuario instanceof Operador operador)) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                        "Solo un operador autenticado puede validar o rechazar incidencias");
-            }
-
-            Incidencia incidencia = incidenciaService.obtenerPorId(id);
-            if (incidencia.getOperador() == null
-                    || !Objects.equals(incidencia.getOperador().getId(), operador.getId())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                        "La incidencia no está asignada a este operador");
-            }
-
-            if (nuevoEstado == Estado.RECHAZADA) {
-                String comentarioRechazo = comentario == null || comentario.isBlank()
-                        ? "Incidencia rechazada por el operador"
-                        : comentario;
-                return ResponseEntity.ok(incidenciaService.cambiarEstado(id, nuevoEstado, comentarioRechazo));
-            }
-
-            if (nuevoEstado == Estado.VALIDADA) {
-                return ResponseEntity.ok(incidenciaService.cambiarEstado(id, nuevoEstado));
-            }   
+    @PutMapping("/{id}/validar")
+    public ResponseEntity<Incidencia> validarIncidencia(@PathVariable Long id, Principal principal) {
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (usuario == null || !(usuario instanceof Operador)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo un operador autenticado puede validar una incidencia");
         }
-        return ResponseEntity.ok(incidenciaService.cambiarEstado(id, nuevoEstado));
+
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        if (incidencia.getOperador() == null || !Objects.equals(incidencia.getOperador().getId(), usuario.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La incidencia no está asignada a este operador");
+        }
+
+        return ResponseEntity.ok(incidenciaService.validarIncidencia(id));
+    }
+
+    @PutMapping("/{id}/rechazar")
+    public ResponseEntity<Incidencia> rechazarIncidencia(@PathVariable Long id, @RequestBody(required = false) Comentario request, Principal principal) {
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (usuario == null || !(usuario instanceof Operador)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo un operador autenticado puede rechazar una incidencia");
+        }
+
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        if (incidencia.getOperador() == null || !Objects.equals(incidencia.getOperador().getId(), usuario.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La incidencia no está asignada a este operador");
+        }
+
+        return ResponseEntity.ok(incidenciaService.rechazarIncidencia(id, request != null ? request.comentario() : null));
     }
 
     @PutMapping("/{id}/prioridad")

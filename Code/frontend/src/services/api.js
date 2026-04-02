@@ -160,7 +160,9 @@ export const api = {
     },
 
     obtenerIncidenciaPorId: async (id) => {
-        const response = await fetch(`${BASE_URL}/incidencias/${id}`);
+        const response = await fetch(`${BASE_URL}/incidencias/${id}`, {
+            headers: getAuthHeaders(),
+        });
 
         if (response.ok) {
         return await response.json();
@@ -285,6 +287,36 @@ export const api = {
 
         if (!response.ok) {
         throw new Error("Error al actualizar la incidencia");
+        }
+
+        return await response.json();
+    },
+
+    validarIncidencia: async (id) => {
+        const response = await fetch(`${BASE_URL}/incidencias/${id}/validar`, {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        });
+
+        if (!response.ok) {
+        throw new Error("Error al validar la incidencia");
+        }
+
+        return await response.json();
+    },
+
+    rechazarIncidencia: async (id, comentario = "") => {
+        const response = await fetch(`${BASE_URL}/incidencias/${id}/rechazar`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders(),
+        },
+        body: JSON.stringify({ comentario }),
+        });
+
+        if (!response.ok) {
+        throw new Error("Error al rechazar la incidencia");
         }
 
         return await response.json();

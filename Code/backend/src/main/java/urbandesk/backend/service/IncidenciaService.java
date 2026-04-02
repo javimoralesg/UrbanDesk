@@ -123,25 +123,45 @@ public class IncidenciaService {
         return incidenciaGuardada;
     }
 
-    public Incidencia cambiarEstado(Long id, Estado nuevoEstado, String comentario) {
+    public Incidencia validarIncidencia(Long id) {
         Incidencia incidencia = obtenerPorId(id);
-        incidencia.actualizarEstado(nuevoEstado);
+        incidencia.actualizarEstado(Estado.VALIDADA);
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                incidencia.getOperador(),
+                Estado.VALIDADA,
+                "Incidencia validada"
+        ));
+        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+        if (incidencia.getCiudadano() != null) {
+            MailService.enviarCambioEstado(
+                    incidencia.getCiudadano().getEmail(),
+                    incidencia.getId(),
+                    incidencia.getDescripcion(),
+                    Estado.VALIDADA);
+        }
+        return incidenciaGuardada;
+    }
+
+    public Incidencia rechazarIncidencia(Long id, String comentario) {
+        Incidencia incidencia = obtenerPorId(id);
+        incidencia.actualizarEstado(Estado.RECHAZADA);
         String observaciones = comentario == null || comentario.isBlank()
-            ? "Estado actualizado a " + nuevoEstado.name()
+            ? "Incidencia rechazada"
             : comentario;
         incidencia.agregarHistorial(new Historial(
                 incidencia,
                 incidencia.getOperador(),
-                nuevoEstado,
+                Estado.RECHAZADA,
                 observaciones
         ));
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
         if (incidencia.getCiudadano() != null) {
             MailService.enviarCambioEstado(
-                incidencia.getCiudadano().getEmail(),
-                incidencia.getId(),
-                incidencia.getDescripcion(),
-                nuevoEstado);
+                    incidencia.getCiudadano().getEmail(),
+                    incidencia.getId(),
+                    incidencia.getDescripcion(),
+                    Estado.RECHAZADA);
         }
         return incidenciaGuardada;
     }
