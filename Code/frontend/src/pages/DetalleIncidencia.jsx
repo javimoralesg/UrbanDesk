@@ -196,13 +196,20 @@ export default function DetalleIncidencia() {
       : []),
   ];
 
-  const historial =
-    incidencia?.historial && incidencia.historial.length > 0
-      ? incidencia.historial
-      : historialPorEstado;
+  const historial = useMemo(() => {
+    const historialApi = incidencia?.historiales ?? incidencia?.historial ?? [];
+
+    if (Array.isArray(historialApi) && historialApi.length > 0) {
+      return historialApi;
+    }
+
+    return historialPorEstado;
+  }, [incidencia, historialPorEstado]);
 
   const historialOrdenado = [...historial].sort(
-    (a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion)
+    (a, b) =>
+      new Date(b.fechaCambio || b.fechaCreacion || 0) -
+      new Date(a.fechaCambio || a.fechaCreacion || 0)
   );
 
   const formatearFecha = (fecha) => {
@@ -466,7 +473,7 @@ export default function DetalleIncidencia() {
                   <div className="circulo"></div>
 
                   <div className="contenedor-de-informacion">
-                    <span>{formatearFecha(entrada.fechaCreacion)}</span>
+                    <span>{formatearFecha(entrada.fechaCambio || entrada.fechaCreacion)}</span>
                     <strong>
                       {entrada.estadoNuevo?.replaceAll("_", " ")}
                     </strong>
