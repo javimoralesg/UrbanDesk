@@ -74,27 +74,27 @@ export default function DetalleIncidencia() {
 
   useEffect(() => {
     if (loading) {
-      setIncidenceList(prev => ([...prev, { id: 'loading', message: 'Cargando incidencia', type: 'waiting' }]));
+      setIncidenceList(prev => [...prev.filter(m => m.id !== 'loading'), { id: 'loading', message: 'Cargando incidencia', type: 'waiting' }]);
     }
     if (!loading) {
       setIncidenceList(prev => prev.filter(m => m.id !== 'loading'));
     }
     if (error) {
-      setIncidenceList(prev => ([...prev, { id: 'error', message: error, type: 'error' }]));
+      setIncidenceList(prev => [...prev.filter(m => m.id !== 'error'), { id: 'error', message: error, type: 'error' }]);
       setTimeout(() => {
         setIncidenceList(prev => prev.filter(m => m.id !== 'error'));
         setError(null);
       }, 5000);
     }
     if (success) {
-      setIncidenceList(prev => ([...prev, { id: 'success', message: success, type: 'success' }]));
+      setIncidenceList(prev => [...prev.filter(m => m.id !== 'success'), { id: 'success', message: success, type: 'success' }]);
       setTimeout(() => {
         setIncidenceList(prev => prev.filter(m => m.id !== 'success'));
         setSuccess(null);
       }, 5000);
     }
     if (working) {
-      setIncidenceList(prev => ([...prev, { id: 'working', message: working, type: 'waiting' }]));
+      setIncidenceList(prev => [...prev.filter(m => m.id !== 'working'), { id: 'working', message: working, type: 'waiting' }]);
     }
     if (!working) {
       setIncidenceList(prev => prev.filter(m => m.id !== 'working'));
@@ -233,21 +233,10 @@ export default function DetalleIncidencia() {
   const rechazarIncidencia = async () => {
     try {
       setWorking("Rechazando incidencia");
-      await api.rechazarIncidencia(id, observaciones);
+      const data = await api.rechazarIncidencia(id, observaciones);
       setWorking(null);
       setSuccess("Incidencia rechazada correctamente.");
-      setIncidencia((prev) => ({
-        ...prev,
-        estado: "RECHAZADA",
-        historial: [
-          ...(prev.historial || []),
-          {
-            fechaCreacion: new Date().toISOString(),
-            estadoNuevo: "RECHAZADA",
-            observaciones: observaciones || "Incidencia rechazada",
-          },
-        ],
-      }));
+      setIncidencia(data);
     } catch (err) {
       console.error("Error al rechazar incidencia:", err);
       setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
