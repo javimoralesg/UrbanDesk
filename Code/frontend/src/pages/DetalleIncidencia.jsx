@@ -17,7 +17,11 @@ export default function DetalleIncidencia() {
   const [working, setWorking] = useState(null);
   const [success, setSuccess] = useState(null);
 
+  const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("MEDIA");
+  const [observaciones, setObservaciones] = useState("");
+
   const [incidenceList, setIncidenceList] = useState([]);
+
 
   const rol = useMemo(() => {
     const rawUser = localStorage.getItem("user");
@@ -209,12 +213,14 @@ export default function DetalleIncidencia() {
   const validarIncidencia = async () => {
     try {
       setWorking("Validando incidencia");
-      await api.validarIncidencia(id, "Validada por el operador.");
+      await api.cambiarPrioridadIncidencia(id, prioridadSeleccionada);
+      await api.validarIncidencia(id, observaciones);
       setWorking(null);
       setSuccess("Incidencia validada correctamente.");
       setIncidencia((prev) => ({
         ...prev,
         estado: "VALIDADA",
+        prioridad: prioridadSeleccionada,
         historial: [
           ...(prev.historial || []),
           {
@@ -341,6 +347,31 @@ export default function DetalleIncidencia() {
               </div>
 
               {estado === "CREADA" && rol === "OPERADOR" && (
+                <div className="detalle-incidencia__form-card">
+                  <h4 className="detalle-incidencia__form-title">Validar incidencia</h4>
+
+                <div className="detalle-incidencia__form-group">
+                    <label>Prioridad</label>
+                    <select
+                        value={prioridadSeleccionada}
+                        onChange={(e) => setPrioridadSeleccionada(e.target.value)}
+                    >
+                        <option value="URGENTE">Urgente</option>
+                        <option value="ALTA">Alta</option>
+                        <option value="MEDIA">Media</option>
+                        <option value="BAJA">Baja</option>
+                    </select>
+                </div>
+
+                <div className="detalle-incidencia__form-group">
+                    <label>Observaciones</label>
+                    <textarea
+                        placeholder="Añade observaciones sobre la validación..."
+                        value={observaciones}
+                        onChange={(e) => setObservaciones(e.target.value)}
+                    />
+                </div>
+
                 <div className="detalle-incidencia__actions">
                   <button onClick={() => validarIncidencia()}>
                     Validar
@@ -349,6 +380,7 @@ export default function DetalleIncidencia() {
                     Rechazar
                   </button>
                 </div>
+          </div>
               )}
 
               {estado === "VALIDADA" && rol === "OPERADOR" && (

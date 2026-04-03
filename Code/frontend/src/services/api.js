@@ -293,10 +293,14 @@ export const api = {
         return await response.json();
     },
 
-    validarIncidencia: async (id) => {
+    validarIncidencia: async (id, observaciones = "") => {
         const response = await fetch(`${BASE_URL}/incidencias/${id}/validar`, {
             method: "PUT",
-            headers: getAuthHeaders(),
+            headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders(),
+        },
+        body: JSON.stringify({ observaciones }),
         });
 
         if (!response.ok) {
