@@ -4,9 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import urbandesk.backend.domain.user.Especialidad;
 import urbandesk.backend.repository.UsuarioRepository;
 import urbandesk.backend.service.UsuarioService;
+import urbandesk.backend.service.IncidenciaService;
+import urbandesk.backend.domain.incidence.Ubicacion;
 
 @Component
 @RequiredArgsConstructor
@@ -14,11 +18,12 @@ public class DataInitializer implements ApplicationRunner {
 
     private final UsuarioService usuarioService;
     private final UsuarioRepository usuarioRepository;
+    private final IncidenciaService incidenciaService;
 
     @Override
     public void run(ApplicationArguments args) {
         crearCiudadano();
-        crearOperador("operador1@urbandesk.com", 8);
+        crearOperador("operador1@urbandesk.com", 7);
         crearOperador("operador2@urbandesk.com", 10);
         crearOperador("operador3@urbandesk.com", 5);
         crearTecnicoElectricista();
@@ -26,6 +31,9 @@ public class DataInitializer implements ApplicationRunner {
         crearTecnicoJardinero();
         crearTecnicoAlbanil();
         crearTecnicoPintor();
+        crearIncidencia(1L);
+        crearIncidencia(2L);
+        crearIncidencia(3L);
     }
 
     private void crearCiudadano() {
@@ -75,6 +83,15 @@ public class DataInitializer implements ApplicationRunner {
         if (usuarioRepository.findByEmail(email).isEmpty()) {
             usuarioService.registrarTecnico("Pintor", email, "pintor", Especialidad.PINTOR);
         }
+    }
+
+    public void crearIncidencia(Long id) {
+        Ubicacion ubicacion = new Ubicacion("Calle Falsa 123", 40.4168, -3.7038);
+        String descripcion = "Farola rota en la calle";
+        Long ciudadanoId = 1L; // ID del ciudadano previamente creado
+        Long operadorId = 2L; // ID del operador previamente creado
+        incidenciaService.crearIncidencia(ubicacion, descripcion, ciudadanoId, null);
+        incidenciaService.asignarOperador(id, operadorId);
     }
 
 }
