@@ -226,7 +226,7 @@ export default function DetalleIncidencia() {
           {
             fechaCreacion: new Date().toISOString(),
             estadoNuevo: "VALIDADA",
-            observaciones: "Validada por el operador.",
+            observaciones: observaciones || "Incidencia validada",
           },
         ],
       }));
@@ -239,7 +239,7 @@ export default function DetalleIncidencia() {
   const rechazarIncidencia = async () => {
     try {
       setWorking("Rechazando incidencia");
-      await api.rechazarIncidencia(id, "La incidencia ha sido rechazada por el operador.");
+      await api.rechazarIncidencia(id, observaciones);
       setWorking(null);
       setSuccess("Incidencia rechazada correctamente.");
       setIncidencia((prev) => ({
@@ -250,7 +250,7 @@ export default function DetalleIncidencia() {
           {
             fechaCreacion: new Date().toISOString(),
             estadoNuevo: "RECHAZADA",
-            observaciones: "Rechazada por el operador.",
+            observaciones: observaciones || "Incidencia rechazada",
           },
         ],
       }));

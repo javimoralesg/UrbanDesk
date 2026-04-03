@@ -165,7 +165,7 @@ public class IncidenciaController {
     }
 
     @PutMapping("/{id}/validar")
-    public ResponseEntity<Incidencia> validarIncidencia(@PathVariable Long id, Principal principal) {
+    public ResponseEntity<Incidencia> validarIncidencia(@PathVariable Long id, @RequestBody(required = false) Comentario request, Principal principal) {
         Usuario usuario = getAuthenticatedUser(principal);
         if (usuario == null || !(usuario instanceof Operador)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo un operador autenticado puede validar una incidencia");
@@ -176,7 +176,7 @@ public class IncidenciaController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La incidencia no está asignada a este operador");
         }
 
-        return ResponseEntity.ok(incidenciaService.validarIncidencia(id));
+        return ResponseEntity.ok(incidenciaService.validarIncidencia(id, request != null ? request.comentario() : null));
     }
 
     @PutMapping("/{id}/rechazar")

@@ -91,14 +91,17 @@ public class IncidenciaService {
         return incidenciaRepository.save(incidencia);
     }
 
-    public Incidencia validarIncidencia(Long id) {
+    public Incidencia validarIncidencia(Long id, String comentario) {
         Incidencia incidencia = obtenerPorId(id);
         incidencia.actualizarEstado(Estado.VALIDADA);
+        String observaciones = comentario == null || comentario.isBlank()
+            ? "Incidencia validada"
+            : comentario;
         incidencia.agregarHistorial(new Historial(
                 incidencia,
                 incidencia.getOperador(),
                 Estado.VALIDADA,
-                "Incidencia validada"
+                observaciones
         ));
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
         if (incidencia.getCiudadano() != null) {

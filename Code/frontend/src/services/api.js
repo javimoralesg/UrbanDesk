@@ -293,14 +293,14 @@ export const api = {
         return await response.json();
     },
 
-    validarIncidencia: async (id, observaciones = "") => {
+    validarIncidencia: async (id, comentario = "Validada por el operador.") => {
         const response = await fetch(`${BASE_URL}/incidencias/${id}/validar`, {
             method: "PUT",
             headers: {
             "Content-Type": "application/json",
             ...getAuthHeaders(),
         },
-        body: JSON.stringify({ observaciones }),
+        body: JSON.stringify({ comentario }),
         });
 
         if (!response.ok) {
@@ -310,7 +310,7 @@ export const api = {
         return await response.json();
     },
 
-    rechazarIncidencia: async (id, comentario = "") => {
+    rechazarIncidencia: async (id, comentario = "Rechazada por el operador.") => {
         const response = await fetch(`${BASE_URL}/incidencias/${id}/rechazar`, {
             method: "PUT",
             headers: {
