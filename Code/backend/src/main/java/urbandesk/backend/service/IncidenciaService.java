@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,9 @@ public class IncidenciaService {
         return incidenciaRepository.findByTecnicos_Id(tecnicoId);
     }
 
-    public Incidencia crearIncidencia(Ubicacion ubicacion, String descripcion, Long ciudadanoId, List<String> imagenes) {
+    @Transactional
+    public Incidencia crearIncidencia(Ubicacion ubicacion, String descripcion, Long ciudadanoId,
+            List<String> imagenes) {
         Ciudadano ciudadano = null;
 
         if (ciudadanoId != null) {
@@ -71,16 +74,17 @@ public class IncidenciaService {
             }
         }
         incidencia.agregarHistorial(new Historial(
-            incidencia,
-            ciudadano,
-            Estado.CREADA,
-            "Incidencia creada"
-        ));
+                incidencia,
+                ciudadano,
+                Estado.CREADA,
+                "Incidencia creada"));
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
 
         if (ciudadano != null) {
             MailService.enviarIncidenciaCreada(ciudadano.getEmail(), incidenciaGuardada.getId(), ciudadano.getNombre());
         }
+
+        asignarOperadorAutomatico(incidenciaGuardada.getId());
 
         return incidenciaGuardada;
     }
@@ -91,19 +95,37 @@ public class IncidenciaService {
         return incidenciaRepository.save(incidencia);
     }
 
-    public Incidencia validarIncidencia(Long id, String comentario) {
-        Incidencia incidencia = obtenerPorId(id);
+    public Incidencia validarIncidencia(Long incidenciaId, Long operadorId, String observaciones, String prioridadStr) {
+        Incidencia incidencia = obtenerPorId(incidenciaId);
+
+        if (prioridadStr == null || prioridadStr.isBlank()) {
+            throw new DomainRuleViolation("Debe asignar una prioridad al validar la incidencia.");
+        }
+        try {
+            Prioridad prioridad = Prioridad.valueOf(prioridadStr);
+            if (prioridad == Prioridad.SIN_ASIGNAR) {
+                throw new DomainRuleViolation("Debe seleccionar una prioridad válida.");
+            }
+            incidencia.asignarPrioridad(prioridad);
+        } catch (IllegalArgumentException e) {
+            throw new DomainRuleViolation("Prioridad no válida: " + prioridadStr);
+        }
+
         incidencia.actualizarEstado(Estado.VALIDADA);
-        String observaciones = comentario == null || comentario.isBlank()
-            ? "Incidencia validada"
-            : comentario;
+
+        String hayObservaciones = observaciones == null || observaciones.isBlank() ? "."
+                : ". Observaciones del operador: " + observaciones;
+
+        String observacionFinal = "Incidencia validada con una prioridad: " + prioridadStr + hayObservaciones;
+
         incidencia.agregarHistorial(new Historial(
                 incidencia,
                 incidencia.getOperador(),
                 Estado.VALIDADA,
-                observaciones
-        ));
+                observacionFinal));
+
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+
         if (incidencia.getCiudadano() != null) {
             MailService.enviarCambioEstado(
                     incidencia.getCiudadano().getEmail(),
@@ -117,15 +139,17 @@ public class IncidenciaService {
     public Incidencia rechazarIncidencia(Long id, String comentario) {
         Incidencia incidencia = obtenerPorId(id);
         incidencia.actualizarEstado(Estado.RECHAZADA);
-        String observaciones = comentario == null || comentario.isBlank()
-            ? "Incidencia rechazada"
-            : comentario;
+
+        String hayObservaciones = comentario == null || comentario.isBlank() ? "."
+                : ". Observaciones del operador:" + comentario;
+
+        String observacionFinal = "Incidencia rechazada" + hayObservaciones;
+
         incidencia.agregarHistorial(new Historial(
                 incidencia,
                 incidencia.getOperador(),
                 Estado.RECHAZADA,
-                observaciones
-        ));
+                observacionFinal));
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
         if (incidencia.getCiudadano() != null) {
             MailService.enviarCambioEstado(
@@ -137,24 +161,7 @@ public class IncidenciaService {
         return incidenciaGuardada;
     }
 
-    public Incidencia asignarOperador(Long incidenciaId, Long operadorId) {
-        Incidencia incidencia = obtenerPorId(incidenciaId);
-
-        Usuario usuario = usuarioRepository.findById(operadorId)
-                .orElseThrow(() -> new DomainRuleViolation("Usuario no encontrado"));
-
-        if (!(usuario instanceof Operador)) {
-            throw new DomainRuleViolation("El usuario no es un operador");
-        }
-
-        Operador operador = (Operador) usuario;
-        if (!operador.tieneDisponibilidad()) {
-            throw new DomainRuleViolation("El operador ha alcanzado su capacidad máxima de trabajo.");
-        }
-
-        return reasignarOperador(incidencia, operador);
-    }
-
+    @Transactional
     public Incidencia asignarOperadorAutomatico(Long incidenciaId) {
         Incidencia incidencia = obtenerPorId(incidenciaId);
 
@@ -167,26 +174,20 @@ public class IncidenciaService {
                         .thenComparing(Operador::getId))
                 .orElseThrow(() -> new DomainRuleViolation("No hay operadores disponibles para asignar"));
 
-        return reasignarOperador(incidencia, operadorConMenorCarga);
-    }
+        operadorConMenorCarga.incrementarCarga();
+        usuarioRepository.save(operadorConMenorCarga);
 
-    private Incidencia reasignarOperador(Incidencia incidencia, Operador nuevoOperador) {
-        Operador operadorActual = incidencia.getOperador();
+        incidencia.asignarOperador(operadorConMenorCarga);
 
-        if (operadorActual != null && Objects.equals(operadorActual.getId(), nuevoOperador.getId())) {
-            return incidencia;
-        }
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                operadorConMenorCarga,
+                Estado.CREADA,
+                "Incidencia asignada a un operador"));
 
-        if (operadorActual != null) {
-            operadorActual.decrementarCarga();
-            usuarioRepository.save(operadorActual);
-        }
+        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
 
-        nuevoOperador.incrementarCarga();
-        usuarioRepository.save(nuevoOperador);
-
-        incidencia.asignarOperador(nuevoOperador);
-        return incidenciaRepository.save(incidencia);
+        return incidenciaGuardada;
     }
 
     public Incidencia asignarTecnico(Long incidenciaId, Long tecnicoId) {
@@ -217,11 +218,4 @@ public class IncidenciaService {
         return incidenciaRepository.save(incidencia);
     }
 
-    public Incidencia cambiarPrioridad(Long id, Prioridad prioridad) {
-        Incidencia incidencia = obtenerPorId(id);
-        incidencia.asignarPrioridad(prioridad);
-        return incidenciaRepository.save(incidencia);
-    }
 }
-
-

@@ -220,23 +220,10 @@ export default function DetalleIncidencia() {
   const validarIncidencia = async () => {
     try {
       setWorking("Validando incidencia");
-      await api.cambiarPrioridadIncidencia(id, prioridadSeleccionada);
-      await api.validarIncidencia(id, observaciones);
+      const data = await api.validarIncidencia(id, observaciones, prioridadSeleccionada);
       setWorking(null);
       setSuccess("Incidencia validada correctamente.");
-      setIncidencia((prev) => ({
-        ...prev,
-        estado: "VALIDADA",
-        prioridad: prioridadSeleccionada,
-        historial: [
-          ...(prev.historial || []),
-          {
-            fechaCreacion: new Date().toISOString(),
-            estadoNuevo: "VALIDADA",
-            observaciones: observaciones || "Incidencia validada",
-          },
-        ],
-      }));
+      setIncidencia(data);
     } catch (err) {
       console.error("Error al validar incidencia:", err);
       setError("No se pudo validar la incidencia. Inténtalo de nuevo.");
@@ -357,37 +344,37 @@ export default function DetalleIncidencia() {
                 <div className="detalle-incidencia__form-card">
                   <h4 className="detalle-incidencia__form-title">Validar incidencia</h4>
 
-                <div className="detalle-incidencia__form-group">
+                  <div className="detalle-incidencia__form-group">
                     <label>Prioridad</label>
                     <select
-                        value={prioridadSeleccionada}
-                        onChange={(e) => setPrioridadSeleccionada(e.target.value)}
+                      value={prioridadSeleccionada}
+                      onChange={(e) => setPrioridadSeleccionada(e.target.value)}
                     >
-                        <option value="URGENTE">Urgente</option>
-                        <option value="ALTA">Alta</option>
-                        <option value="MEDIA">Media</option>
-                        <option value="BAJA">Baja</option>
+                      <option value="URGENTE">Urgente</option>
+                      <option value="ALTA">Alta</option>
+                      <option value="MEDIA">Media</option>
+                      <option value="BAJA">Baja</option>
                     </select>
-                </div>
+                  </div>
 
-                <div className="detalle-incidencia__form-group">
+                  <div className="detalle-incidencia__form-group">
                     <label>Observaciones</label>
                     <textarea
-                        placeholder="Añade observaciones sobre la validación..."
-                        value={observaciones}
-                        onChange={(e) => setObservaciones(e.target.value)}
+                      placeholder="Añade observaciones sobre la validación..."
+                      value={observaciones}
+                      onChange={(e) => setObservaciones(e.target.value)}
                     />
-                </div>
+                  </div>
 
-                <div className="detalle-incidencia__actions">
-                  <button onClick={() => validarIncidencia()}>
-                    Validar
-                  </button>
-                  <button onClick={() => rechazarIncidencia()}>
-                    Rechazar
-                  </button>
+                  <div className="detalle-incidencia__actions">
+                    <button onClick={() => validarIncidencia()}>
+                      Validar
+                    </button>
+                    <button onClick={() => rechazarIncidencia()}>
+                      Rechazar
+                    </button>
+                  </div>
                 </div>
-          </div>
               )}
 
               {estado === "VALIDADA" && rol === "OPERADOR" && (

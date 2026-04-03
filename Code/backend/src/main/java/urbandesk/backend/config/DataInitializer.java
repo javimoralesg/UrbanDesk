@@ -49,7 +49,6 @@ public class DataInitializer implements ApplicationRunner {
         }
     }
 
-
     private void crearTecnicoElectricista() {
         String email = "electricista@urbandesk.com";
         if (usuarioRepository.findByEmail(email).isEmpty()) {
@@ -89,9 +88,7 @@ public class DataInitializer implements ApplicationRunner {
         Ubicacion ubicacion = new Ubicacion("Calle Falsa 123", 40.4168, -3.7038);
         String descripcion = "Farola rota en la calle";
         Long ciudadanoId = 1L; // ID del ciudadano previamente creado
-        Long operadorId = 2L; // ID del operador previamente creado
         incidenciaService.crearIncidencia(ubicacion, descripcion, ciudadanoId, null);
-        incidenciaService.asignarOperador(id, operadorId);
     }
 
 }

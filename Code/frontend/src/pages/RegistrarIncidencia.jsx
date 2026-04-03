@@ -151,14 +151,14 @@ export default function RegistrarIncidencia() {
             setError(null);
             setSuccess(null);
 
-            const response = await api.validateDescription(descripcion);
+            /* const response = await api.validateDescription(descripcion);
             const parsedResponse = JSON.parse(response);
             if (!parsedResponse.valid) {
 
                 setError(parsedResponse.reason || 'La descripción parece no ser válida para una incidencia urbana. Por favor, revisa y corrige la descripción.');
                 setIsSubmitting(false);
                 return;
-            }
+            } */
 
             const imagenesBase64 = await Promise.all(imagenes.map((imagen) => fileToBase64(imagen)));
 
@@ -171,13 +171,7 @@ export default function RegistrarIncidencia() {
             });
 
             if (incidenciaCreada?.id != null) {
-                try {
-                    await api.asignarOperadorIncidencia(incidenciaCreada.id);
-                    setSuccess('Incidencia registrada y operador asignado automáticamente.');
-                } catch (assignError) {
-                    console.error('Incidencia creada, pero no se pudo asignar operador automáticamente:', assignError);
-                    setSuccess('Incidencia registrada, pero no se pudo asignar operador automáticamente.');
-                }
+                setSuccess('Incidencia registrada correctamente.');
             } else {
                 setError('No se pudo registrar la incidencia. Inténtalo de nuevo.');
             }

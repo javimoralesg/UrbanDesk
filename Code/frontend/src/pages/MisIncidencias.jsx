@@ -179,13 +179,7 @@ export default function MisIncidencias() {
 
         let data = [];
 
-        if (rol === "OPERADOR") {
-          data = await api.obtenerIncidenciasPorOperador(user.id);
-        } else if (rol === "TECNICO") {
-          data = await api.obtenerIncidenciasPorTecnico(user.id);
-        } else if (rol === "CIUDADANO") {
-          data = await api.obtenerIncidenciasPorCiudadano(user.id);
-        }
+        data = await api.getIncidents();
 
         if (Array.isArray(data) && data.length > 0) {
           setMisIncidencias(data);

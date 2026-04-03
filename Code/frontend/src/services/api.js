@@ -108,8 +108,6 @@ export const api = {
     },
 
 
-
-
     // llamadas a la api de IA 
     validateDescription: async (descripcion) => {
         const response = await fetch("https://urbandeskvalidate-g475okyxfq-uc.a.run.app", {
@@ -150,15 +148,6 @@ export const api = {
         return response
     },
 
-    obtenerTodasIncidencias: async () => {
-        const response = await fetch(`${BASE_URL}/incidencias`);
-
-        if (!response.ok) {
-            throw new Error("Error al obtener todas las incidencias");
-        }
-
-        return await response.json();
-    },
 
     obtenerIncidenciaPorId: async (id) => {
         const response = await fetch(`${BASE_URL}/incidencias/${id}`, {
@@ -189,62 +178,6 @@ export const api = {
         error.status = response.status;
         error.message = message;
         throw error;
-    },
-
-    obtenerIncidenciasPorEstado: async (estado) => {
-        const response = await fetch(`${BASE_URL}/incidencias/estado/${estado}`);
-
-        if (!response.ok) {
-            throw new Error("Error al obtener incidencias por estado");
-        }
-
-        return await response.json();
-    },
-
-    obtenerIncidenciasPorCiudadano: async (idCiudadano) => {
-        const response = await fetch(`${BASE_URL}/incidencias/ciudadano/${idCiudadano}`, {
-            headers: getAuthHeaders(),
-        });
-
-        if (!response.ok) {
-            throw new Error("Error al obtener incidencias del ciudadano");
-        }
-
-        return await response.json();
-    },
-
-    obtenerIncidenciasPorOperador: async (idOperador) => {
-        const response = await fetch(`${BASE_URL}/incidencias/operador/${idOperador}`, {
-            headers: getAuthHeaders(),
-        });
-
-        if (!response.ok) {
-            throw new Error("Error al obtener incidencias del operador");
-        }
-
-        return await response.json();
-    },
-
-    obtenerIncidenciasPorPrioridad: async (prioridad) => {
-        const response = await fetch(`${BASE_URL}/incidencias/prioridad/${prioridad}`);
-
-        if (!response.ok) {
-            throw new Error("Error al obtener incidencias por prioridad");
-        }
-
-        return await response.json();
-    },
-
-    obtenerIncidenciasPorTecnico: async (tecnicoId) => {
-        const response = await fetch(`${BASE_URL}/incidencias/tecnico/${tecnicoId}`, {
-            headers: getAuthHeaders(),
-        });
-
-        if (!response.ok) {
-            throw new Error("Error al obtener incidencias del técnico");
-        }
-
-        return await response.json();
     },
 
     crearIncidencia: async ({ direccion, latitud, longitud, descripcion, ciudadanoId, imagenes = [] }) => {
@@ -293,21 +226,22 @@ export const api = {
         return await response.json();
     },
 
-    validarIncidencia: async (id, comentario = "Validada por el operador.") => {
-        const response = await fetch(`${BASE_URL}/incidencias/${id}/validar`, {
+    validarIncidencia: async (id, observaciones, prioridad) => {
+        const params = new URLSearchParams({ observaciones, prioridad });
+
+        const response = await fetch(`${BASE_URL}/incidencias/${id}/validar?${params.toString()}`, {
             method: "PUT",
             headers: {
-            "Content-Type": "application/json",
-            ...getAuthHeaders(),
-        },
-        body: JSON.stringify({ comentario }),
+                "Content-Type": "application/json",
+                ...getAuthHeaders(),
+            },
         });
 
         if (!response.ok) {
             throw new Error("Error al validar la incidencia");
         }
 
-        return await response.json();
+        return parseJsonOrThrow(response);
     },
 
     rechazarIncidencia: async (id, comentario = "Rechazada por el operador.") => {
@@ -322,42 +256,6 @@ export const api = {
 
         if (!response.ok) {
             throw new Error("Error al rechazar la incidencia");
-        }
-
-        return await response.json();
-    },
-
-    cambiarPrioridadIncidencia: async (id, prioridad) => {
-        const response = await fetch(
-            `${BASE_URL}/incidencias/${id}/prioridad?prioridad=${prioridad}`,
-            {
-                method: "PUT",
-                headers: getAuthHeaders(),
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error("Error al cambiar la prioridad");
-        }
-
-        return await response.json();
-    },
-
-    asignarOperadorIncidencia: async (id, operadorId = null) => {
-        const endpoint = operadorId == null
-            ? `${BASE_URL}/incidencias/${id}/operador`
-            : `${BASE_URL}/incidencias/${id}/operador/${operadorId}`;
-
-        const response = await fetch(
-            endpoint,
-            {
-                method: "PUT",
-                headers: getAuthHeaders(),
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error("Error al asignar operador");
         }
 
         return await response.json();

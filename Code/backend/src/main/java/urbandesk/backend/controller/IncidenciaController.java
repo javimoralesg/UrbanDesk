@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
+import urbandesk.backend.domain.DomainRuleViolation;
 import urbandesk.backend.domain.incidence.Estado;
 import urbandesk.backend.domain.incidence.Incidencia;
 import urbandesk.backend.domain.incidence.Prioridad;
@@ -32,11 +33,11 @@ public class IncidenciaController {
     private final UsuarioService usuarioService;
 
     public record IncidenciaRequest(
-        String direccion,
-        Double latitud,
-        Double longitud,
-        String descripcion,
-        List<String> imagenes) {
+            String direccion,
+            Double latitud,
+            Double longitud,
+            String descripcion,
+            List<String> imagenes) {
     }
 
     public record Comentario(String comentario) {
@@ -52,14 +53,14 @@ public class IncidenciaController {
     public ResponseEntity<List<Incidencia>> obtenerTodas(Principal principal) {
         Usuario usuario = getAuthenticatedUser(principal);
         if (usuario == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Debes estar autenticado para ver las incidencias");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    "Debes estar autenticado para ver las incidencias");
         }
         if (usuario instanceof Ciudadano) {
             return ResponseEntity.ok(incidenciaService.obtenerPorCiudadano(usuario.getId()));
-        }
-        else if (usuario instanceof Operador) {
+        } else if (usuario instanceof Operador) {
             return ResponseEntity.ok(incidenciaService.obtenerPorOperador(usuario.getId()));
-        } else{
+        } else {
             return ResponseEntity.ok(incidenciaService.obtenerPorTecnico(usuario.getId()));
         }
     }
@@ -68,15 +69,18 @@ public class IncidenciaController {
     public ResponseEntity<Incidencia> obtenerPorId(@PathVariable Long id, Principal principal) {
         Usuario usuario = getAuthenticatedUser(principal);
         if (usuario == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Debes estar autenticado para ver las incidencias");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    "Debes estar autenticado para ver las incidencias");
         }
         Incidencia incidencia = incidenciaService.obtenerPorId(id);
         if (usuario instanceof Ciudadano ciudadano) {
-            if (incidencia.getCiudadano() == null || !Objects.equals(incidencia.getCiudadano().getId(), ciudadano.getId())) {
+            if (incidencia.getCiudadano() == null
+                    || !Objects.equals(incidencia.getCiudadano().getId(), ciudadano.getId())) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta incidencia");
             }
         } else if (usuario instanceof Operador operador) {
-            if (incidencia.getOperador() == null || !Objects.equals(incidencia.getOperador().getId(), operador.getId())) {
+            if (incidencia.getOperador() == null
+                    || !Objects.equals(incidencia.getOperador().getId(), operador.getId())) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta incidencia");
             }
         } else if (usuario instanceof Tecnico tecnico) {
@@ -89,24 +93,6 @@ public class IncidenciaController {
         return ResponseEntity.ok(incidenciaService.obtenerPorId(id));
     }
 
-    @GetMapping("/ciudadano/{ciudadanoId}")
-    public ResponseEntity<List<Incidencia>> obtenerPorCiudadano(@PathVariable Long ciudadanoId, Principal principal) {
-        Usuario usuario = getAuthenticatedUser(principal);
-        if (usuario == null || !Objects.equals(usuario.getId(), ciudadanoId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver las incidencias de otro usuario");
-        }
-        return ResponseEntity.ok(incidenciaService.obtenerPorCiudadano(ciudadanoId));
-    }
-
-    @GetMapping("/operador/{operadorId}")
-    public ResponseEntity<List<Incidencia>> obtenerPorOperador(@PathVariable Long operadorId, Principal principal) {
-        Usuario usuario = getAuthenticatedUser(principal);
-        if (usuario == null || !Objects.equals(usuario.getId(), operadorId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver las incidencias de otro operador");
-        }
-        return ResponseEntity.ok(incidenciaService.obtenerPorOperador(operadorId));
-    }
-
     @PostMapping
     public ResponseEntity<?> crearIncidencia(@RequestBody IncidenciaRequest request, Principal principal) {
 
@@ -114,17 +100,15 @@ public class IncidenciaController {
         Long usuarioId = usuario != null ? usuario.getId() : null;
 
         Ubicacion ubicacion = new Ubicacion(
-            request.direccion(),
-            request.latitud(),
-            request.longitud()
-        );
+                request.direccion(),
+                request.latitud(),
+                request.longitud());
 
         Incidencia incidencia = incidenciaService.crearIncidencia(
-            ubicacion,
-            request.descripcion(),
-            usuarioId,
-            request.imagenes()
-        );
+                ubicacion,
+                request.descripcion(),
+                usuarioId,
+                request.imagenes());
 
         return ResponseEntity.ok(incidencia);
     }
@@ -137,7 +121,8 @@ public class IncidenciaController {
 
         Usuario usuario = getAuthenticatedUser(principal);
         if (usuario == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Debes estar autenticado para editar una incidencia");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    "Debes estar autenticado para editar una incidencia");
         }
 
         Incidencia incidencia = incidenciaService.obtenerPorId(id);
@@ -146,44 +131,47 @@ public class IncidenciaController {
         }
 
         if (incidencia.getEstado() != Estado.CREADA) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solo se pueden editar las incidencias en estado CREADA");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Solo se pueden editar las incidencias en estado CREADA");
         }
 
         Ubicacion nuevaUbicacion = new Ubicacion(
-                request.direccion() != null && !request.direccion().isBlank() ? request.direccion() : incidencia.getUbicacion().getDireccion(),
+                request.direccion() != null && !request.direccion().isBlank() ? request.direccion()
+                        : incidencia.getUbicacion().getDireccion(),
                 request.latitud() != null ? request.latitud() : incidencia.getUbicacion().getLatitud(),
-                request.longitud() != null ? request.longitud() : incidencia.getUbicacion().getLongitud()
-        );
+                request.longitud() != null ? request.longitud() : incidencia.getUbicacion().getLongitud());
 
         Incidencia incidenciaActualizada = incidenciaService.actualizarIncidencia(
                 id,
                 nuevaUbicacion,
-                request.descripcion() != null && !request.descripcion().isBlank() ? request.descripcion() : incidencia.getDescripcion()
-        );
+                request.descripcion() != null && !request.descripcion().isBlank() ? request.descripcion()
+                        : incidencia.getDescripcion());
 
         return ResponseEntity.ok(incidenciaActualizada);
     }
 
     @PutMapping("/{id}/validar")
-    public ResponseEntity<Incidencia> validarIncidencia(@PathVariable Long id, @RequestBody(required = false) Comentario request, Principal principal) {
+    public ResponseEntity<Incidencia> validarIncidencia(
+            @PathVariable Long id,
+            @RequestParam String observaciones,
+            @RequestParam String prioridad,
+            Principal principal) {
+
         Usuario usuario = getAuthenticatedUser(principal);
-        if (usuario == null || !(usuario instanceof Operador)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo un operador autenticado puede validar una incidencia");
-        }
+        if ((!(usuario instanceof Operador)))
+            throw new DomainRuleViolation("Solo los operadores pueden validar incidencias.");
 
-        Incidencia incidencia = incidenciaService.obtenerPorId(id);
-        if (incidencia.getOperador() == null || !Objects.equals(incidencia.getOperador().getId(), usuario.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La incidencia no está asignada a este operador");
-        }
-
-        return ResponseEntity.ok(incidenciaService.validarIncidencia(id, request != null ? request.comentario() : null));
+        return ResponseEntity
+                .ok(incidenciaService.validarIncidencia(id, usuario.getId(), observaciones, prioridad));
     }
 
     @PutMapping("/{id}/rechazar")
-    public ResponseEntity<Incidencia> rechazarIncidencia(@PathVariable Long id, @RequestBody(required = false) Comentario request, Principal principal) {
+    public ResponseEntity<Incidencia> rechazarIncidencia(@PathVariable Long id,
+            @RequestBody(required = false) Comentario request, Principal principal) {
         Usuario usuario = getAuthenticatedUser(principal);
         if (usuario == null || !(usuario instanceof Operador)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo un operador autenticado puede rechazar una incidencia");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Solo un operador autenticado puede rechazar una incidencia");
         }
 
         Incidencia incidencia = incidenciaService.obtenerPorId(id);
@@ -191,41 +179,8 @@ public class IncidenciaController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La incidencia no está asignada a este operador");
         }
 
-        return ResponseEntity.ok(incidenciaService.rechazarIncidencia(id, request != null ? request.comentario() : null));
-    }
-
-    @PutMapping("/{id}/prioridad")
-    public ResponseEntity<Incidencia> cambiarPrioridad(
-            @PathVariable Long id,
-            @RequestParam Prioridad prioridad,
-            Principal principal) {
-        
-        Usuario usuario = getAuthenticatedUser(principal);
-        if (!(usuario instanceof Operador operador)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Solo un operador autenticado puede cambiar la prioridad de una incidencia");
-        }
-        
-        Incidencia incidencia = incidenciaService.obtenerPorId(id);
-        if (incidencia.getOperador() == null
-                || !Objects.equals(incidencia.getOperador().getId(), operador.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "La incidencia no está asignada a este operador");
-        }
-
-        return ResponseEntity.ok(incidenciaService.cambiarPrioridad(id, prioridad));
-    }
-
-    @PutMapping("/{id}/operador/{operadorId}")
-    public ResponseEntity<Incidencia> asignarOperador(
-            @PathVariable Long id,
-            @PathVariable Long operadorId) {
-        return ResponseEntity.ok(incidenciaService.asignarOperador(id, operadorId));
-    }
-
-    @PutMapping("/{id}/operador")
-    public ResponseEntity<Incidencia> asignarOperadorAutomatico(@PathVariable Long id) {
-        return ResponseEntity.ok(incidenciaService.asignarOperadorAutomatico(id));
+        return ResponseEntity
+                .ok(incidenciaService.rechazarIncidencia(id, request != null ? request.comentario() : null));
     }
 
     @PutMapping("/{id}/tecnico/{tecnicoId}")
