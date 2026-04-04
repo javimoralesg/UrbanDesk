@@ -17,7 +17,7 @@ export default function DetalleIncidencia() {
   const [working, setWorking] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("MEDIA");
+  const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("SIN ASIGNAR");
   const [observaciones, setObservaciones] = useState("");
 
   const [incidenceList, setIncidenceList] = useState([]);
@@ -218,6 +218,11 @@ export default function DetalleIncidencia() {
   };
 
   const validarIncidencia = async () => {
+    if (prioridadSeleccionada === "SIN_ASIGNAR") {
+        setError("Debes seleccionar una prioridad antes de validar.");
+        return;
+    }
+
     try {
       setWorking("Validando incidencia");
       const data = await api.validarIncidencia(id, observaciones, prioridadSeleccionada);
@@ -339,6 +344,7 @@ export default function DetalleIncidencia() {
                       value={prioridadSeleccionada}
                       onChange={(e) => setPrioridadSeleccionada(e.target.value)}
                     >
+                      <option value="SIN_ASIGNAR">Sin asignar</option>
                       <option value="URGENTE">Urgente</option>
                       <option value="ALTA">Alta</option>
                       <option value="MEDIA">Media</option>
