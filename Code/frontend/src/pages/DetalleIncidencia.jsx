@@ -232,6 +232,8 @@ export default function DetalleIncidencia() {
     } catch (err) {
       console.error("Error al validar incidencia:", err);
       setError("No se pudo validar la incidencia. Inténtalo de nuevo.");
+    } finally {
+      setWorking(null);
     }
   };
 
