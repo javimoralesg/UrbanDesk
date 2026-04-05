@@ -99,7 +99,6 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
     }
     if (!working || success || error) {
       setIncidenceList(prev => prev.filter(m => m.id !== 'working'));
-      setWorking(null);
     }
   }, [loading, error, success, working]);
 
@@ -225,9 +224,7 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
   }
 
   try {
-    setWorking("Validando incidencia");
     const data = await api.validarIncidencia(id, observaciones, prioridadSeleccionada);
-    setWorking(null);
     setSuccess("Incidencia validada correctamente.");
     setIncidencia(data);
     setFormularioAbierto(null);
@@ -236,8 +233,6 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
   } catch (err) {
     console.error("Error al validar incidencia:", err);
     setError("No se pudo validar la incidencia. Inténtalo de nuevo.");
-  } finally {
-    setWorking(null);
   }
 };
 
@@ -248,9 +243,7 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
   }
 
   try {
-    setWorking("Rechazando incidencia");
     const data = await api.rechazarIncidencia(id, observaciones);
-    setWorking(null);
     setSuccess("Incidencia rechazada correctamente.");
     setIncidencia(data);
     setFormularioAbierto(null);
@@ -259,9 +252,7 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
   } catch (err) {
     console.error("Error al rechazar incidencia:", err);
     setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
-  } finally {
-    setWorking(null);
-  }
+  } 
 };
 
 
