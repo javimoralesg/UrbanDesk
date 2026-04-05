@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import MapRegister, { useMapRegisterLogic } from '../components/MapRegister';
 import Recording from '../components/Recording';
 import Sidebar from '../components/Sidebar';
@@ -175,15 +175,20 @@ export default function RegistrarIncidencia() {
         });
     };
 
+    const imagenesRef = useRef(imagenes);
+    useEffect(() => {
+        imagenesRef.current = imagenes;
+    }, [imagenes]);
+
     useEffect(() => {
         return () => {
-            imagenes.forEach((img) => {
+            imagenesRef.current.forEach((img) => {
                 if (img.preview) {
                     URL.revokeObjectURL(img.preview);
                 }
             });
         };
-    }, [imagenes]);
+    }, []);
 
     const handleRegisterIncident = async () => {
         const trimmedDescription = descripcion.trim();
