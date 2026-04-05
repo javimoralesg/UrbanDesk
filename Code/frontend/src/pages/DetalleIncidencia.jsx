@@ -83,6 +83,8 @@ export default function DetalleIncidencia() {
     }
     if (error) {
       setIncidenceList(prev => [...prev.filter(m => m.id !== 'error'), { id: 'error', message: error, type: 'error' }]);
+      setSuccess(null);
+      setIncidenceList(prev => [...prev.filter(m => m.id !== 'success')]);
       setTimeout(() => {
         setIncidenceList(prev => prev.filter(m => m.id !== 'error'));
         setError(null);
@@ -90,6 +92,8 @@ export default function DetalleIncidencia() {
     }
     if (success) {
       setIncidenceList(prev => [...prev.filter(m => m.id !== 'success'), { id: 'success', message: success, type: 'success' }]);
+      setError(null);
+      setIncidenceList(prev => [...prev.filter(m => m.id !== 'error')]);
       setTimeout(() => {
         setIncidenceList(prev => prev.filter(m => m.id !== 'success'));
         setSuccess(null);
@@ -100,6 +104,7 @@ export default function DetalleIncidencia() {
     }
     if (!working || success || error) {
       setIncidenceList(prev => prev.filter(m => m.id !== 'working'));
+      setWorking(null);
     }
   }, [loading, error, success, working]);
 
@@ -157,46 +162,46 @@ export default function DetalleIncidencia() {
       observaciones: "Incidencia reportada por ciudadano anónimo.",
     },
     ...(estado === "VALIDADA" ||
-    estado === "ASIGNADA" ||
-    estado === "EN_CURSO" ||
-    estado === "RESUELTA"
+      estado === "ASIGNADA" ||
+      estado === "EN_CURSO" ||
+      estado === "RESUELTA"
       ? [
-          {
-            fechaCreacion: "2026-04-01T09:30:00",
-            estadoNuevo: "VALIDADA",
-            observaciones:
-              "La incidencia ha sido revisada y validada por el operador.",
-          },
-        ]
+        {
+          fechaCreacion: "2026-04-01T09:30:00",
+          estadoNuevo: "VALIDADA",
+          observaciones:
+            "La incidencia ha sido revisada y validada por el operador.",
+        },
+      ]
       : []),
     ...(estado === "ASIGNADA" || estado === "EN_CURSO" || estado === "RESUELTA"
       ? [
-          {
-            fechaCreacion: "2026-04-01T12:00:00",
-            estadoNuevo: "ASIGNADA",
-            observaciones:
-              "Incidencia asignada a los operarios correspondientes.",
-          },
-        ]
+        {
+          fechaCreacion: "2026-04-01T12:00:00",
+          estadoNuevo: "ASIGNADA",
+          observaciones:
+            "Incidencia asignada a los operarios correspondientes.",
+        },
+      ]
       : []),
     ...(estado === "EN_CURSO" || estado === "RESUELTA"
       ? [
-          {
-            fechaCreacion: "2026-04-02T08:15:00",
-            estadoNuevo: "EN_CURSO",
-            observaciones: "Los trabajos de intervención ya han comenzado.",
-          },
-        ]
+        {
+          fechaCreacion: "2026-04-02T08:15:00",
+          estadoNuevo: "EN_CURSO",
+          observaciones: "Los trabajos de intervención ya han comenzado.",
+        },
+      ]
       : []),
     ...(estado === "RESUELTA"
       ? [
-          {
-            fechaCreacion: "2026-04-02T16:45:00",
-            estadoNuevo: "RESUELTA",
-            observaciones:
-              "La incidencia ha quedado resuelta correctamente.",
-          },
-        ]
+        {
+          fechaCreacion: "2026-04-02T16:45:00",
+          estadoNuevo: "RESUELTA",
+          observaciones:
+            "La incidencia ha quedado resuelta correctamente.",
+        },
+      ]
       : []),
   ];
 
@@ -268,14 +273,17 @@ export default function DetalleIncidencia() {
         <Sidebar />
 
         <section className="detalle-incidencia__content">
-          <button
-            className="detalle-incidencia__back"
-            onClick={() => window.history.back()}
-          >
-            &lt; Volver
-          </button>
+
 
           <div className="detalle-incidencia__header">
+
+            <button
+              className="detalle-incidencia__back"
+              onClick={() => window.history.back()}
+            >
+              &lt; Volver
+            </button>
+
             <h2 className="detalle-incidencia__title">Incidencia #{id}</h2>
 
             <span
@@ -287,9 +295,6 @@ export default function DetalleIncidencia() {
             </span>
           </div>
 
-          <p className="detalle-incidencia__subtitle">
-            Consulta toda la información relacionada con incidencias urbanas
-          </p>
 
           <div className="detalle-incidencia__top">
             <div className="detalle-incidencia__card">
@@ -348,7 +353,11 @@ export default function DetalleIncidencia() {
                 <>
                   <div className="detalle-incidencia__actions">
                     <button
-                      className="detalle-incidencia__main-btn"
+                      className={`detalle-incidencia__main-btn ${
+                        formularioAbierto === "rechazar"
+                          ? "detalle-incidencia__btn--light"
+                          : "detalle-incidencia__btn--dark"
+                      }`}
                       onClick={() =>
                         setFormularioAbierto((prev) => (prev === "validar" ? null : "validar"))
                       }
@@ -357,7 +366,11 @@ export default function DetalleIncidencia() {
                     </button>
 
                     <button
-                      className="detalle-incidencia__main-btn detalle-incidencia__main-btn--danger"
+                      className={`detalle-incidencia__main-btn ${
+                        formularioAbierto === "rechazar"
+                          ? "detalle-incidencia__btn--dark"
+                          : "detalle-incidencia__btn--light"
+                      }`}
                       onClick={() =>
                         setFormularioAbierto((prev) => (prev === "rechazar" ? null : "rechazar"))
                       }
@@ -371,12 +384,12 @@ export default function DetalleIncidencia() {
                       <h4 className="detalle-incidencia__form-title">Validar incidencia</h4>
 
                       <div className="detalle-incidencia__form-group">
-                        <label>Prioridad</label>
+                        <label>Prioridad <span style={{ color: "red" }}>*</span></label>
                         <select
                           value={prioridadSeleccionada}
                           onChange={(e) => setPrioridadSeleccionada(e.target.value)}
                         >
-                          <option value="SIN_ASIGNAR">Sin asignar</option>
+                          <option value="SIN_ASIGNAR">-- Sin asignar --</option>
                           <option value="URGENTE">Urgente</option>
                           <option value="ALTA">Alta</option>
                           <option value="MEDIA">Media</option>
@@ -394,7 +407,10 @@ export default function DetalleIncidencia() {
                       </div>
 
                       <div className="detalle-incidencia__actions">
-                        <button onClick={validarIncidencia}>
+                        <button 
+                          onClick={validarIncidencia}
+                          disabled={prioridadSeleccionada === "SIN_ASIGNAR"}
+                        >
                           Confirmar validación
                         </button>
                         <button
@@ -416,7 +432,7 @@ export default function DetalleIncidencia() {
                       <h4 className="detalle-incidencia__form-title">Rechazar incidencia</h4>
 
                       <div className="detalle-incidencia__form-group">
-                        <label>Observaciones</label>
+                        <label>Observaciones <span style={{ color: "red" }}>*</span></label>
                         <textarea
                           placeholder="Indica el motivo del rechazo..."
                           value={observaciones}
@@ -425,7 +441,10 @@ export default function DetalleIncidencia() {
                       </div>
 
                       <div className="detalle-incidencia__actions">
-                        <button onClick={rechazarIncidencia}>
+                        <button 
+                          onClick={rechazarIncidencia}
+                          disabled={!observaciones.trim()}
+                        >
                           Confirmar rechazo
                         </button>
                         <button

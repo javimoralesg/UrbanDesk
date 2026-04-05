@@ -4,35 +4,39 @@
   gap: 0;
   min-height: 100vh;
   align-items: start;
-  background: #f4f7fb;
 }
 
 .registrar-incidencia__content {
   min-width: 0;
-  padding: 32px 24px;
+  padding: 24px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.registrar-incidencia__content > * {
+.registrar-incidencia__content>* {
   width: 100%;
   max-width: 600px;
 }
 
 .registrar-incidencia__title {
   font-size: 2rem;
-  margin: 0;
+  margin-bottom: 10px;
   text-align: start;
-  color: #24364b;
+  margin: 0;
+  margin-left: -50px;
+  align-self: flex-start;
 }
 
 .registrar-incidencia__subtitle {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   text-align: start;
-  color: #5f6f82;
+  color: #444;
   margin: 0;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
+  margin-left: -50px;
+  align-self: flex-start;
 }
 
 .registrar-incidencia__form {
@@ -194,17 +198,19 @@
     padding: 20px 14px;
   }
 
-  .registrar-incidencia__content > * {
+  .registrar-incidencia__content>* {
     max-width: 100%;
   }
 
   .registrar-incidencia__title {
     font-size: 1.6rem;
+    margin-left: 0px;
   }
 
   .registrar-incidencia__subtitle {
     font-size: 0.8rem;
     margin-bottom: 16px;
+    margin-left: 0px;
   }
 
   .registrar-incidencia__form {
@@ -320,4 +326,169 @@
 
 .detalle-incidencia__attachment-image {
   cursor: pointer;
+}
+
+
+.registrar-incidencia__form {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.registrar-incidencia__form .recording-button {
+  width: 100% !important;
+  max-width: 100% !important;
+  background-color: #8edcf9 !important;
+  border-radius: 6px !important;
+  color: #000 !important;
+  box-sizing: border-box !important;
+  height: 52px !important;
+}
+
+textarea.registrar-incidencia__textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 12px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  box-sizing: border-box;
+}
+
+.registrar-incidencia__location-row {
+  display: flex;
+  gap: 10px;
+  position: relative;
+  align-items: stretch;
+  z-index: 5000;
+}
+
+.registrar-incidencia__location-row .registrar-incidencia__input {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 12px;
+  height: auto;
+}
+
+.registrar-incidencia__location-btn {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 50px;
+  min-width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background 0.2s;
+  padding: 0;
+}
+
+.registrar-incidencia__location-btn:hover {
+  background: #f0f0f0;
+}
+
+.registrar-incidencia__suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 60px;
+  /* Leave space for the pin button */
+  width: calc(100% - 60px);
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+  max-height: 180px;
+  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 5001;
+}
+
+.registrar-incidencia__suggestion-item {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+  color: #333;
+}
+
+.registrar-incidencia__suggestion-item:hover {
+  background-color: #f0f7ff;
+}
+
+.registrar-incidencia__map-container {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+}
+
+.registrar-incidencia__evidences-box {
+  background-color: #f4f4f4;
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+}
+
+.registrar-incidencia__evidences-title {
+  font-weight: 600;
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.registrar-incidencia__evidences-subtitle {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 15px 0;
+}
+
+.registrar-incidencia__file-input-wrapper {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.registrar-incidencia__file-input {
+  font-size: 14px;
+}
+
+.registrar-incidencia__submit-btn {
+  width: 80%;
+  align-self: center;
+  background-color: #24364b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 15px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
+
+.registrar-incidencia__submit-btn:hover {
+  background-color: #e5e7eb;
+  color: #24364b;
+}
+
+.registrar-incidencia__imagen-nombre {
+  margin: 6px 0 0 0;
+  font-size: 12px;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
 }

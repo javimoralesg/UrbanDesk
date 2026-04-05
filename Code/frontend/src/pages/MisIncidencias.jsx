@@ -132,6 +132,8 @@ export default function MisIncidencias() {
     }
     if (error) {
       setIncidenceList(prev => ([...prev, { id: 'error', message: error, type: 'error' }]));
+      setLoading(false);
+      setIncidenceList(prev => [...prev.filter(m => m.id !== 'loading')]);
       setTimeout(() => {
         setIncidenceList(prev => prev.filter(m => m.id !== 'error'));
         setError(null);
@@ -305,7 +307,7 @@ export default function MisIncidencias() {
                   }`}
                 onClick={() => setFiltroEstado(filtro.key)}
               >
-                {filtro.label} ({filtro.total})
+                {filtro.label} {filtro.total > 0 && `(${filtro.total})`}
               </button>
             ))}
           </div>

@@ -1,6 +1,5 @@
 .urban-home__layout {
   display: grid;
-  display: grid;
   grid-template-columns: 330px 1fr;
   gap: 0;
   min-height: 100vh;
@@ -24,7 +23,7 @@
   font-size: 0.8rem;
   text-align: start;
   color: #444;
-  margin:0;
+  margin: 0;
   margin-bottom: 20px;
   margin-left: -50px;
 }
@@ -66,14 +65,14 @@
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   background: #d1d1d1;
-  color:black
+  color: black
 }
 
 .urban-cards__action-card--active:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   background: #1838eb;
-  color:white
+  color: white
 }
 
 @media (max-width: 640px) {
@@ -89,6 +88,10 @@
   .urban-home__subtitle {
     font-size: 0.7rem;
     margin-left: 0px;
-  } 
-  
+  }
+
+  .urban-home__content {
+    min-height: 100vh;
+  }
+
 }

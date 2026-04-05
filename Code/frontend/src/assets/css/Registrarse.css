@@ -20,36 +20,41 @@
   margin-bottom: 10px;
   text-align: start;
   margin: 0;
+  margin-left: -50px;
+  align-self: flex-start;
+
 }
 
 .urban-register__subtitle {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   text-align: start;
-  color: #5f6f82;
+  color: #444;
   margin: 0;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
+  margin-left: -50px;
+  align-self: flex-start;
 }
 
 .urban-register__form {
   width: 100%;
-  max-width: 600px;   
+  max-width: 600px;
   display: flex;
   flex-direction: column;
-  gap: 20px;          
+  gap: 20px;
   align-items: stretch;
 }
 
 .urban-register__group {
   width: 100%;
-  max-width: 600px; 
-  margin: 0 auto;   
+  max-width: 600px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 6px;           
+  gap: 6px;
 }
 
 .urban-register__label {
-  font-size: 0.95rem;  
+  font-size: 0.95rem;
   color: #24364b;
   font-weight: 600;
 }
@@ -57,9 +62,9 @@
 .urban-register__input {
   width: 100%;
   max-width: 100%;
-  height: 52px;        
-  border: 2px solid #dbe3ee; 
-  border-radius: 16px; 
+  height: 52px;
+  border: 2px solid #dbe3ee;
+  border-radius: 16px;
   padding: 0 18px;
   font-size: 0.95rem;
   background: white;
@@ -80,9 +85,9 @@
 .urban-register__actions {
   display: flex;
   width: 100%;
-  gap: 16px;          
+  gap: 16px;
   margin-top: 10px;
-  max-width: 600px; 
+  max-width: 600px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -90,7 +95,7 @@
 .urban-register__button {
   flex: 1;
   min-width: 0;
-  height: 52px;       
+  height: 52px;
   border: none;
   border-radius: 14px;
   background: #e5e7eb;
@@ -117,14 +122,17 @@
   }
 
   .urban-register__title {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
+    margin-left: 0px;
   }
 
   .urban-register__subtitle {
-    font-size: 0.8rem;
-  } 
-  
-  .urban-register__actions {
-    flex-direction: column;
+    font-size: 0.7rem;
+    margin-left: 0px;
   }
+
+  .urban-register__content {
+    min-height: 100vh;
+  }
+
 }

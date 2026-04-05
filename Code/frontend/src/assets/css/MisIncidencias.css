@@ -1,38 +1,42 @@
 .mis-incidencias__layout {
-  display: flex;
+  display: grid;
+  grid-template-columns: 330px 1fr;
+  gap: 0;
   min-height: 100vh;
-  background: #f4f7fb;
+  align-items: start;
 }
 
 .mis-incidencias__content {
-  flex: 1;
-  padding: 2.5rem 2rem;
-  margin-left: 1rem;
-  border-left: 1px solid #dbe3ee;
+  min-width: 0;
+  padding: 24px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.mis-incidencias__content > * {
+.mis-incidencias__content>* {
   width: 100%;
   max-width: 1180px;
 }
 
 .mis-incidencias__title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: #24364b;
-  margin: 0 0 0.4rem 0;
-  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 10px;
+  text-align: start;
+  margin: 0;
+  margin-left: -50px;
+  align-self: flex-start;
 }
 
 .mis-incidencias__subtitle {
-  font-size: 1rem;
-  color: #5f6f82;
-  margin: 0 0 2rem 0;
-  text-align: center;
+  font-size: 0.8rem;
+  text-align: start;
+  color: #444;
+  margin: 0;
+  margin-bottom: 20px;
+  margin-left: -50px;
+  align-self: flex-start;
 }
 
 .mis-incidencias__view-buttons {
@@ -55,6 +59,7 @@
 
 .mis-incidencias__view-btn:hover {
   background: #dce7ff;
+  color: #24364b;
   transform: translateY(-1px);
 }
 
@@ -193,7 +198,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #2196f3, #1976d2);
+  background: #2196f3;
   color: white;
   text-decoration: none;
   border-radius: 12px;
@@ -208,7 +213,8 @@
 
 .mis-incidencias__more-btn:hover {
   color: white;
-  transform: translateY(-1px);
+  background-color: #1976d2;
+
   box-shadow: 0 12px 24px rgba(33, 150, 243, 0.3);
 }
 
@@ -223,24 +229,23 @@
   padding: 1rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 640px) {
   .mis-incidencias__layout {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .mis-incidencias__content {
-    margin-left: 0;
-    border-left: none;
-    padding: 1.2rem;
+    min-height: 100vh;
   }
 
   .mis-incidencias__title {
-    font-size: 2rem;
+    font-size: 1.5rem;
+    margin-left: 0px;
   }
 
   .mis-incidencias__subtitle {
-    font-size: 0.95rem;
-    margin-bottom: 1.5rem;
+    font-size: 0.7rem;
+    margin-left: 0px;
   }
 
   .mis-incidencias__view-buttons {
@@ -248,13 +253,13 @@
   }
 
   .mis-incidencias__filters {
-    flex-direction: column;
+
     padding: 0.8rem;
   }
 
   .mis-incidencias__filter-btn {
-    width: 100%;
-    min-width: unset;
+    min-width: 135px;
+    width: 135px;
   }
 
   .mis-incidencias__table-wrapper {

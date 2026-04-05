@@ -72,7 +72,7 @@ export default function Registrarse() {
           </h2>
 
           <p className="urban-register__subtitle">
-            ####Falta por cambiar
+            Regístrese en UrbanDesk
           </p>
 
           <form className="urban-register__form" onSubmit={handleSubmit}>

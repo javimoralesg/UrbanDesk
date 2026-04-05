@@ -67,7 +67,7 @@ export default function IniciarSesion() {
             Iniciar sesión
           </h2>
           <p className="urban-login__subtitle">
-            ####Falta por cambiar
+            Inicie sesión en su cuenta
           </p>
 
           <form className="urban-login__form">
