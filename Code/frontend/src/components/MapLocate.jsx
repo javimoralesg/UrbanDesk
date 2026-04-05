@@ -7,17 +7,6 @@ import 'leaflet/dist/leaflet.css';
 import '../assets/css/Map.css';
 
 
-const pruebaPuntos = [
-  { lat: 40.4531, lng: -3.6883, info: { nombre: "Estadio Santiago Bernabéu", id: 101 } },
-  { lat: 40.4139, lng: -3.6921, info: { nombre: "Museo del Prado", id: 102 } },
-  { lat: 40.4168, lng: -3.7038, info: { nombre: "Puerta del Sol", id: 103 } },
-  { lat: 40.4155, lng: -3.7074, info: { nombre: "Plaza Mayor", id: 104 } },
-  { lat: 40.4183, lng: -3.7061, info: { nombre: "Palacio Real", id: 105 } },
-  { lat: 40.4192, lng: -3.7035, info: { nombre: "Catedral de la Almudena", id: 106 } },
-  { lat: 40.4210, lng: -3.7058, info: { nombre: "Templo de Debod", id: 107 } },
-  { lat: 40.4728, lng: -3.8723, info: { nombre: "Majadahonda", id: 108 } },
-];
-
 const COLORES_DISPONIBLES = ['blue', 'red', 'green', 'orange', 'yellow', 'violet', 'black', 'gold', 'grey'];
 
 const crearIconoColor = (color) => {
@@ -46,7 +35,7 @@ function AutoZoom({ puntos }) {
 
 export default function MapLocate({ width = "100%", height = "500px", puntos = [] }) {
   const navigate = useNavigate();
-  const puntosVisibles = puntos.length > 0 ? puntos : pruebaPuntos;
+  const puntosVisibles = puntos;
 
   return (
     <div style={{ width, height, position: 'relative', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>

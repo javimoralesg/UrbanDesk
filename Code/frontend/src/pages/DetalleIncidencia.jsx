@@ -17,7 +17,7 @@ export default function DetalleIncidencia() {
   const [working, setWorking] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("SIN ASIGNAR");
+  const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("SIN_ASIGNAR");
   const [observaciones, setObservaciones] = useState("");
 const [formularioAbierto, setFormularioAbierto] = useState(null); 
 // "validar" | "rechazar" | null
@@ -97,8 +97,9 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
     if (working) {
       setIncidenceList(prev => [...prev.filter(m => m.id !== 'working'), { id: 'working', message: working, type: 'waiting' }]);
     }
-    if (!working) {
+    if (!working || success || error) {
       setIncidenceList(prev => prev.filter(m => m.id !== 'working'));
+      setWorking(null);
     }
   }, [loading, error, success, working]);
 
@@ -496,7 +497,7 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
               </p>
 
               <div className="detalle-incidencia__map">
-                <MapLocate width="100%" puntos={puntosMapa} />
+                <MapLocate width="100%" height="100%" puntos={puntosMapa} />
               </div>
             </div>
           </div>
