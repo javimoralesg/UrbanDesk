@@ -19,7 +19,8 @@ export default function DetalleIncidencia() {
 
   const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("SIN ASIGNAR");
   const [observaciones, setObservaciones] = useState("");
-
+const [formularioAbierto, setFormularioAbierto] = useState(null); 
+// "validar" | "rechazar" | null
   const [incidenceList, setIncidenceList] = useState([]);
 
 
@@ -145,7 +146,6 @@ export default function DetalleIncidencia() {
       ? [{ id: incidencia?.id ?? Number(id), lat: latitud, lng: longitud }]
       : [];
 
-  // Si la API no trae historial, construimos uno básico según estado
   const historialPorEstado = [
     {
       fechaCreacion: fechaCreacion || "2026-03-31T07:37:20",
@@ -207,10 +207,10 @@ export default function DetalleIncidencia() {
   }, [incidencia, historialPorEstado]);
 
   const historialOrdenado = [...historial].sort(
-    (a, b) =>
-      new Date(b.fechaCambio || b.fechaCreacion || 0) -
-      new Date(a.fechaCambio || a.fechaCreacion || 0)
-  );
+  (a, b) =>
+    new Date(a.fechaCambio || a.fechaCreacion || 0) -
+    new Date(b.fechaCambio || b.fechaCreacion || 0)
+);
 
   const formatearFecha = (fecha) => {
     if (!fecha) return "Fecha no disponible";
@@ -218,37 +218,50 @@ export default function DetalleIncidencia() {
   };
 
   const validarIncidencia = async () => {
-    if (prioridadSeleccionada === "SIN_ASIGNAR") {
-        setError("Debes seleccionar una prioridad antes de validar.");
-        return;
-    }
+  if (prioridadSeleccionada === "SIN_ASIGNAR") {
+    setError("Debes seleccionar una prioridad antes de validar.");
+    return;
+  }
 
-    try {
-      setWorking("Validando incidencia");
-      const data = await api.validarIncidencia(id, observaciones, prioridadSeleccionada);
-      setWorking(null);
-      setSuccess("Incidencia validada correctamente.");
-      setIncidencia(data);
-    } catch (err) {
-      console.error("Error al validar incidencia:", err);
-      setError("No se pudo validar la incidencia. Inténtalo de nuevo.");
-    } finally {
-      setWorking(null);
-    }
-  };
+  try {
+    setWorking("Validando incidencia");
+    const data = await api.validarIncidencia(id, observaciones, prioridadSeleccionada);
+    setWorking(null);
+    setSuccess("Incidencia validada correctamente.");
+    setIncidencia(data);
+    setFormularioAbierto(null);
+    setObservaciones("");
+    setPrioridadSeleccionada("SIN_ASIGNAR");
+  } catch (err) {
+    console.error("Error al validar incidencia:", err);
+    setError("No se pudo validar la incidencia. Inténtalo de nuevo.");
+  } finally {
+    setWorking(null);
+  }
+};
 
-  const rechazarIncidencia = async () => {
-    try {
-      setWorking("Rechazando incidencia");
-      const data = await api.rechazarIncidencia(id, observaciones);
-      setWorking(null);
-      setSuccess("Incidencia rechazada correctamente.");
-      setIncidencia(data);
-    } catch (err) {
-      console.error("Error al rechazar incidencia:", err);
-      setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
-    }
-  };
+ const rechazarIncidencia = async () => {
+  if (!observaciones.trim()) {
+    setError("Debes indicar una observación antes de rechazar la incidencia.");
+    return;
+  }
+
+  try {
+    setWorking("Rechazando incidencia");
+    const data = await api.rechazarIncidencia(id, observaciones);
+    setWorking(null);
+    setSuccess("Incidencia rechazada correctamente.");
+    setIncidencia(data);
+    setFormularioAbierto(null);
+    setObservaciones("");
+    setPrioridadSeleccionada("SIN_ASIGNAR");
+  } catch (err) {
+    console.error("Error al rechazar incidencia:", err);
+    setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
+  } finally {
+    setWorking(null);
+  }
+};
 
 
   return (
@@ -337,42 +350,103 @@ export default function DetalleIncidencia() {
               </div>
 
               {estado === "CREADA" && rol === "OPERADOR" && (
-                <div className="detalle-incidencia__form-card">
-                  <h4 className="detalle-incidencia__form-title">Validar incidencia</h4>
+  <>
+    <div className="detalle-incidencia__actions">
+      <button
+        className="detalle-incidencia__main-btn"
+        onClick={() =>
+          setFormularioAbierto((prev) => (prev === "validar" ? null : "validar"))
+        }
+      >
+        Validar incidencia
+      </button>
 
-                  <div className="detalle-incidencia__form-group">
-                    <label>Prioridad</label>
-                    <select
-                      value={prioridadSeleccionada}
-                      onChange={(e) => setPrioridadSeleccionada(e.target.value)}
-                    >
-                      <option value="SIN_ASIGNAR">Sin asignar</option>
-                      <option value="URGENTE">Urgente</option>
-                      <option value="ALTA">Alta</option>
-                      <option value="MEDIA">Media</option>
-                      <option value="BAJA">Baja</option>
-                    </select>
-                  </div>
+      <button
+        className="detalle-incidencia__main-btn detalle-incidencia__main-btn--danger"
+        onClick={() =>
+          setFormularioAbierto((prev) => (prev === "rechazar" ? null : "rechazar"))
+        }
+      >
+        Rechazar incidencia
+      </button>
+    </div>
 
-                  <div className="detalle-incidencia__form-group">
-                    <label>Observaciones</label>
-                    <textarea
-                      placeholder="Añade observaciones sobre la validación..."
-                      value={observaciones}
-                      onChange={(e) => setObservaciones(e.target.value)}
-                    />
-                  </div>
+    {formularioAbierto === "validar" && (
+      <div className="detalle-incidencia__form-card">
+        <h4 className="detalle-incidencia__form-title">Validar incidencia</h4>
 
-                  <div className="detalle-incidencia__actions">
-                    <button onClick={() => validarIncidencia()}>
-                      Validar
-                    </button>
-                    <button onClick={() => rechazarIncidencia()}>
-                      Rechazar
-                    </button>
-                  </div>
-                </div>
-              )}
+        <div className="detalle-incidencia__form-group">
+          <label>Prioridad</label>
+          <select
+            value={prioridadSeleccionada}
+            onChange={(e) => setPrioridadSeleccionada(e.target.value)}
+          >
+            <option value="SIN_ASIGNAR">Sin asignar</option>
+            <option value="URGENTE">Urgente</option>
+            <option value="ALTA">Alta</option>
+            <option value="MEDIA">Media</option>
+            <option value="BAJA">Baja</option>
+          </select>
+        </div>
+
+        <div className="detalle-incidencia__form-group">
+          <label>Observaciones</label>
+          <textarea
+            placeholder="Añade observaciones sobre la validación..."
+            value={observaciones}
+            onChange={(e) => setObservaciones(e.target.value)}
+          />
+        </div>
+
+        <div className="detalle-incidencia__actions">
+          <button onClick={validarIncidencia}>
+            Confirmar validación
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setFormularioAbierto(null);
+              setObservaciones("");
+              setPrioridadSeleccionada("SIN_ASIGNAR");
+            }}
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    )}
+
+    {formularioAbierto === "rechazar" && (
+      <div className="detalle-incidencia__form-card">
+        <h4 className="detalle-incidencia__form-title">Rechazar incidencia</h4>
+
+        <div className="detalle-incidencia__form-group">
+          <label>Observaciones</label>
+          <textarea
+            placeholder="Indica el motivo del rechazo..."
+            value={observaciones}
+            onChange={(e) => setObservaciones(e.target.value)}
+          />
+        </div>
+
+        <div className="detalle-incidencia__actions">
+          <button onClick={rechazarIncidencia}>
+            Confirmar rechazo
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setFormularioAbierto(null);
+              setObservaciones("");
+            }}
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    )}
+  </>
+)}
 
               {estado === "VALIDADA" && rol === "OPERADOR" && (
                 <>
@@ -426,6 +500,7 @@ export default function DetalleIncidencia() {
               </div>
             </div>
           </div>
+
           <div className="detalle-incidencia__section">
             <h3>Adjuntos</h3>
 
@@ -467,8 +542,6 @@ export default function DetalleIncidencia() {
               ))}
             </div>
           </div>
-
-
         </section>
       </main>
     </>

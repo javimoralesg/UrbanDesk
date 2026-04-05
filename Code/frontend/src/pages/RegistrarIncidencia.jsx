@@ -266,6 +266,12 @@ export default function RegistrarIncidencia() {
                         )}
                     </div>
 
+                    
+
+                    <MapRegister
+                        onCenterChanged={handleCenterChanged}
+                        targetLocation={targetLocation}
+                    />
                     <button onClick={handleCurrentLocation} style={{ marginTop: '10px', padding: '8px 12px', cursor: 'pointer' }}>Ubicación actual</button>
 
                     <button
@@ -275,11 +281,6 @@ export default function RegistrarIncidencia() {
                     >
                         Registrar incidencia
                     </button>
-
-                    <MapRegister
-                        onCenterChanged={handleCenterChanged}
-                        targetLocation={targetLocation}
-                    />
                 </section>
 
             </main>

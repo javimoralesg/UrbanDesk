@@ -1,32 +1,178 @@
 .registrar-incidencia__layout {
   display: grid;
-  display: grid;
   grid-template-columns: 330px 1fr;
   gap: 0;
   min-height: 100vh;
   align-items: start;
+  background: #f4f7fb;
 }
 
 .registrar-incidencia__content {
   min-width: 0;
-  padding: 24px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.registrar-incidencia__content > * {
+  width: 100%;
+  max-width: 600px;
 }
 
 .registrar-incidencia__title {
   font-size: 2rem;
-  margin-bottom: 10px;
-  text-align: start;
   margin: 0;
-  margin-left: -50px;
+  text-align: start;
+  color: #24364b;
 }
 
 .registrar-incidencia__subtitle {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   text-align: start;
-  color: #444;
-  margin:0;
-  margin-bottom: 20px;
-  margin-left: -50px;
+  color: #5f6f82;
+  margin: 0;
+  margin-bottom: 18px;
+}
+
+.registrar-incidencia__form {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.registrar-incidencia__group {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.registrar-incidencia__label {
+  font-size: 0.95rem;
+  color: #24364b;
+  font-weight: 600;
+}
+
+.registrar-incidencia__input,
+.registrar-incidencia__textarea {
+  width: 100%;
+  max-width: 100%;
+  border: 2px solid #dbe3ee;
+  border-radius: 16px;
+  padding: 0 18px;
+  font-size: 0.95rem;
+  background: white;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.2s ease;
+  color: #111;
+}
+
+.registrar-incidencia__input {
+  height: 52px;
+}
+
+.registrar-incidencia__textarea {
+  min-height: 120px;
+  padding: 14px 18px;
+  resize: vertical;
+}
+
+.registrar-incidencia__input::placeholder,
+.registrar-incidencia__textarea::placeholder {
+  color: #98a2b3;
+}
+
+.registrar-incidencia__input:focus,
+.registrar-incidencia__textarea:focus {
+  border-color: #24364b;
+  box-shadow: 0 0 0 3px rgba(36, 54, 75, 0.08);
+}
+
+.registrar-incidencia__audio-btn {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  border: none;
+  border-radius: 16px;
+  background: #86d4f4;
+  color: #24364b;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.registrar-incidencia__audio-btn:hover {
+  opacity: 0.95;
+}
+
+.registrar-incidencia__file-row {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.registrar-incidencia__file-label {
+  font-size: 0.95rem;
+  color: #24364b;
+  font-weight: 600;
+}
+
+.registrar-incidencia__file-input {
+  font-size: 0.9rem;
+  color: #24364b;
+}
+
+.registrar-incidencia__map {
+  width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.registrar-incidencia__actions {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+  margin-top: 10px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.registrar-incidencia__button {
+  flex: 1;
+  min-width: 0;
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: #e5e7eb;
+  color: #24364b;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.registrar-incidencia__button:hover {
+  opacity: 0.95;
+}
+
+.registrar-incidencia__button--primary {
+  background: #24364b;
+  color: #fff;
 }
 
 @media (max-width: 640px) {
@@ -34,14 +180,53 @@
     grid-template-columns: 1fr;
   }
 
+  .registrar-incidencia__content {
+    padding: 20px 14px;
+  }
+
+  .registrar-incidencia__content > * {
+    max-width: 100%;
+  }
+
   .registrar-incidencia__title {
-    font-size: 1.5rem;
-    margin-left: 0px;
+    font-size: 1.6rem;
   }
 
   .registrar-incidencia__subtitle {
-    font-size: 0.7rem;
-    margin-left: 0px;
-  } 
-  
+    font-size: 0.8rem;
+    margin-bottom: 16px;
+  }
+
+  .registrar-incidencia__form {
+    max-width: 100%;
+    gap: 16px;
+  }
+
+  .registrar-incidencia__group {
+    max-width: 100%;
+  }
+
+  .registrar-incidencia__input,
+  .registrar-incidencia__textarea {
+    font-size: 0.95rem;
+  }
+
+  .registrar-incidencia__audio-btn {
+    max-width: 100%;
+    font-size: 0.92rem;
+    padding: 14px;
+  }
+
+  .registrar-incidencia__map {
+    max-width: 100%;
+  }
+
+  .registrar-incidencia__actions {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .registrar-incidencia__button {
+    width: 100%;
+  }
 }

@@ -1,6 +1,5 @@
 .urban-login__layout {
   display: grid;
-  display: grid;
   grid-template-columns: 330px 1fr;
   gap: 0;
   min-height: 100vh;
@@ -10,6 +9,10 @@
 .urban-login__content {
   min-width: 0;
   padding: 24px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .urban-login__title {
@@ -17,81 +20,94 @@
   margin-bottom: 10px;
   text-align: start;
   margin: 0;
-  margin-left: -50px;
 }
 
 .urban-login__subtitle {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   text-align: start;
-  color: #444;
-  margin:0;
-  margin-bottom: 20px;
-  margin-left: -50px;
+  color: #5f6f82;
+  margin: 0;
+  margin-bottom: 18px;
 }
 
 .urban-login__form {
   width: 100%;
-  max-width: 1400px;
+  max-width: 600px;   
   display: flex;
   flex-direction: column;
-  gap: 34px;
+  gap: 20px;          
   align-items: stretch;
 }
 
 .urban-login__group {
   width: 100%;
-  max-width: 700px; 
+  max-width: 600px; 
   margin: 0 auto;   
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;          
 }
 
 .urban-login__label {
-  font-size: 1.2rem;
-  color: #111;
+  font-size: 0.95rem; 
+  color: #24364b;
+  font-weight: 600;
 }
 
 .urban-login__input {
   width: 100%;
-  max-width: 1400px;
-  height: 74px;
-  border: 3px solid #111;
-  border-radius: 24px;
-  padding: 0 28px;
-  font-size: 1.1rem;
+  max-width: 100%;
+  height: 52px;       
+  border: 2px solid #dbe3ee;
+  border-radius: 16px;
+  padding: 0 18px;
+  font-size: 0.95rem;
   background: white;
   box-sizing: border-box;
   outline: none;
+  transition: all 0.2s ease;
 }
 
 .urban-login__input::placeholder {
-  color: #999;
+  color: #98a2b3;
+}
+
+.urban-login__input:focus {
+  border-color: #24364b;
+  box-shadow: 0 0 0 3px rgba(36, 54, 75, 0.08);
 }
 
 .urban-login__actions {
   display: flex;
   width: 100%;
-  gap: 50px;
-  margin-top: 18px;
-  max-width: 700px; 
-  margin: 0 auto;  
+  gap: 16px;         
+  margin-top: 10px;
+  max-width: 600px; 
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .urban-login__button {
   flex: 1;
-  min-width: 220px;
-  height: 78px;
+  min-width: 0;
+  height: 52px;       
   border: none;
-  border-radius: 22px;
-  background: #d9d9d9;
-  color: #111;
-  font-size: 1.1rem;
+  border-radius: 14px;
+  background: #e5e7eb;
+  color: #24364b;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .urban-login__button:hover {
-  opacity: 0.92;
+  opacity: 0.95;
+}
+
+.urban-login__button:last-child {
+  background: #24364b;
+  color: #fff;
 }
 
 input {
@@ -104,13 +120,14 @@ input {
   }
 
   .urban-login__title {
-    font-size: 1.5rem;
-    margin-left: 0px;
+    font-size: 1.6rem;
   }
 
   .urban-login__subtitle {
-    font-size: 0.7rem;
-    margin-left: 0px;
+    font-size: 0.8rem;
   } 
   
+  .urban-login__actions {
+    flex-direction: column;
+  }
 }
