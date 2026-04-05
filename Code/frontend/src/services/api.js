@@ -110,6 +110,7 @@ export const api = {
 
     // llamadas a la api de IA 
     validateDescription: async (descripcion) => {
+        resetInactivityTimer();
         const response = await fetch("https://urbandeskvalidate-g475okyxfq-uc.a.run.app", {
             method: 'POST',
             headers: {
@@ -132,6 +133,7 @@ export const api = {
     },
 
     transcribeAndProcessAudio: async (audioBase64) => {
+        resetInactivityTimer();
         const response = await fetch("https://urbandesk-g475okyxfq-uc.a.run.app", {
             method: 'POST',
             headers: {
@@ -150,6 +152,7 @@ export const api = {
 
 
     obtenerIncidenciaPorId: async (id) => {
+        resetInactivityTimer();
         const response = await fetch(`${BASE_URL}/incidencias/${id}`, {
             headers: getAuthHeaders(),
         });
@@ -181,6 +184,7 @@ export const api = {
     },
 
     crearIncidencia: async ({ direccion, latitud, longitud, descripcion, ciudadanoId, imagenes = [] }) => {
+        resetInactivityTimer();
         const response = await fetch(`${BASE_URL}/incidencias`, {
             method: "POST",
             headers: {
@@ -205,6 +209,7 @@ export const api = {
     },
 
     actualizarIncidencia: async (id, { direccion, latitud, longitud, descripcion }) => {
+        resetInactivityTimer();
         const response = await fetch(`${BASE_URL}/incidencias/${id}/editar`, {
             method: "PUT",
             headers: {
@@ -227,6 +232,7 @@ export const api = {
     },
 
     validarIncidencia: async (id, observaciones, prioridad) => {
+        resetInactivityTimer();
         const params = new URLSearchParams({ observaciones, prioridad });
 
         const response = await fetch(`${BASE_URL}/incidencias/${id}/validar?${params.toString()}`, {
@@ -245,6 +251,7 @@ export const api = {
     },
 
     rechazarIncidencia: async (id, comentario = "Rechazada por el operador.") => {
+        resetInactivityTimer();
         const response = await fetch(`${BASE_URL}/incidencias/${id}/rechazar`, {
             method: "PUT",
             headers: {
@@ -262,6 +269,7 @@ export const api = {
     },
 
     asignarTecnicoIncidencia: async (id, tecnicoId) => {
+        resetInactivityTimer();
         const response = await fetch(
             `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}`,
             {
@@ -278,6 +286,7 @@ export const api = {
     },
 
     eliminarTecnicoIncidencia: async (id, tecnicoId) => {
+        resetInactivityTimer();
         const response = await fetch(
             `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}`,
             {

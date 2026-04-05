@@ -172,7 +172,11 @@ public class IncidenciaService {
                 .min(Comparator
                         .comparing(Operador::getCargaActual, Comparator.nullsFirst(Integer::compareTo))
                         .thenComparing(Operador::getId))
-                .orElseThrow(() -> new DomainRuleViolation("No hay operadores disponibles para asignar"));
+                .orElse(null);
+
+        if (operadorConMenorCarga == null) {
+            return incidencia;
+        }
 
         operadorConMenorCarga.incrementarCarga();
         usuarioRepository.save(operadorConMenorCarga);
