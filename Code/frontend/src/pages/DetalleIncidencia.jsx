@@ -17,7 +17,7 @@ export default function DetalleIncidencia() {
   const [working, setWorking] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("SIN ASIGNAR");
+  const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("SIN_ASIGNAR");
   const [observaciones, setObservaciones] = useState("");
 
   const [incidenceList, setIncidenceList] = useState([]);
@@ -96,8 +96,9 @@ export default function DetalleIncidencia() {
     if (working) {
       setIncidenceList(prev => [...prev.filter(m => m.id !== 'working'), { id: 'working', message: working, type: 'waiting' }]);
     }
-    if (!working) {
+    if (!working || success || error) {
       setIncidenceList(prev => prev.filter(m => m.id !== 'working'));
+      setWorking(null);
     }
   }, [loading, error, success, working]);
 
@@ -226,14 +227,11 @@ export default function DetalleIncidencia() {
     try {
       setWorking("Validando incidencia");
       const data = await api.validarIncidencia(id, observaciones, prioridadSeleccionada);
-      setWorking(null);
       setSuccess("Incidencia validada correctamente.");
       setIncidencia(data);
     } catch (err) {
       console.error("Error al validar incidencia:", err);
       setError("No se pudo validar la incidencia. Inténtalo de nuevo.");
-    } finally {
-      setWorking(null);
     }
   };
 
@@ -241,7 +239,6 @@ export default function DetalleIncidencia() {
     try {
       setWorking("Rechazando incidencia");
       const data = await api.rechazarIncidencia(id, observaciones);
-      setWorking(null);
       setSuccess("Incidencia rechazada correctamente.");
       setIncidencia(data);
     } catch (err) {
@@ -341,12 +338,12 @@ export default function DetalleIncidencia() {
                   <h4 className="detalle-incidencia__form-title">Validar incidencia</h4>
 
                   <div className="detalle-incidencia__form-group">
-                    <label>Prioridad</label>
+                    <label>Prioridad <span style={{color: "red"}}>*</span></label>
                     <select
                       value={prioridadSeleccionada}
                       onChange={(e) => setPrioridadSeleccionada(e.target.value)}
                     >
-                      <option value="SIN_ASIGNAR">Sin asignar</option>
+                      <option value="SIN_ASIGNAR">-- Sin asignar --</option>
                       <option value="URGENTE">Urgente</option>
                       <option value="ALTA">Alta</option>
                       <option value="MEDIA">Media</option>
@@ -422,7 +419,7 @@ export default function DetalleIncidencia() {
               </p>
 
               <div className="detalle-incidencia__map">
-                <MapLocate width="100%" puntos={puntosMapa} />
+                <MapLocate width="100%" height="100%" puntos={puntosMapa} />
               </div>
             </div>
           </div>
