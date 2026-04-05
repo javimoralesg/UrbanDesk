@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router";
 import { api } from "../services/api";
 import "../assets/css/DetalleIncidencia.css";
 import Popups from '../components/Popups';
+import MediaPopup from "../components/MediaPopup";
 
 export default function DetalleIncidencia() {
   const { id } = useParams();
@@ -16,13 +17,13 @@ export default function DetalleIncidencia() {
   const [error, setError] = useState(null);
   const [working, setWorking] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [mediaSeleccionada, setMediaSeleccionada] = useState(null);
 
   const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("SIN_ASIGNAR");
   const [observaciones, setObservaciones] = useState("");
-const [formularioAbierto, setFormularioAbierto] = useState(null); 
-// "validar" | "rechazar" | null
+  const [formularioAbierto, setFormularioAbierto] = useState(null);
+  // "validar" | "rechazar" | null
   const [incidenceList, setIncidenceList] = useState([]);
-
 
   const rol = useMemo(() => {
     const rawUser = localStorage.getItem("user");
@@ -102,7 +103,6 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
     }
   }, [loading, error, success, working]);
 
-
   const estado = incidencia?.estado;
   const prioridad = incidencia?.prioridad;
   const descripcion = incidencia?.descripcion;
@@ -139,7 +139,11 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
     SIN_ASIGNAR: "Sin asignar",
   }[prioridad] || prioridad;
 
-  const adjuntos = incidencia?.evidencias?.map((ev) => ev.url) || [];
+  const adjuntos = (incidencia?.evidencias || []).map((ev, index) => ({
+    src: ev?.url || ev?.ruta || "",
+    type: ev?.tipo || ev?.mimeType || ev?.contentType || "image/*",
+    alt: ev?.nombre || `Adjunto ${index + 1} de la incidencia`,
+  })).filter((adjunto) => adjunto.src);
 
   const puntosMapa =
     typeof latitud === "number" && typeof longitud === "number"
@@ -153,46 +157,46 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
       observaciones: "Incidencia reportada por ciudadano anónimo.",
     },
     ...(estado === "VALIDADA" ||
-      estado === "ASIGNADA" ||
-      estado === "EN_CURSO" ||
-      estado === "RESUELTA"
+    estado === "ASIGNADA" ||
+    estado === "EN_CURSO" ||
+    estado === "RESUELTA"
       ? [
-        {
-          fechaCreacion: "2026-04-01T09:30:00",
-          estadoNuevo: "VALIDADA",
-          observaciones:
-            "La incidencia ha sido revisada y validada por el operador.",
-        },
-      ]
+          {
+            fechaCreacion: "2026-04-01T09:30:00",
+            estadoNuevo: "VALIDADA",
+            observaciones:
+              "La incidencia ha sido revisada y validada por el operador.",
+          },
+        ]
       : []),
     ...(estado === "ASIGNADA" || estado === "EN_CURSO" || estado === "RESUELTA"
       ? [
-        {
-          fechaCreacion: "2026-04-01T12:00:00",
-          estadoNuevo: "ASIGNADA",
-          observaciones:
-            "Incidencia asignada a los operarios correspondientes.",
-        },
-      ]
+          {
+            fechaCreacion: "2026-04-01T12:00:00",
+            estadoNuevo: "ASIGNADA",
+            observaciones:
+              "Incidencia asignada a los operarios correspondientes.",
+          },
+        ]
       : []),
     ...(estado === "EN_CURSO" || estado === "RESUELTA"
       ? [
-        {
-          fechaCreacion: "2026-04-02T08:15:00",
-          estadoNuevo: "EN_CURSO",
-          observaciones: "Los trabajos de intervención ya han comenzado.",
-        },
-      ]
+          {
+            fechaCreacion: "2026-04-02T08:15:00",
+            estadoNuevo: "EN_CURSO",
+            observaciones: "Los trabajos de intervención ya han comenzado.",
+          },
+        ]
       : []),
     ...(estado === "RESUELTA"
       ? [
-        {
-          fechaCreacion: "2026-04-02T16:45:00",
-          estadoNuevo: "RESUELTA",
-          observaciones:
-            "La incidencia ha quedado resuelta correctamente.",
-        },
-      ]
+          {
+            fechaCreacion: "2026-04-02T16:45:00",
+            estadoNuevo: "RESUELTA",
+            observaciones:
+              "La incidencia ha quedado resuelta correctamente.",
+          },
+        ]
       : []),
   ];
 
@@ -207,10 +211,10 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
   }, [incidencia, historialPorEstado]);
 
   const historialOrdenado = [...historial].sort(
-  (a, b) =>
-    new Date(a.fechaCambio || a.fechaCreacion || 0) -
-    new Date(b.fechaCambio || b.fechaCreacion || 0)
-);
+    (a, b) =>
+      new Date(a.fechaCambio || a.fechaCreacion || 0) -
+      new Date(b.fechaCambio || b.fechaCreacion || 0)
+  );
 
   const formatearFecha = (fecha) => {
     if (!fecha) return "Fecha no disponible";
@@ -218,43 +222,42 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
   };
 
   const validarIncidencia = async () => {
-  if (prioridadSeleccionada === "SIN_ASIGNAR") {
-    setError("Debes seleccionar una prioridad antes de validar.");
-    return;
-  }
+    if (prioridadSeleccionada === "SIN_ASIGNAR") {
+      setError("Debes seleccionar una prioridad antes de validar.");
+      return;
+    }
 
-  try {
-    const data = await api.validarIncidencia(id, observaciones, prioridadSeleccionada);
-    setSuccess("Incidencia validada correctamente.");
-    setIncidencia(data);
-    setFormularioAbierto(null);
-    setObservaciones("");
-    setPrioridadSeleccionada("SIN_ASIGNAR");
-  } catch (err) {
-    console.error("Error al validar incidencia:", err);
-    setError("No se pudo validar la incidencia. Inténtalo de nuevo.");
-  }
-};
+    try {
+      const data = await api.validarIncidencia(id, observaciones, prioridadSeleccionada);
+      setSuccess("Incidencia validada correctamente.");
+      setIncidencia(data);
+      setFormularioAbierto(null);
+      setObservaciones("");
+      setPrioridadSeleccionada("SIN_ASIGNAR");
+    } catch (err) {
+      console.error("Error al validar incidencia:", err);
+      setError("No se pudo validar la incidencia. Inténtalo de nuevo.");
+    }
+  };
 
- const rechazarIncidencia = async () => {
-  if (!observaciones.trim()) {
-    setError("Debes indicar una observación antes de rechazar la incidencia.");
-    return;
-  }
+  const rechazarIncidencia = async () => {
+    if (!observaciones.trim()) {
+      setError("Debes indicar una observación antes de rechazar la incidencia.");
+      return;
+    }
 
-  try {
-    const data = await api.rechazarIncidencia(id, observaciones);
-    setSuccess("Incidencia rechazada correctamente.");
-    setIncidencia(data);
-    setFormularioAbierto(null);
-    setObservaciones("");
-    setPrioridadSeleccionada("SIN_ASIGNAR");
-  } catch (err) {
-    console.error("Error al rechazar incidencia:", err);
-    setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
-  } 
-};
-
+    try {
+      const data = await api.rechazarIncidencia(id, observaciones);
+      setSuccess("Incidencia rechazada correctamente.");
+      setIncidencia(data);
+      setFormularioAbierto(null);
+      setObservaciones("");
+      setPrioridadSeleccionada("SIN_ASIGNAR");
+    } catch (err) {
+      console.error("Error al rechazar incidencia:", err);
+      setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
+    }
+  };
 
   return (
     <>
@@ -342,103 +345,103 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
               </div>
 
               {estado === "CREADA" && rol === "OPERADOR" && (
-  <>
-    <div className="detalle-incidencia__actions">
-      <button
-        className="detalle-incidencia__main-btn"
-        onClick={() =>
-          setFormularioAbierto((prev) => (prev === "validar" ? null : "validar"))
-        }
-      >
-        Validar incidencia
-      </button>
+                <>
+                  <div className="detalle-incidencia__actions">
+                    <button
+                      className="detalle-incidencia__main-btn"
+                      onClick={() =>
+                        setFormularioAbierto((prev) => (prev === "validar" ? null : "validar"))
+                      }
+                    >
+                      Validar incidencia
+                    </button>
 
-      <button
-        className="detalle-incidencia__main-btn detalle-incidencia__main-btn--danger"
-        onClick={() =>
-          setFormularioAbierto((prev) => (prev === "rechazar" ? null : "rechazar"))
-        }
-      >
-        Rechazar incidencia
-      </button>
-    </div>
+                    <button
+                      className="detalle-incidencia__main-btn detalle-incidencia__main-btn--danger"
+                      onClick={() =>
+                        setFormularioAbierto((prev) => (prev === "rechazar" ? null : "rechazar"))
+                      }
+                    >
+                      Rechazar incidencia
+                    </button>
+                  </div>
 
-    {formularioAbierto === "validar" && (
-      <div className="detalle-incidencia__form-card">
-        <h4 className="detalle-incidencia__form-title">Validar incidencia</h4>
+                  {formularioAbierto === "validar" && (
+                    <div className="detalle-incidencia__form-card">
+                      <h4 className="detalle-incidencia__form-title">Validar incidencia</h4>
 
-        <div className="detalle-incidencia__form-group">
-          <label>Prioridad</label>
-          <select
-            value={prioridadSeleccionada}
-            onChange={(e) => setPrioridadSeleccionada(e.target.value)}
-          >
-            <option value="SIN_ASIGNAR">Sin asignar</option>
-            <option value="URGENTE">Urgente</option>
-            <option value="ALTA">Alta</option>
-            <option value="MEDIA">Media</option>
-            <option value="BAJA">Baja</option>
-          </select>
-        </div>
+                      <div className="detalle-incidencia__form-group">
+                        <label>Prioridad</label>
+                        <select
+                          value={prioridadSeleccionada}
+                          onChange={(e) => setPrioridadSeleccionada(e.target.value)}
+                        >
+                          <option value="SIN_ASIGNAR">Sin asignar</option>
+                          <option value="URGENTE">Urgente</option>
+                          <option value="ALTA">Alta</option>
+                          <option value="MEDIA">Media</option>
+                          <option value="BAJA">Baja</option>
+                        </select>
+                      </div>
 
-        <div className="detalle-incidencia__form-group">
-          <label>Observaciones</label>
-          <textarea
-            placeholder="Añade observaciones sobre la validación..."
-            value={observaciones}
-            onChange={(e) => setObservaciones(e.target.value)}
-          />
-        </div>
+                      <div className="detalle-incidencia__form-group">
+                        <label>Observaciones</label>
+                        <textarea
+                          placeholder="Añade observaciones sobre la validación..."
+                          value={observaciones}
+                          onChange={(e) => setObservaciones(e.target.value)}
+                        />
+                      </div>
 
-        <div className="detalle-incidencia__actions">
-          <button onClick={validarIncidencia}>
-            Confirmar validación
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setFormularioAbierto(null);
-              setObservaciones("");
-              setPrioridadSeleccionada("SIN_ASIGNAR");
-            }}
-          >
-            Cancelar
-          </button>
-        </div>
-      </div>
-    )}
+                      <div className="detalle-incidencia__actions">
+                        <button onClick={validarIncidencia}>
+                          Confirmar validación
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormularioAbierto(null);
+                            setObservaciones("");
+                            setPrioridadSeleccionada("SIN_ASIGNAR");
+                          }}
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
-    {formularioAbierto === "rechazar" && (
-      <div className="detalle-incidencia__form-card">
-        <h4 className="detalle-incidencia__form-title">Rechazar incidencia</h4>
+                  {formularioAbierto === "rechazar" && (
+                    <div className="detalle-incidencia__form-card">
+                      <h4 className="detalle-incidencia__form-title">Rechazar incidencia</h4>
 
-        <div className="detalle-incidencia__form-group">
-          <label>Observaciones</label>
-          <textarea
-            placeholder="Indica el motivo del rechazo..."
-            value={observaciones}
-            onChange={(e) => setObservaciones(e.target.value)}
-          />
-        </div>
+                      <div className="detalle-incidencia__form-group">
+                        <label>Observaciones</label>
+                        <textarea
+                          placeholder="Indica el motivo del rechazo..."
+                          value={observaciones}
+                          onChange={(e) => setObservaciones(e.target.value)}
+                        />
+                      </div>
 
-        <div className="detalle-incidencia__actions">
-          <button onClick={rechazarIncidencia}>
-            Confirmar rechazo
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setFormularioAbierto(null);
-              setObservaciones("");
-            }}
-          >
-            Cancelar
-          </button>
-        </div>
-      </div>
-    )}
-  </>
-)}
+                      <div className="detalle-incidencia__actions">
+                        <button onClick={rechazarIncidencia}>
+                          Confirmar rechazo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormularioAbierto(null);
+                            setObservaciones("");
+                          }}
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
 
               {estado === "VALIDADA" && rol === "OPERADOR" && (
                 <>
@@ -499,12 +502,24 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
             <div className="detalle-incidencia__attachments">
               {adjuntos.length > 0 ? (
                 adjuntos.map((adjunto, index) => (
-                  <img
+                  <div
                     key={index}
-                    src={adjunto}
-                    alt={`Adjunto ${index + 1} de la incidencia`}
-                    className="detalle-incidencia__attachment-image"
-                  />
+                    className="detalle-incidencia__adjunto-item"
+                    onClick={() => setMediaSeleccionada(adjunto)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {adjunto.type?.startsWith("video/") ? (
+                      <video className="detalle-incidencia__attachment-image">
+                        <source src={adjunto.src} type={adjunto.type} />
+                      </video>
+                    ) : (
+                      <img
+                        src={adjunto.src}
+                        alt={adjunto.alt}
+                        className="detalle-incidencia__attachment-image"
+                      />
+                    )}
+                  </div>
                 ))
               ) : (
                 <p>No hay adjuntos disponibles.</p>
@@ -536,6 +551,12 @@ const [formularioAbierto, setFormularioAbierto] = useState(null);
           </div>
         </section>
       </main>
+
+      <MediaPopup
+        isOpen={!!mediaSeleccionada}
+        media={mediaSeleccionada}
+        onClose={() => setMediaSeleccionada(null)}
+      />
     </>
   );
 }
