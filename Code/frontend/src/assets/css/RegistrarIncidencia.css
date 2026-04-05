@@ -95,6 +95,7 @@
   box-shadow: 0 0 0 3px rgba(36, 54, 75, 0.08);
 }
 
+/* BOTÓN VOZ */
 .registrar-incidencia__audio-btn {
   width: 100%;
   max-width: 420px;
@@ -107,13 +108,14 @@
   font-weight: 700;
   padding: 14px 18px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .registrar-incidencia__audio-btn:hover {
-  opacity: 0.95;
+  background: #6ec6ea;
 }
 
+/* FILE */
 .registrar-incidencia__file-row {
   width: 100%;
   max-width: 600px;
@@ -133,6 +135,7 @@
   color: #24364b;
 }
 
+/* MAPA */
 .registrar-incidencia__map {
   width: 100%;
   max-width: 600px;
@@ -140,8 +143,10 @@
   margin-right: auto;
   border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* BOTONES */
 .registrar-incidencia__actions {
   display: flex;
   width: 100%;
@@ -163,18 +168,23 @@
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .registrar-incidencia__button:hover {
-  opacity: 0.95;
+  background: #d1d5db;
 }
 
 .registrar-incidencia__button--primary {
   background: #24364b;
-  color: #fff;
+  color: #ffffff;
 }
 
+.registrar-incidencia__button--primary:hover {
+  background: #1b2838;
+}
+
+/* RESPONSIVE */
 @media (max-width: 640px) {
   .registrar-incidencia__layout {
     grid-template-columns: 1fr;
