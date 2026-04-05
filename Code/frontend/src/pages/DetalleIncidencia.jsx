@@ -15,6 +15,7 @@ export default function DetalleIncidencia() {
   const [incidencia, setIncidencia] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [persistentError, setPersistentError] = useState(null);
   const [working, setWorking] = useState(null);
   const [success, setSuccess] = useState(null);
   const [mediaSeleccionada, setMediaSeleccionada] = useState(null);
@@ -53,17 +54,29 @@ export default function DetalleIncidencia() {
 
         if (data && Object.keys(data).length > 0) {
           setIncidencia(data);
+          setPersistentError(null);
         } else {
           setIncidencia(null);
+          setPersistentError("No se obtuvieron datos de la incidencia.");
         }
       } catch (err) {
         console.error("Error al cargar incidencia:", err);
         if (err?.status === 404) {
-          navigate("/incidencias-urbanas/no-match", { replace: true });
+          setPersistentError("Incidencia no encontrada.");
           return;
         }
 
-        setError("No se pudo cargar la incidencia desde la API. Mostrando datos de ejemplo.");
+        if (err?.status === 401) {
+          navigate("/incidencias-urbanas/login", { replace: true });
+          return;
+        }
+
+        if (err?.status === 403) {
+          setPersistentError("No tienes permiso para acceder a esta incidencia.");
+          return;
+        }
+
+        setPersistentError("No se pudo cargar la incidencia.");
         setIncidencia(null);
       } finally {
         setLoading(false);
@@ -75,38 +88,63 @@ export default function DetalleIncidencia() {
   }, [id, navigate]);
 
   useEffect(() => {
-    if (loading) {
-      setIncidenceList(prev => [...prev.filter(m => m.id !== 'loading'), { id: 'loading', message: 'Cargando incidencia', type: 'waiting' }]);
-    }
-    if (!loading) {
-      setIncidenceList(prev => prev.filter(m => m.id !== 'loading'));
-    }
+    setIncidenceList(prev => {
+      let next = [...prev];
+      if (loading) {
+        if (!next.find(m => m.id === 'loading')) {
+          next.push({ id: 'loading', message: 'Cargando incidencia', type: 'waiting' });
+        }
+      } else {
+        next = next.filter(m => m.id !== 'loading');
+      }
+
+      if (working) {
+        if (!next.find(m => m.id === 'working')) {
+          next.push({ id: 'working', message: working, type: 'waiting' });
+        } else {
+          next = next.map(m => m.id === 'working' ? { ...m, message: working } : m);
+        }
+      } else {
+        next = next.filter(m => m.id !== 'working');
+      }
+
+      if (persistentError) {
+        if (!next.find(m => m.id === 'persistent_error')) {
+          next.push({ id: 'persistent_error', message: persistentError, type: 'error' });
+        } else {
+          next = next.map(m => m.id === 'persistent_error' ? { ...m, message: persistentError } : m);
+        }
+      } else {
+        next = next.filter(m => m.id !== 'persistent_error');
+      }
+
+      return next;
+    });
+  }, [loading, working, persistentError]);
+
+  useEffect(() => {
     if (error) {
-      setIncidenceList(prev => [...prev.filter(m => m.id !== 'error'), { id: 'error', message: error, type: 'error' }]);
+      setIncidenceList(prev => [...prev.filter(m => m.id !== 'error' && m.id !== 'success'), { id: 'error', message: error, type: 'error' }]);
       setSuccess(null);
-      setIncidenceList(prev => [...prev.filter(m => m.id !== 'success')]);
+      setWorking(null);
       setTimeout(() => {
         setIncidenceList(prev => prev.filter(m => m.id !== 'error'));
         setError(null);
       }, 5000);
     }
+  }, [error]);
+
+  useEffect(() => {
     if (success) {
-      setIncidenceList(prev => [...prev.filter(m => m.id !== 'success'), { id: 'success', message: success, type: 'success' }]);
+      setIncidenceList(prev => [...prev.filter(m => m.id !== 'success' && m.id !== 'error'), { id: 'success', message: success, type: 'success' }]);
       setError(null);
-      setIncidenceList(prev => [...prev.filter(m => m.id !== 'error')]);
+      setWorking(null);
       setTimeout(() => {
         setIncidenceList(prev => prev.filter(m => m.id !== 'success'));
         setSuccess(null);
       }, 5000);
     }
-    if (working) {
-      setIncidenceList(prev => [...prev.filter(m => m.id !== 'working'), { id: 'working', message: working, type: 'waiting' }]);
-    }
-    if (!working || success || error) {
-      setIncidenceList(prev => prev.filter(m => m.id !== 'working'));
-      setWorking(null);
-    }
-  }, [loading, error, success, working]);
+  }, [success]);
 
   const estado = incidencia?.estado;
   const prioridad = incidencia?.prioridad;
@@ -119,13 +157,11 @@ export default function DetalleIncidencia() {
 
   const ciudadano =
     incidencia?.ciudadano?.nombre ||
-    incidencia?.usuario?.nombre ||
-    "Anónimo";
+    incidencia?.usuario?.nombre;
 
   const operadorAsignado =
     incidencia?.operador?.nombre ||
-    incidencia?.operadorAsignado?.nombre ||
-    "Operador Principal";
+    incidencia?.operadorAsignado?.nombre;
 
   const estadoLabel = {
     CREADA: "Creada",
@@ -155,65 +191,10 @@ export default function DetalleIncidencia() {
       ? [{ id: incidencia?.id ?? Number(id), lat: latitud, lng: longitud }]
       : [];
 
-  const historialPorEstado = [
-    {
-      fechaCreacion: fechaCreacion || "2026-03-31T07:37:20",
-      estadoNuevo: "CREADA",
-      observaciones: "Incidencia reportada por ciudadano anónimo.",
-    },
-    ...(estado === "VALIDADA" ||
-      estado === "ASIGNADA" ||
-      estado === "EN_CURSO" ||
-      estado === "RESUELTA"
-      ? [
-        {
-          fechaCreacion: "2026-04-01T09:30:00",
-          estadoNuevo: "VALIDADA",
-          observaciones:
-            "La incidencia ha sido revisada y validada por el operador.",
-        },
-      ]
-      : []),
-    ...(estado === "ASIGNADA" || estado === "EN_CURSO" || estado === "RESUELTA"
-      ? [
-        {
-          fechaCreacion: "2026-04-01T12:00:00",
-          estadoNuevo: "ASIGNADA",
-          observaciones:
-            "Incidencia asignada a los operarios correspondientes.",
-        },
-      ]
-      : []),
-    ...(estado === "EN_CURSO" || estado === "RESUELTA"
-      ? [
-        {
-          fechaCreacion: "2026-04-02T08:15:00",
-          estadoNuevo: "EN_CURSO",
-          observaciones: "Los trabajos de intervención ya han comenzado.",
-        },
-      ]
-      : []),
-    ...(estado === "RESUELTA"
-      ? [
-        {
-          fechaCreacion: "2026-04-02T16:45:00",
-          estadoNuevo: "RESUELTA",
-          observaciones:
-            "La incidencia ha quedado resuelta correctamente.",
-        },
-      ]
-      : []),
-  ];
-
   const historial = useMemo(() => {
     const historialApi = incidencia?.historiales ?? incidencia?.historial ?? [];
-
-    if (Array.isArray(historialApi) && historialApi.length > 0) {
-      return historialApi;
-    }
-
-    return historialPorEstado;
-  }, [incidencia, historialPorEstado]);
+    return Array.isArray(historialApi) ? historialApi : [];
+  }, [incidencia]);
 
   const historialOrdenado = [...historial].sort(
     (a, b) =>
@@ -222,7 +203,7 @@ export default function DetalleIncidencia() {
   );
 
   const formatearFecha = (fecha) => {
-    if (!fecha) return "Fecha no disponible";
+    if (!fecha) return;
     return new Date(fecha).toLocaleString("es-ES");
   };
 
@@ -353,11 +334,10 @@ export default function DetalleIncidencia() {
                 <>
                   <div className="detalle-incidencia__actions">
                     <button
-                      className={`detalle-incidencia__main-btn ${
-                        formularioAbierto === "rechazar"
-                          ? "detalle-incidencia__btn--light"
-                          : "detalle-incidencia__btn--dark"
-                      }`}
+                      className={`detalle-incidencia__main-btn ${formularioAbierto === "rechazar"
+                        ? "detalle-incidencia__btn--light"
+                        : "detalle-incidencia__btn--dark"
+                        }`}
                       onClick={() =>
                         setFormularioAbierto((prev) => (prev === "validar" ? null : "validar"))
                       }
@@ -366,11 +346,10 @@ export default function DetalleIncidencia() {
                     </button>
 
                     <button
-                      className={`detalle-incidencia__main-btn ${
-                        formularioAbierto === "rechazar"
-                          ? "detalle-incidencia__btn--dark"
-                          : "detalle-incidencia__btn--light"
-                      }`}
+                      className={`detalle-incidencia__main-btn ${formularioAbierto === "rechazar"
+                        ? "detalle-incidencia__btn--dark"
+                        : "detalle-incidencia__btn--light"
+                        }`}
                       onClick={() =>
                         setFormularioAbierto((prev) => (prev === "rechazar" ? null : "rechazar"))
                       }
@@ -407,7 +386,7 @@ export default function DetalleIncidencia() {
                       </div>
 
                       <div className="detalle-incidencia__actions">
-                        <button 
+                        <button
                           onClick={validarIncidencia}
                           disabled={prioridadSeleccionada === "SIN_ASIGNAR"}
                         >
@@ -441,7 +420,7 @@ export default function DetalleIncidencia() {
                       </div>
 
                       <div className="detalle-incidencia__actions">
-                        <button 
+                        <button
                           onClick={rechazarIncidencia}
                           disabled={!observaciones.trim()}
                         >

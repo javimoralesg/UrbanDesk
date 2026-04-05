@@ -94,4 +94,10 @@
     min-height: 100vh;
   }
 
+  .urban-cards__action-card,
+  .urban-cards__action-card--active {
+    font-size: 1.2rem;
+    padding: 1rem 1.2rem;
+    min-width: 140px;
+  }
 }

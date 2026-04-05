@@ -18,58 +18,6 @@ const ESTADOS_LABELS = {
   RECHAZADA: "Rechazada",
 };
 
-const MIS_INCIDENCIAS_MOCK = [
-  {
-    id: 1,
-    descripcion: "Farola rota en la calle principal",
-    prioridad: "Alta",
-    estado: "CREADA",
-    ubicacion: { latitud: 40.4168, longitud: -3.7038 },
-  },
-  {
-    id: 2,
-    descripcion: "Bache en la calzada",
-    prioridad: "Media",
-    estado: "VALIDADA",
-    ubicacion: { latitud: 40.4175, longitud: -3.7045 },
-  },
-  {
-    id: 3,
-    descripcion: "Contenedor desbordado",
-    prioridad: "Baja",
-    estado: "ASIGNADA",
-    ubicacion: { latitud: 40.4182, longitud: -3.7051 },
-  },
-  {
-    id: 4,
-    descripcion: "Señal de tráfico dañada",
-    prioridad: "Alta",
-    estado: "EN_CURSO",
-    ubicacion: { latitud: 40.419, longitud: -3.7029 },
-  },
-  {
-    id: 5,
-    descripcion: "Fuga de agua en acera",
-    prioridad: "Alta",
-    estado: "RESUELTA",
-    ubicacion: { latitud: 40.4159, longitud: -3.7018 },
-  },
-  {
-    id: 6,
-    descripcion: "Papelera rota en el parque",
-    prioridad: "Media",
-    estado: "RECHAZADA",
-    ubicacion: { latitud: 40.4148, longitud: -3.7062 },
-  },
-  {
-    id: 7,
-    descripcion: "Acera levantada",
-    prioridad: "Baja",
-    estado: "CERRADA",
-    ubicacion: { latitud: 40.4201, longitud: -3.707 },
-  },
-];
-
 const ORDEN_ESTADOS = {
   CREADA: 1,
   VALIDADA: 2,
@@ -118,28 +66,56 @@ export default function MisIncidencias() {
   const [rolUsuario, setRolUsuario] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [persistentError, setPersistentError] = useState(null);
 
   const navigate = useNavigate();
 
   const [incidenceList, setIncidenceList] = useState([]);
 
   useEffect(() => {
-    if (loading) {
-      setIncidenceList(prev => ([...prev, { id: 'loading', message: 'Cargando incidencias', type: 'waiting' }]));
-    }
-    if (!loading) {
-      setIncidenceList(prev => prev.filter(m => m.id !== 'loading'));
-    }
+    setIncidenceList(prev => {
+      let next = [...prev];
+      if (loading) {
+        if (!next.find(m => m.id === 'loading')) {
+          next.push({ id: 'loading', message: 'Cargando incidencias', type: 'waiting' });
+        }
+      } else {
+        next = next.filter(m => m.id !== 'loading');
+      }
+
+      if (persistentError) {
+        if (!next.find(m => m.id === 'persistent_error')) {
+          next.push({ id: 'persistent_error', message: persistentError, type: 'error' });
+        } else {
+          next = next.map(m => m.id === 'persistent_error' ? { ...m, message: persistentError } : m);
+        }
+      } else {
+        next = next.filter(m => m.id !== 'persistent_error');
+      }
+
+      return next;
+    });
+  }, [loading, persistentError]);
+
+  useEffect(() => {
     if (error) {
-      setIncidenceList(prev => ([...prev, { id: 'error', message: error, type: 'error' }]));
+      setIncidenceList(prev => {
+        let next = [...prev];
+        if (!next.find(m => m.id === 'error')) {
+          next.push({ id: 'error', message: error, type: 'error' });
+        } else {
+          next = next.map(m => m.id === 'error' ? { ...m, message: error } : m);
+        }
+        return next;
+      });
       setLoading(false);
-      setIncidenceList(prev => [...prev.filter(m => m.id !== 'loading')]);
+      setIncidenceList(prev => prev.filter(m => m.id !== 'loading'));
       setTimeout(() => {
         setIncidenceList(prev => prev.filter(m => m.id !== 'error'));
         setError(null);
       }, 5000);
     }
-  }, [loading, error]);
+  }, [error]);
 
   useEffect(() => {
     const verificarSesionYRedirigir = () => {
@@ -156,8 +132,8 @@ export default function MisIncidencias() {
 
         const rawUser = localStorage.getItem("user");
         if (!rawUser) {
-          setMisIncidencias(MIS_INCIDENCIAS_MOCK);
-          setError("No se encontró sesión. Mostrando incidencias de ejemplo.");
+          setMisIncidencias([]);
+          setError("No se encontró sesión para obtener datos.");
           return;
         }
 
@@ -165,14 +141,14 @@ export default function MisIncidencias() {
         try {
           user = JSON.parse(rawUser);
         } catch {
-          setMisIncidencias(MIS_INCIDENCIAS_MOCK);
-          setError("No se pudo leer la sesión. Mostrando incidencias de ejemplo.");
+          setMisIncidencias([]);
+          setError("No se pudo leer la sesión para obtener datos.");
           return;
         }
 
         if (!user?.id) {
-          setMisIncidencias(MIS_INCIDENCIAS_MOCK);
-          setError("No se encontró el id del usuario. Mostrando incidencias de ejemplo.");
+          setMisIncidencias([]);
+          setError("No se encontró el id del usuario.");
           return;
         }
 
@@ -185,14 +161,15 @@ export default function MisIncidencias() {
 
         if (Array.isArray(data) && data.length > 0) {
           setMisIncidencias(data);
+          setPersistentError(null);
         } else {
-          setMisIncidencias(MIS_INCIDENCIAS_MOCK);
-          setError("La API no devolvió incidencias. Mostrando incidencias de ejemplo.");
+          setMisIncidencias([]);
+          setPersistentError("No se obtuvieron incidencias del servidor.");
         }
       } catch (err) {
         console.error("Error al cargar mis incidencias:", err);
-        setMisIncidencias(MIS_INCIDENCIAS_MOCK);
-        setError("No se pudieron cargar tus incidencias desde la API. Mostrando incidencias de ejemplo.");
+        setMisIncidencias([]);
+        setError("Error de red: No se pudo conectar con el servidor.");
       } finally {
         setLoading(false);
       }
