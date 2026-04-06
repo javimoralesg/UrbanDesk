@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0">
   <diagram name="Page-1" id="DOUQtb2R-PkraQFvJPJS">
-    <mxGraphModel dx="1518" dy="810" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2361" dy="759" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -30,18 +30,18 @@
         </object>
         <object placeholders="1" c4Name="H2 DataBase" c4Type="jdbc:h2:mem:urbandesk" c4Description="usuarios-incidencias&#xa;historial-evidencias" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#cccccc&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="-Rr8FW6R5V26wYJOCMdc-18">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#1061B0;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0D5091;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
-            <mxGeometry height="120" width="240" x="790" y="850" as="geometry" />
+            <mxGeometry height="120" width="240" x="790" y="840" as="geometry" />
           </mxCell>
         </object>
         <mxCell id="-Rr8FW6R5V26wYJOCMdc-19" edge="1" parent="1" source="-Rr8FW6R5V26wYJOCMdc-16" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=12;startSize=8;endSize=8;" target="-Rr8FW6R5V26wYJOCMdc-18">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <object placeholders="1" c4Name="UsuarioController" c4Type="@ResetController/Api/usuarios" c4Description="POST/registro/login" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#cccccc&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="-Rr8FW6R5V26wYJOCMdc-20">
+        <object placeholders="1" c4Name="UsuarioController" c4Type="@ResetController/Api/usuarios" c4Description="POST /regstro&#xa;POST /login" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#cccccc&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="-Rr8FW6R5V26wYJOCMdc-20">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#1061B0;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0D5091;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry height="120" width="240" x="450" y="240" as="geometry" />
           </mxCell>
         </object>
-        <object placeholders="1" c4Name="UsuarioService" c4Type="@Service" c4Description="registrarCiudadano()&#xa;registrarOperador()&#xa;registrarTecnico()" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#cccccc&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="-Rr8FW6R5V26wYJOCMdc-21">
+        <object placeholders="1" c4Name="UsuarioService" c4Type="@Service" c4Description="registrarCiudadano()&#xa;registrarOperador()&#xa;registrarTecnico()&#xa;modificarPerfil()" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#cccccc&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="-Rr8FW6R5V26wYJOCMdc-21">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#1061B0;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0D5091;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry height="120" width="240" x="450" y="440" as="geometry" />
           </mxCell>
@@ -63,7 +63,7 @@
         <mxCell id="-Rr8FW6R5V26wYJOCMdc-26" edge="1" parent="1" source="-Rr8FW6R5V26wYJOCMdc-24" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;startSize=8;endSize=8;" target="-Rr8FW6R5V26wYJOCMdc-25">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <object placeholders="1" c4Name="IncidenciaController" c4Type="@ResetController/Api/Incidencias" c4Description="GET-POST-PUT-DELETE" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#cccccc&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="-Rr8FW6R5V26wYJOCMdc-24">
+        <object placeholders="1" c4Name="IncidenciaController" c4Type="@ResetController/Api/Incidencias" c4Description="POST /incidencia&#xa;GET /&#xa;GET /{id}&#xa;POST /crearIncidencia&#xa;" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#cccccc&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="-Rr8FW6R5V26wYJOCMdc-24">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#1061B0;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0D5091;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry height="120" width="240" x="120" y="240" as="geometry" />
           </mxCell>
@@ -71,7 +71,7 @@
         <mxCell id="-Rr8FW6R5V26wYJOCMdc-29" edge="1" parent="1" source="-Rr8FW6R5V26wYJOCMdc-25" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;startSize=8;endSize=8;" target="-Rr8FW6R5V26wYJOCMdc-27">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <object placeholders="1" c4Name="IncidenciaService" c4Type="@Service" c4Description="crearIncidencia()&#xa;actualizarIncidencia()&#xa;validarIncidencia()&#xa;rechazarIncidencia()" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#cccccc&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="-Rr8FW6R5V26wYJOCMdc-25">
+        <object placeholders="1" c4Name="IncidenciaService" c4Type="@Service" c4Description="crearIncidencia()&#xa;validarIncidencia()&#xa;rechazarIncidencia()&#xa;obtenerporX()&#xa;asignarx()" label="&lt;font style=&quot;font-size: 16px&quot;&gt;&lt;b&gt;%c4Name%&lt;/b&gt;&lt;/font&gt;&lt;div&gt;[%c4Type%]&lt;/div&gt;&lt;br&gt;&lt;div&gt;&lt;font style=&quot;font-size: 11px&quot;&gt;&lt;font color=&quot;#cccccc&quot;&gt;%c4Description%&lt;/font&gt;&lt;/div&gt;" id="-Rr8FW6R5V26wYJOCMdc-25">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#1061B0;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0D5091;metaEdit=1;resizable=0;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];" vertex="1">
             <mxGeometry height="120" width="240" x="120" y="440" as="geometry" />
           </mxCell>
