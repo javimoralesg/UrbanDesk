@@ -9,6 +9,7 @@ import Registrarse from "./pages/Registrarse";
 import NoMatch from "./pages/NoMatch";
 import MisIncidencias from './pages/MisIncidencias';
 import DetalleIncidencia from './pages/DetalleIncidencia';
+import EditarPerfil from './pages/EditarPerfil';
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
         <Route path="/incidencias-urbanas/register" element={<Registrarse />} />
         <Route path="*" element={<NoMatch />} />
         <Route path="/incidencias-urbanas/mis-incidencias" element={<MisIncidencias />} />
-
+        <Route path="/incidencias-urbanas/editar-perfil" element={<EditarPerfil />} />
       </Routes>
     </>
   )
