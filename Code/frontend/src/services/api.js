@@ -1,6 +1,5 @@
 const BASE_URL = 'http://localhost:8080/api';
 
-
 const getAuthHeaders = () => {
     try {
         const raw = localStorage.getItem('user');
@@ -44,16 +43,12 @@ function resetInactivityTimer() {
     }, INACTIVITY_TIMEOUT_MINUTES * 60 * 1000);
 }
 
-// Escucha eventos de actividad del usuario
 ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(event => {
     window.addEventListener(event, resetInactivityTimer);
 });
 resetInactivityTimer();
 
-
 export const api = {
-    // funciones asíncronas que se usan en los jsx y que hacen las peticiones al backend
-
     login: async (email, password) => {
         resetInactivityTimer();
         const authdata = window.btoa(email + ':' + password);
@@ -98,6 +93,36 @@ export const api = {
         return user;
     },
 
+    updateProfile: async (userData) => {
+        resetInactivityTimer();
+
+        const response = await fetch(`${BASE_URL}/usuarios/perfil`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders(),
+            },
+            body: JSON.stringify(userData),
+        });
+
+        const updatedUser = await parseJsonOrThrow(response);
+
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+        const finalEmail = userData.email || currentUser.email;
+        const finalPassword = userData.password || null;
+
+        if (finalEmail && finalPassword) {
+            updatedUser.authdata = window.btoa(finalEmail + ':' + finalPassword);
+        } else {
+            updatedUser.authdata = currentUser.authdata;
+        }
+
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+
+        return updatedUser;
+        },
+
     getIncidents: async () => {
         resetInactivityTimer();
         const response = await fetch(`${BASE_URL}/incidencias`, {
@@ -107,8 +132,6 @@ export const api = {
         return parseJsonOrThrow(response);
     },
 
-
-    // llamadas a la api de IA 
     validateDescription: async (descripcion) => {
         resetInactivityTimer();
         const response = await fetch("https://urbandeskvalidate-g475okyxfq-uc.a.run.app", {
@@ -120,7 +143,7 @@ export const api = {
             body: JSON.stringify({ userMessage: descripcion }),
         });
 
-        const ops = await response.json()
+        const ops = await response.json();
         try {
             const parsedAnswer = JSON.parse(ops.reply);
             return JSON.stringify(parsedAnswer);
@@ -147,9 +170,8 @@ export const api = {
             throw new Error("ReadableStream no soportado.");
         }
 
-        return response
+        return response;
     },
-
 
     obtenerIncidenciaPorId: async (id) => {
         resetInactivityTimer();
@@ -169,7 +191,6 @@ export const api = {
             try {
                 message = (await response.text()) || message;
             } catch {
-                // Ignorar fallos al leer el cuerpo de error.
             }
         }
 

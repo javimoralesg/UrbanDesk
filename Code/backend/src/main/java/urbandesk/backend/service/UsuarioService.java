@@ -1,5 +1,9 @@
 package urbandesk.backend.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 import urbandesk.backend.domain.DomainRuleViolation;
 import urbandesk.backend.domain.user.Ciudadano;
 import urbandesk.backend.domain.user.Especialidad;
@@ -7,9 +11,6 @@ import urbandesk.backend.domain.user.Operador;
 import urbandesk.backend.domain.user.Tecnico;
 import urbandesk.backend.domain.user.Usuario;
 import urbandesk.backend.repository.UsuarioRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 @RequiredArgsConstructor
@@ -75,12 +76,46 @@ public class UsuarioService {
         return passwordEncoder.encode(password);
     }
 
+    public Usuario modificarPerfilPorEmailAutenticado(
+            String emailActual,
+            String nombre,
+            String nuevoEmail,
+            String password,
+            String codigoPostal
+    ) {
+        Usuario usuario = obtenerUsuarioPorEmail(emailActual);
+
+        if (nombre != null && !nombre.isBlank()) {
+            usuario.actualizarDatosPersonales(nombre, usuario.getEmail());
+        }
+
+        if (nuevoEmail != null && !nuevoEmail.isBlank()) {
+            if (!nuevoEmail.equals(usuario.getEmail()) && existeUsuarioConEmail(nuevoEmail)) {
+                throw new DomainRuleViolation("El email ya está registrado");
+            }
+            usuario.actualizarDatosPersonales(usuario.getNombre(), nuevoEmail);
+        }
+
+        if (password != null && !password.isBlank()) {
+            usuario.actualizarPassword(hashPassword(password));
+        }
+
+        if (usuario instanceof Ciudadano ciudadano) {
+            if (codigoPostal != null && !codigoPostal.isBlank()) {
+                ciudadano.actualizarCodigoPostal(codigoPostal);
+            }
+        }
+
+        return usuarioRepository.save(usuario);
+    }
+
     public Usuario modificarPerfil(Long id, String nombre, String email, String password, String codigoPostal) {
         Usuario usuario = obtenerUsuarioPorId(id);
 
         if (password != null && !password.isBlank()) {
             usuario.actualizarPassword(hashPassword(password));
         }
+
         if (usuario instanceof Ciudadano ciudadano) {
             if (nombre != null && !nombre.isBlank()) {
                 ciudadano.actualizarDatosPersonales(nombre, ciudadano.getEmail());
@@ -95,7 +130,7 @@ public class UsuarioService {
                 ciudadano.actualizarCodigoPostal(codigoPostal);
             }
         }
+
         return usuarioRepository.save(usuario);
     }
-
 }

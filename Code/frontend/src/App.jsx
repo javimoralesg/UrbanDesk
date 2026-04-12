@@ -11,6 +11,7 @@ import MisIncidencias from './pages/MisIncidencias';
 import DetalleIncidencia from './pages/DetalleIncidencia';
 import EditarPerfil from './pages/EditarPerfil';
 
+
 function App() {
   return (
     <>
