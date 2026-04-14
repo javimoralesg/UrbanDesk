@@ -306,6 +306,40 @@ export const api = {
         return await response.json();
     },
 
+    asignarTecnicoPorEspecialidadIncidencia: async (id, especialidad) => {
+        resetInactivityTimer();
+        const response = await fetch(
+            `${BASE_URL}/incidencias/${id}/tecnico?especialidad=${encodeURIComponent(especialidad)}`,
+            {
+                method: "PUT",
+                headers: getAuthHeaders(),
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Error al asignar técnico por especialidad");
+        }
+
+        return await response.json();
+    },
+
+    eliminarTecnicoPorEspecialidadIncidencia: async (id, especialidad) => {
+        resetInactivityTimer();
+        const response = await fetch(
+            `${BASE_URL}/incidencias/${id}/tecnico?especialidad=${encodeURIComponent(especialidad)}`,
+            {
+                method: "DELETE",
+                headers: getAuthHeaders(),
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Error al eliminar técnico por especialidad");
+        }
+
+        return await response.json();
+    },
+
     eliminarTecnicoIncidencia: async (id, tecnicoId) => {
         resetInactivityTimer();
         const response = await fetch(

@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -14,9 +13,9 @@ import lombok.RequiredArgsConstructor;
 import urbandesk.backend.domain.DomainRuleViolation;
 import urbandesk.backend.domain.incidence.Estado;
 import urbandesk.backend.domain.incidence.Incidencia;
-import urbandesk.backend.domain.incidence.Prioridad;
 import urbandesk.backend.domain.incidence.Ubicacion;
 import urbandesk.backend.domain.user.Ciudadano;
+import urbandesk.backend.domain.user.Especialidad;
 import urbandesk.backend.domain.user.Operador;
 import urbandesk.backend.domain.user.Tecnico;
 import urbandesk.backend.domain.user.Usuario;
@@ -203,6 +202,66 @@ public class IncidenciaController {
         }
 
         return ResponseEntity.ok(incidenciaService.asignarTecnico(id, tecnicoId));
+    }
+
+    @PutMapping("/{id}/tecnico")
+    public ResponseEntity<Incidencia> asignarTecnico(
+            @PathVariable Long id,
+            @RequestParam String especialidad,
+            Principal principal) {
+
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (!(usuario instanceof Operador operador)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Solo un operador autenticado puede asignar técnicos a una incidencia");
+        }
+
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        if (incidencia.getOperador() == null
+                || !Objects.equals(incidencia.getOperador().getId(), operador.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "La incidencia no está asignada a este operador");
+        }
+
+        Especialidad especialidadEnum;
+        try {
+            especialidadEnum = Especialidad.valueOf(especialidad.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Especialidad no válida: " + especialidad);
+        }
+
+        return ResponseEntity.ok(incidenciaService.asignarTecnicoPorEspecialidad(id, especialidadEnum));
+    }
+
+    @DeleteMapping("/{id}/tecnico")
+    public ResponseEntity<Incidencia> eliminarTecnico(
+            @PathVariable Long id,
+            @RequestParam String especialidad,
+            Principal principal) {
+
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (!(usuario instanceof Operador operador)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Solo un operador autenticado puede eliminar técnicos de una incidencia");
+        }
+
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        if (incidencia.getOperador() == null
+                || !Objects.equals(incidencia.getOperador().getId(), operador.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "La incidencia no está asignada a este operador");
+        }
+
+        Especialidad especialidadEnum;
+        try {
+            especialidadEnum = Especialidad.valueOf(especialidad.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Especialidad no válida: " + especialidad);
+        }
+
+        return ResponseEntity.ok(incidenciaService.eliminarTecnicoPorEspecialidad(id, especialidadEnum));
     }
 
     @DeleteMapping("/{id}/tecnico/{tecnicoId}")

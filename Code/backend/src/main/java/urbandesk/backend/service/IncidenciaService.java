@@ -18,6 +18,7 @@ import urbandesk.backend.domain.incidence.Incidencia;
 import urbandesk.backend.domain.incidence.Prioridad;
 import urbandesk.backend.domain.incidence.Ubicacion;
 import urbandesk.backend.domain.user.Ciudadano;
+import urbandesk.backend.domain.user.Especialidad;
 import urbandesk.backend.domain.user.Operador;
 import urbandesk.backend.domain.user.Tecnico;
 import urbandesk.backend.domain.user.Usuario;
@@ -205,6 +206,46 @@ public class IncidenciaService {
         }
 
         incidencia.agregarTecnico(tecnico);
+        tecnico.incrementarCarga();
+        usuarioRepository.save(tecnico);
+        return incidenciaRepository.save(incidencia);
+    }
+
+    public Incidencia asignarTecnicoPorEspecialidad(Long incidenciaId, Especialidad especialidad) {
+        Incidencia incidencia = obtenerPorId(incidenciaId);
+
+        Tecnico tecnicoSeleccionado = usuarioRepository.findAll().stream()
+                .filter(Tecnico.class::isInstance)
+                .map(Tecnico.class::cast)
+                .filter(tecnico -> tecnico.getEspecialidad() == especialidad)
+                .filter(Tecnico::tieneDisponibilidad)
+                .filter(tecnico -> incidencia.getTecnicos().stream()
+                        .noneMatch(t -> Objects.equals(t.getId(), tecnico.getId())))
+                .min(Comparator
+                        .comparing(Tecnico::getCargaActual, Comparator.nullsFirst(Integer::compareTo))
+                        .thenComparing(Tecnico::getId))
+                .orElseThrow(() -> new DomainRuleViolation(
+                        "No hay técnicos disponibles para la especialidad: " + especialidad));
+
+        incidencia.agregarTecnico(tecnicoSeleccionado);
+        tecnicoSeleccionado.incrementarCarga();
+
+        usuarioRepository.save(tecnicoSeleccionado);
+        return incidenciaRepository.save(incidencia);
+    }
+
+    public Incidencia eliminarTecnicoPorEspecialidad(Long incidenciaId, Especialidad especialidad) {
+        Incidencia incidencia = obtenerPorId(incidenciaId);
+
+        Tecnico tecnicoSeleccionado = incidencia.getTecnicos().stream()
+                .filter(tecnico -> tecnico.getEspecialidad() == especialidad)
+                .findFirst()
+                .orElseThrow(() -> new DomainRuleViolation(
+                        "No hay técnicos asignados para la especialidad: " + especialidad));
+
+        incidencia.eliminarTecnico(tecnicoSeleccionado);
+        tecnicoSeleccionado.decrementarCarga();
+        usuarioRepository.save(tecnicoSeleccionado);
         return incidenciaRepository.save(incidencia);
     }
 
@@ -218,6 +259,8 @@ public class IncidenciaService {
             throw new DomainRuleViolation("El usuario indicado no es un técnico");
         }
 
+        tecnico.decrementarCarga();
+        usuarioRepository.save(tecnico);
         incidencia.eliminarTecnico(tecnico);
         return incidenciaRepository.save(incidencia);
     }

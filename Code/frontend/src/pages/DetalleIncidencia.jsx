@@ -26,6 +26,14 @@ export default function DetalleIncidencia() {
   // "validar" | "rechazar" | null
   const [incidenceList, setIncidenceList] = useState([]);
 
+  const especialidadesTecnico = [
+    { key: "JARDINERO", label: "Jardinero" },
+    { key: "FONTANERO", label: "Fontanero" },
+    { key: "ELECTRICISTA", label: "Electricista" },
+    { key: "PINTOR", label: "Pintor" },
+    { key: "ALBAÑIL", label: "Albañil" },
+  ];
+
   const rol = useMemo(() => {
     const rawUser = localStorage.getItem("user");
     if (!rawUser) return "";
@@ -245,6 +253,34 @@ export default function DetalleIncidencia() {
     }
   };
 
+  const asignarTecnicoPorEspecialidad = async (especialidad) => {
+    try {
+      setWorking(`Asignando técnico de ${especialidad.toLowerCase()}...`);
+      const data = await api.asignarTecnicoPorEspecialidadIncidencia(id, especialidad);
+      setIncidencia(data);
+      setSuccess(`Técnico de ${especialidad.toLowerCase()} asignado correctamente.`);
+    } catch (err) {
+      console.error("Error al asignar técnico por especialidad:", err);
+      setError("No se pudo asignar un técnico de esa especialidad.");
+    } finally {
+      setWorking(null);
+    }
+  };
+
+  const eliminarTecnicoPorEspecialidad = async (especialidad) => {
+    try {
+      setWorking(`Eliminando técnico de ${especialidad.toLowerCase()}...`);
+      const data = await api.eliminarTecnicoPorEspecialidadIncidencia(id, especialidad);
+      setIncidencia(data);
+      setSuccess(`Técnico de ${especialidad.toLowerCase()} eliminado correctamente.`);
+    } catch (err) {
+      console.error("Error al eliminar técnico por especialidad:", err);
+      setError("No se pudo eliminar el técnico de esa especialidad.");
+    } finally {
+      setWorking(null);
+    }
+  };
+
   return (
     <>
       <Popups list={incidenceList} />
@@ -444,26 +480,35 @@ export default function DetalleIncidencia() {
               {estado === "VALIDADA" && rol === "OPERADOR" && (
                 <>
                   <div className="detalle-incidencia__asignacion">
-                    <div>
-                      Jardinero <button className="delete">Eliminar</button>
-                    </div>
-                    <div>
-                      Fontanero <button className="delete">Eliminar</button>
-                    </div>
-                    <div>
-                      Electricista <button className="delete">Eliminar</button>
-                    </div>
-                    <div>
-                      Pintor <button className="add">Añadir</button>
-                    </div>
-                    <div>
-                      Albañil <button className="add">Añadir</button>
-                    </div>
-                  </div>
+                    {especialidadesTecnico.map((especialidad) => {
+                      const asignadosEspecialidad = (incidencia?.tecnicos || []).filter(
+                        (tecnico) => tecnico?.especialidad === especialidad.key
+                      );
+                      const estaAsignado = asignadosEspecialidad.length > 0;
 
-                  <button className="detalle-incidencia__main-btn">
-                    Asignar
-                  </button>
+                      return (
+                        <div key={especialidad.key}>
+                          {especialidad.label}
+                          {asignadosEspecialidad.length > 0 && (
+                            <span>
+                              {" "}
+                              ({asignadosEspecialidad.map((tecnico) => tecnico?.nombre).join(", ")})
+                            </span>
+                          )}
+                          <button
+                            className={estaAsignado ? "delete" : "add"}
+                            onClick={() =>
+                              estaAsignado
+                                ? eliminarTecnicoPorEspecialidad(especialidad.key)
+                                : asignarTecnicoPorEspecialidad(especialidad.key)
+                            }
+                          >
+                            {estaAsignado ? "Eliminar" : "Añadir"}
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </>
               )}
 
