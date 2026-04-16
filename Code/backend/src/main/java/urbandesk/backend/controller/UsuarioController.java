@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -101,6 +102,23 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error al actualizar el perfil"));
+        }
+    }
+
+    @DeleteMapping("/perfil")
+    public ResponseEntity<?> eliminarCuenta(Authentication authentication) {
+        try {
+            if (authentication == null || authentication.getName() == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "Usuario no autenticado"));
+            }
+
+            String email = authentication.getName();
+            usuarioService.eliminarUsuario(email);
+
+            return ResponseEntity.ok(Map.of("message", "Cuenta eliminada correctamente"));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Error al eliminar la cuenta"));
         }
     }
 }

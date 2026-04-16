@@ -83,8 +83,18 @@ export default function Popups({ list }) {
                         minHeight: '40px'
                     }}
                 >
-                    <span style={{ display: 'flex', alignItems: 'center' }}>{emoji[popup.type]}</span>
+                            <span style={{ display: 'flex', alignItems: 'center' }}>{emoji[popup.type]}</span>
                     <span style={{ display: 'flex', alignItems: 'center' }}>{popup.message}</span>
+                    {popup.onAccept && popup.onCancel && (
+                        <div className="popup-actions">
+                            <button className="popup-button popup-button--cancel" onClick={popup.onCancel}>
+                                {popup.cancelText || 'Cancelar'}
+                            </button>
+                            <button className="popup-button popup-button--accept" onClick={popup.onAccept}>
+                                {popup.acceptText || 'Aceptar'}
+                            </button>
+                        </div>
+                    )}
                 </div>
             ))}
         </div>

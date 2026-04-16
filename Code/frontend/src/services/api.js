@@ -123,6 +123,20 @@ export const api = {
         return updatedUser;
         },
 
+    deleteAccount: async () => {
+        resetInactivityTimer();
+
+        const response = await fetch(`${BASE_URL}/usuarios/perfil`, {
+            method: 'DELETE',
+            headers: getAuthHeaders(),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Error al eliminar la cuenta');
+        }
+    },
+
     getIncidents: async () => {
         resetInactivityTimer();
         const response = await fetch(`${BASE_URL}/incidencias`, {

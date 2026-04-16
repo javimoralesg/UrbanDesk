@@ -26,6 +26,41 @@
   box-sizing: border-box;
 }
 
+#popup-container .popup-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+#popup-container .popup-button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#popup-container .popup-button--accept {
+  background: #4caf50;
+  color: white;
+}
+
+#popup-container .popup-button--cancel {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #111827;
+}
+
+#popup-container .popup-button--accept:hover {
+  background: #43a047;
+}
+
+#popup-container .popup-button--cancel:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
 
 
 @media (max-width: 640px) {

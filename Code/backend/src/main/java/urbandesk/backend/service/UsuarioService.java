@@ -119,6 +119,11 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    public void eliminarUsuario(String email) {
+        Usuario usuario = obtenerUsuarioPorEmail(email);
+        usuarioRepository.delete(usuario);
+    }
+
     public Usuario modificarPerfil(Long id, String nombre, String email, String password, String codigoPostal) {
         Usuario usuario = obtenerUsuarioPorId(id);
 

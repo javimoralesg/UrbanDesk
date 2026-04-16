@@ -17,6 +17,7 @@ export default function EditarPerfil() {
   const [loading, setLoading] = useState(false);
   const [isRestricted, setIsRestricted] = useState(false);
   const [popups, setPopups] = useState([]);
+  const [confirmPopup, setConfirmPopup] = useState(null);
 
   useEffect(() => {
     try {
@@ -51,6 +52,28 @@ export default function EditarPerfil() {
     }));
   };
 
+  const handleDelete = () => {
+    setConfirmPopup({
+      type: 'error',
+      message: '¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.',
+      acceptText: 'Aceptar',
+      cancelText: 'Cancelar',
+      onAccept: async () => {
+        setConfirmPopup(null);
+        try {
+          await api.deleteAccount();
+          localStorage.removeItem('user');
+          window.location.href = "/incidencias-urbanas/login";
+        } catch (error) {
+          setPopups([{ type: 'error', message: error.message || "Error al eliminar la cuenta" }]);
+          setTimeout(() => setPopups([]), 5000);
+        }
+      },
+      onCancel: () => setConfirmPopup(null),
+      persistent: true,
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -82,13 +105,17 @@ export default function EditarPerfil() {
       const result = await api.updateProfile(userData);
 
       if (result.requiresRelogin) {
-          alert("Perfil actualizado correctamente. Inicia sesión de nuevo.");
+        setPopups([{ type: 'success', message: 'Perfil actualizado correctamente. Inicia sesión de nuevo.' }]);
+        setTimeout(() => {
           window.location.href = "/incidencias-urbanas/login";
+        }, 1500);
       } else {
-          setPopups([{ type: 'success', message: 'Perfil actualizado correctamente' }]);
-          setTimeout(() => setPopups([]), 3000);
+        setPopups([{ type: 'success', message: 'Perfil actualizado correctamente' }]);
+        setTimeout(() => {
+          setPopups([]);
           window.location.href = "/incidencias-urbanas";
-        }
+        }, 1500);
+      }
 
     } catch (error) {
       console.error("Error al actualizar perfil:", error);
@@ -173,10 +200,18 @@ export default function EditarPerfil() {
             >
               {loading ? "Guardando..." : "Guardar cambios"}
             </button>
+
+            <button
+              type="button"
+              className="editar-perfil__delete-button"
+              onClick={handleDelete}
+            >
+              Eliminar cuenta
+            </button>
           </form>
         </main>
       </div>
-      <Popups list={popups} />
+      <Popups list={[...popups, ...(confirmPopup ? [confirmPopup] : [])]} />
     </div>
   );
 }

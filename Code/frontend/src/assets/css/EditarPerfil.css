@@ -25,6 +25,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  margin: 0 auto;
 }
 
 .editar-perfil__field {
@@ -47,6 +48,44 @@
 
 .editar-perfil__field input:focus {
   border-color: #4f46e5;
+}
+
+.editar-perfil__button {
+  padding: 0.8rem 1rem;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.editar-perfil__button:hover {
+  background-color: #4338ca;
+}
+
+.editar-perfil__button:disabled {
+  background-color: #d9d9d9;
+  cursor: not-allowed;
+}
+
+.editar-perfil__delete-button {
+  padding: 0.8rem 1rem;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1rem;
+}
+
+.editar-perfil__delete-button:hover {
+  background-color: #d32f2f;
 }
 
 .editar-perfil__button {
