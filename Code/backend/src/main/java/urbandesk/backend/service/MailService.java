@@ -6,6 +6,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import urbandesk.backend.domain.incidence.Estado;
+import urbandesk.backend.domain.incidence.Ubicacion;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -176,7 +177,7 @@ public class MailService {
     }
 
     public void enviarIncidenciaAsignadaOperador(String destinatario, Long idIncidencia,
-        String descripcion, String direccion) {
+        String descripcion, Ubicacion ubicacion) {
     String html = """
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
                 <div style="background-color: #3b82f6; padding: 24px; text-align: center;">
@@ -197,7 +198,7 @@ public class MailService {
                     <p style="color: #6b7280; font-size: 12px;">© 2026 UrbanDesk. Todos los derechos reservados.</p>
                 </div>
             </div>
-            """.formatted(idIncidencia, descripcion, direccion);
+            """.formatted(idIncidencia, descripcion, ubicacion.toString());
 
     enviar(destinatario, "Nueva incidencia asignada #" + idIncidencia, html);
     }   

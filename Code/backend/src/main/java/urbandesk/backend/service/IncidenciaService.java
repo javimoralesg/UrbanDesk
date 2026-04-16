@@ -191,7 +191,11 @@ public class IncidenciaService {
                 "Incidencia asignada a un operador"));
 
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
-
+        MailService.enviarIncidenciaAsignadaOperador(
+                operadorConMenorCarga.getEmail(),
+                incidenciaGuardada.getId(),
+                incidenciaGuardada.getDescripcion(),
+                incidenciaGuardada.getUbicacion());
         return incidenciaGuardada;
     }
 
