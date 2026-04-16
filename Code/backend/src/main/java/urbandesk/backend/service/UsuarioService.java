@@ -8,6 +8,7 @@ import urbandesk.backend.domain.DomainRuleViolation;
 import urbandesk.backend.domain.user.Ciudadano;
 import urbandesk.backend.domain.user.Especialidad;
 import urbandesk.backend.domain.user.Operador;
+import urbandesk.backend.domain.user.Rol;
 import urbandesk.backend.domain.user.Tecnico;
 import urbandesk.backend.domain.user.Usuario;
 import urbandesk.backend.repository.UsuarioRepository;
@@ -84,6 +85,15 @@ public class UsuarioService {
             String codigoPostal
     ) {
         Usuario usuario = obtenerUsuarioPorEmail(emailActual);
+
+        // Validación: Operadores y Técnicos solo pueden cambiar contraseña
+        if (usuario.getRol() == Rol.OPERADOR || usuario.getRol() == Rol.TECNICO) {
+            if ((nombre != null && !nombre.isBlank()) ||
+                (nuevoEmail != null && !nuevoEmail.isBlank()) ||
+                (codigoPostal != null && !codigoPostal.isBlank())) {
+                throw new DomainRuleViolation("Los operadores y técnicos solo pueden cambiar su contraseña");
+            }
+        }
 
         if (nombre != null && !nombre.isBlank()) {
             usuario.actualizarDatosPersonales(nombre, usuario.getEmail());
