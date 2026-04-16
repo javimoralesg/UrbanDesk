@@ -370,4 +370,18 @@ export const api = {
 
         return await response.json();
     },
+
+    aceptarIncidencia: async (id) => {
+        resetInactivityTimer();
+        const response = await fetch(`${BASE_URL}/incidencias/${id}/aceptar`, {
+            method: "PUT",
+            headers: getAuthHeaders(),
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al aceptar la incidencia");
+        }
+
+        return await response.json();
+    }
 }

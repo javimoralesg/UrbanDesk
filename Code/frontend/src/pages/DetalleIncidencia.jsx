@@ -19,6 +19,7 @@ export default function DetalleIncidencia() {
   const [working, setWorking] = useState(null);
   const [success, setSuccess] = useState(null);
   const [mediaSeleccionada, setMediaSeleccionada] = useState(null);
+  const [incidenciaAceptadaPorTecnico, setIncidenciaAceptadaPorTecnico] = useState(false);
 
   const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("SIN_ASIGNAR");
   const [observaciones, setObservaciones] = useState("");
@@ -154,6 +155,12 @@ export default function DetalleIncidencia() {
     }
   }, [success]);
 
+  useEffect(() => {
+    if (incidencia?.estado === "EN_CURSO") {
+      setIncidenciaAceptadaPorTecnico(true);
+    }
+  }, [incidencia?.estado]);
+
   const estado = incidencia?.estado;
   const prioridad = incidencia?.prioridad;
   const descripcion = incidencia?.descripcion;
@@ -276,6 +283,26 @@ export default function DetalleIncidencia() {
     } catch (err) {
       console.error("Error al eliminar técnico por especialidad:", err);
       setError("No se pudo eliminar el técnico de esa especialidad.");
+    } finally {
+      setWorking(null);
+    }
+  };
+
+  const aceptarIncidencia = async () => {
+    if (incidenciaAceptadaPorTecnico) {
+      setError("Ya has aceptado esta incidencia.");
+      return;
+    }
+
+    try {
+      setWorking("Aceptando incidencia...");
+      const data = await api.aceptarIncidencia(id);
+      setIncidencia(data);
+      setSuccess("Incidencia aceptada correctamente.");
+      setIncidenciaAceptadaPorTecnico(true);
+    } catch (err) {
+      console.error("Error al aceptar incidencia:", err);
+      setError("No se pudo aceptar la incidencia. Inténtalo de nuevo.");
     } finally {
       setWorking(null);
     }
@@ -510,6 +537,21 @@ export default function DetalleIncidencia() {
                     })}
                   </div>
                 </>
+              )}
+
+              {(estado === "VALIDADA" || estado === "ASIGNADA") &&
+                rol === "TECNICO" && (
+                <div>
+                  <button
+                    className="detalle-incidencia__main-btn"
+                    onClick={aceptarIncidencia}
+                  >
+                    Aceptar incidencia
+                  </button>
+                  <button className="detalle-incidencia__main-btn">
+                    Rechazar incidencia
+                  </button>
+                </div>
               )}
 
               {(estado === "ASIGNADA" || estado === "EN_CURSO") &&
