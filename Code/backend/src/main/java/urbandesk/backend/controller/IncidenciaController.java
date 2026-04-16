@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.Objects;
 import java.util.List;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -284,5 +285,26 @@ public class IncidenciaController {
         }
 
         return ResponseEntity.ok(incidenciaService.eliminarTecnico(id, tecnicoId));
+    }
+
+    @PutMapping("/{id}/aceptar")
+    public ResponseEntity<Incidencia> aceptarIncidencia(
+            @PathVariable Long id,
+            Principal principal) {
+
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (!(usuario instanceof Tecnico tecnico)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Solo un técnico autenticado puede aceptar una incidencia");
+        }
+
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        boolean asignado = incidencia.getTecnicos().stream()
+                .anyMatch(t -> Objects.equals(t.getId(), tecnico.getId()));
+        if (!asignado) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No estás asignado a esta incidencia");
+        }
+
+        return ResponseEntity.ok(incidenciaService.aceptarIncidencia(id));
     }
 }

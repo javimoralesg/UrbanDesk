@@ -265,4 +265,33 @@ public class IncidenciaService {
         return incidenciaRepository.save(incidencia);
     }
 
+    public Incidencia aceptarIncidencia(Long id) {
+        Incidencia incidencia = obtenerPorId(id);
+
+        if (incidencia.getEstado() != Estado.VALIDADA && incidencia.getEstado() != Estado.ASIGNADA) {
+            throw new DomainRuleViolation("Solo se pueden aceptar incidencias que estén en estado VALIDADA o ASIGNADA");
+        }
+
+        incidencia.actualizarEstado(Estado.ASIGNADA);
+
+        String observacionFinal = "Incidencia aceptada por el técnico.";
+
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                null,
+                Estado.ASIGNADA,
+                observacionFinal));
+
+        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+
+        if (incidencia.getCiudadano() != null) {
+            MailService.enviarCambioEstado(
+                    incidencia.getCiudadano().getEmail(),
+                    incidencia.getId(),
+                    incidencia.getDescripcion(),
+                    Estado.ASIGNADA);
+        }
+        return incidenciaGuardada;
+    }
+
 }
