@@ -10,6 +10,7 @@ import NoMatch from "./pages/NoMatch";
 import MisIncidencias from './pages/MisIncidencias';
 import DetalleIncidencia from './pages/DetalleIncidencia';
 import EditarPerfil from './pages/EditarPerfil';
+import PoliticaPrivacidad from './pages/PoliticaPrivacidad';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path="*" element={<NoMatch />} />
         <Route path="/incidencias-urbanas/mis-incidencias" element={<MisIncidencias />} />
         <Route path="/incidencias-urbanas/editar-perfil" element={<EditarPerfil />} />
+        <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
       </Routes>
     </>
   )

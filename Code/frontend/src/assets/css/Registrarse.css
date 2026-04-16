@@ -116,6 +116,39 @@
   color: #fff;
 }
 
+.urban-register__checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: #24364b;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+
+.urban-register__checkbox {
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  accent-color: #24364b;
+  cursor: pointer;
+}
+
+.urban-register__checkbox-link {
+  color: #24364b;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.urban-register__checkbox-link:hover {
+  color: #1a2a3a;
+  text-decoration: none;
+}
+
 @media (max-width: 640px) {
   .urban-register__layout {
     grid-template-columns: 1fr;

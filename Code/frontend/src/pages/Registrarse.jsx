@@ -19,6 +19,8 @@ export default function Registrarse() {
 
   const [incidenceList, setIncidenceList] = useState([]);
 
+  const [acceptTerms, setAcceptTerms] = useState(false);
+
   useEffect(() => {
     if (loading) {
       setIncidenceList(prev => ([...prev, { id: 'loading', message: 'Registrando usuario', type: 'waiting' }]));
@@ -37,6 +39,12 @@ export default function Registrarse() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!acceptTerms) {
+      setError("Debes aceptar la política de privacidad y protección de datos para registrarte.");
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -130,6 +138,19 @@ export default function Registrarse() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+            </div>
+
+            <div className="urban-register__checkbox-group">
+              <input
+                id="acceptTerms"
+                type="checkbox"
+                className="urban-register__checkbox"
+                checked={acceptTerms}
+                onChange={(e) => setAcceptTerms(e.target.checked)}
+              />
+              <label htmlFor="acceptTerms">
+                Acepto la <a href="/politica-privacidad" target="_blank" rel="noopener noreferrer" className="urban-register__checkbox-link">política de privacidad y protección de datos</a>
+              </label>
             </div>
 
             <div className="urban-register__actions">
