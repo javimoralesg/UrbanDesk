@@ -620,6 +620,7 @@ export default function DetalleIncidencia() {
                 </div>
               )}
 
+              {/* Quizas no usamos este bloque al final */}
               {(estado === "ASIGNADA" || estado === "EN_CURSO") &&
                 rol === "OPERADOR" && (
                   <button className="detalle-incidencia__main-btn">
