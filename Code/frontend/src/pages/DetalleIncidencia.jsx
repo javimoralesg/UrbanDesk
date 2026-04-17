@@ -323,8 +323,7 @@ export default function DetalleIncidencia() {
 
             <button
               className="detalle-incidencia__back"
-              onClick={() => window.history.back()}
-            >
+              onClick={() => navigate("/incidencias-urbanas/mis-incidencias")}            >
               &lt; Volver
             </button>
 
@@ -392,6 +391,18 @@ export default function DetalleIncidencia() {
                   </div>
                 </div>
               </div>
+               <div className="detalle-incidencia__divider"></div>
+
+                {estado === "CREADA" && rol === "CIUDADANO" && (
+                  <div className="detalle-incidencia__actions">
+                    <button
+                      className="detalle-incidencia__main-btn"
+                      onClick={() => navigate(`/incidencias-urbanas/editar/${id}`)}
+                    >
+                      Editar incidencia
+                    </button>
+                  </div>
+                )}
 
               {estado === "CREADA" && rol === "OPERADOR" && (
                 <>

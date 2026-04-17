@@ -129,14 +129,14 @@ public class Incidencia {
     }
 
     public void modificarIncidencia(Ubicacion nuevaUbicacion, String nuevaDescripcion) {
-        if (ubicacion == null) {
-            throw new DomainRuleViolation("La ubicación no puede ser nula");
-        }
-        if (descripcion == null || descripcion.isBlank()) {
-            throw new DomainRuleViolation("La descripción no puede ser nula o vacía");
-        }
-        this.ubicacion = nuevaUbicacion;
-        this.descripcion = nuevaDescripcion;
-        
+    if (nuevaUbicacion == null) {
+        throw new DomainRuleViolation("La nueva ubicación no puede ser nula");
     }
+    if (nuevaDescripcion == null || nuevaDescripcion.isBlank()) {
+        throw new DomainRuleViolation("La nueva descripción no puede ser vacía");
+    }
+
+    this.ubicacion = nuevaUbicacion;
+    this.descripcion = nuevaDescripcion;
+}
 }

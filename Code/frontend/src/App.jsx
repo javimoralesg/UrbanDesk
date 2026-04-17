@@ -27,6 +27,7 @@ function App() {
         <Route path="/incidencias-urbanas/mis-incidencias" element={<MisIncidencias />} />
         <Route path="/incidencias-urbanas/editar-perfil" element={<EditarPerfil />} />
         <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
+        <Route path="/incidencias-urbanas/editar/:id" element={<RegistrarIncidencia />} />
       </Routes>
     </>
   )
