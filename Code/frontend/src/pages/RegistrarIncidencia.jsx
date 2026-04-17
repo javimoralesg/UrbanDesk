@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import MapRegister, { useMapRegisterLogic } from '../components/MapRegister';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router'; // 🔥 EDIT
 import Recording from '../components/Recording';
 import Sidebar from '../components/Sidebar';
 import Hero from "../components/Hero";
@@ -10,8 +10,10 @@ import Popups from '../components/Popups';
 import MediaPopup from '../components/MediaPopup';
 
 export default function RegistrarIncidencia() {
+
     const { id } = useParams(); // 🔥 EDIT
-    const esEdicion = !!id; 
+    const esEdicion = !!id;     // 🔥 EDIT
+
     const [descripcion, setDescripcion] = useState('');
     const [imagenes, setImagenes] = useState([]);
     const [centerLocation, setCenterLocation] = useState(null);
@@ -121,7 +123,7 @@ export default function RegistrarIncidencia() {
         if (!warningPopup) {
             setIncidenceList(prev => prev.filter(m => m.id !== 'error2'));
         }
-    }, [isSubmitting, error, success, warningPopup, addressPopup]);
+    }, [isSubmitting, error, success, warningPopup, addressPopup, esEdicion]);
 
     const MAX_IMAGE_SIZE_MB = 10;
     const MAX_IMAGENES = 5;
@@ -139,7 +141,6 @@ export default function RegistrarIncidencia() {
 
     const handleImagenesChange = (event) => {
         const archivos = Array.from(event.target.files || []);
-
         if (archivos.length === 0) return;
 
         const imagenesInvalidas = archivos.some((archivo) => !archivo.type.startsWith('image/'));
@@ -189,26 +190,20 @@ export default function RegistrarIncidencia() {
     const handleEliminarImagen = (idImagen) => {
         setImagenes((prevImagenes) => {
             const imagenAEliminar = prevImagenes.find((img) => img.id === idImagen);
-
             if (imagenAEliminar?.preview) {
                 URL.revokeObjectURL(imagenAEliminar.preview);
             }
-
             return prevImagenes.filter((img) => img.id !== idImagen);
         });
     };
 
     const imagenesRef = useRef(imagenes);
-    useEffect(() => {
-        imagenesRef.current = imagenes;
-    }, [imagenes]);
+    useEffect(() => { imagenesRef.current = imagenes; }, [imagenes]);
 
     useEffect(() => {
         return () => {
             imagenesRef.current.forEach((img) => {
-                if (img.preview) {
-                    URL.revokeObjectURL(img.preview);
-                }
+                if (img.preview) URL.revokeObjectURL(img.preview);
             });
         };
     }, []);
@@ -244,42 +239,47 @@ export default function RegistrarIncidencia() {
             setError(null);
             setSuccess(null);
 
-            /* const response = await api.validateDescription(descripcion);
-            const parsedResponse = JSON.parse(response);
-            if (!parsedResponse.valid) {
-                setError(parsedResponse.reason || 'La descripción parece no ser válida para una incidencia urbana. Por favor, revisa y corrige la descripción.');
-                setIsSubmitting(false);
-                return;
-            } */
+            let incidencia;
 
-            const imagenesBase64 = await Promise.all(
-                imagenes.map((imagen) => fileToBase64(imagen.file))
-            );
+            if (esEdicion) {
+                incidencia = await api.actualizarIncidencia(id, {
+                    direccion: address || 'Ubicación sin dirección textual',
+                    latitud,
+                    longitud,
+                    descripcion: trimmedDescription
+                });
+            } else {
+                const imagenesBase64 = await Promise.all(
+                    imagenes.map((imagen) => fileToBase64(imagen.file))
+                );
 
-            const incidenciaCreada = await api.crearIncidencia({
-                direccion: address || 'Ubicación sin dirección textual',
-                latitud,
-                longitud,
-                descripcion: trimmedDescription,
-                imagenes: imagenesBase64,
-            });
+                incidencia = await api.crearIncidencia({
+                    direccion: address || 'Ubicación sin dirección textual',
+                    latitud,
+                    longitud,
+                    descripcion: trimmedDescription,
+                    imagenes: imagenesBase64,
+                });
+            }
 
-            if (incidenciaCreada?.id != null) {
-                setSuccess('Incidencia registrada correctamente.');
+            if (incidencia?.id != null) {
+                setSuccess(esEdicion
+                    ? 'Incidencia actualizada correctamente.'
+                    : 'Incidencia registrada correctamente.'
+                );
             } else {
                 setError('No se pudo registrar la incidencia. Inténtalo de nuevo.');
             }
 
             imagenes.forEach((img) => {
-                if (img.preview) {
-                    URL.revokeObjectURL(img.preview);
-                }
+                if (img.preview) URL.revokeObjectURL(img.preview);
             });
 
             setIsSubmitting(false);
+
             const user = JSON.parse(localStorage.getItem("user"));
             if (user != null) {
-                navigate(`/incidencias-urbanas/mis-incidencias/${incidenciaCreada.id}`);
+                navigate(`/incidencias-urbanas/mis-incidencias/${incidencia.id}`);
             }
 
             setDescripcion('');
