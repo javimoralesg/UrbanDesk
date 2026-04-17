@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import MapRegister, { useMapRegisterLogic } from '../components/MapRegister';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router'; // 🔥 EDIT
 import Recording from '../components/Recording';
 import Sidebar from '../components/Sidebar';
 import Hero from "../components/Hero";
@@ -10,6 +10,10 @@ import Popups from '../components/Popups';
 import MediaPopup from '../components/MediaPopup';
 
 export default function RegistrarIncidencia() {
+
+    const { id } = useParams(); // 🔥 EDIT
+    const esEdicion = !!id;     // 🔥 EDIT
+
     const [descripcion, setDescripcion] = useState('');
     const [imagenes, setImagenes] = useState([]);
     const [centerLocation, setCenterLocation] = useState(null);
@@ -39,6 +43,24 @@ export default function RegistrarIncidencia() {
         clearGeolocationError,
     } = useMapRegisterLogic();
 
+    // 🔥 EDIT: cargar datos en edición
+    useEffect(() => {
+        if (esEdicion) {
+            api.obtenerIncidenciaPorId(id).then(data => {
+                setDescripcion(data.descripcion);
+
+                if (data.ubicacion) {
+                    handleInputChange({ target: { value: data.ubicacion.direccion } });
+
+                    setCenterLocation({
+                        lat: data.ubicacion.latitud,
+                        lon: data.ubicacion.longitud
+                    });
+                }
+            });
+        }
+    }, [id]);
+
     useEffect(() => {
         if (geolocationError) {
             setError(geolocationError);
@@ -48,7 +70,7 @@ export default function RegistrarIncidencia() {
 
     useEffect(() => {
         if (isSubmitting) {
-            const msg = 'Registrando incidencia';
+            const msg = esEdicion ? 'Actualizando incidencia' : 'Registrando incidencia'; // 🔥 EDIT
             setIncidenceList(prev => {
                 if (prev.some(m => m.id === 'loading' || m.message === msg)) return prev;
                 return [...prev, { id: 'loading', message: msg, type: 'waiting' }];
@@ -101,7 +123,7 @@ export default function RegistrarIncidencia() {
         if (!warningPopup) {
             setIncidenceList(prev => prev.filter(m => m.id !== 'error2'));
         }
-    }, [isSubmitting, error, success, warningPopup, addressPopup]);
+    }, [isSubmitting, error, success, warningPopup, addressPopup, esEdicion]);
 
     const MAX_IMAGE_SIZE_MB = 10;
     const MAX_IMAGENES = 5;
@@ -119,7 +141,6 @@ export default function RegistrarIncidencia() {
 
     const handleImagenesChange = (event) => {
         const archivos = Array.from(event.target.files || []);
-
         if (archivos.length === 0) return;
 
         const imagenesInvalidas = archivos.some((archivo) => !archivo.type.startsWith('image/'));
@@ -169,26 +190,20 @@ export default function RegistrarIncidencia() {
     const handleEliminarImagen = (idImagen) => {
         setImagenes((prevImagenes) => {
             const imagenAEliminar = prevImagenes.find((img) => img.id === idImagen);
-
             if (imagenAEliminar?.preview) {
                 URL.revokeObjectURL(imagenAEliminar.preview);
             }
-
             return prevImagenes.filter((img) => img.id !== idImagen);
         });
     };
 
     const imagenesRef = useRef(imagenes);
-    useEffect(() => {
-        imagenesRef.current = imagenes;
-    }, [imagenes]);
+    useEffect(() => { imagenesRef.current = imagenes; }, [imagenes]);
 
     useEffect(() => {
         return () => {
             imagenesRef.current.forEach((img) => {
-                if (img.preview) {
-                    URL.revokeObjectURL(img.preview);
-                }
+                if (img.preview) URL.revokeObjectURL(img.preview);
             });
         };
     }, []);
@@ -224,42 +239,47 @@ export default function RegistrarIncidencia() {
             setError(null);
             setSuccess(null);
 
-            /* const response = await api.validateDescription(descripcion);
-            const parsedResponse = JSON.parse(response);
-            if (!parsedResponse.valid) {
-                setError(parsedResponse.reason || 'La descripción parece no ser válida para una incidencia urbana. Por favor, revisa y corrige la descripción.');
-                setIsSubmitting(false);
-                return;
-            } */
+            let incidencia;
 
-            const imagenesBase64 = await Promise.all(
-                imagenes.map((imagen) => fileToBase64(imagen.file))
-            );
+            if (esEdicion) {
+                incidencia = await api.actualizarIncidencia(id, {
+                    direccion: address || 'Ubicación sin dirección textual',
+                    latitud,
+                    longitud,
+                    descripcion: trimmedDescription
+                });
+            } else {
+                const imagenesBase64 = await Promise.all(
+                    imagenes.map((imagen) => fileToBase64(imagen.file))
+                );
 
-            const incidenciaCreada = await api.crearIncidencia({
-                direccion: address || 'Ubicación sin dirección textual',
-                latitud,
-                longitud,
-                descripcion: trimmedDescription,
-                imagenes: imagenesBase64,
-            });
+                incidencia = await api.crearIncidencia({
+                    direccion: address || 'Ubicación sin dirección textual',
+                    latitud,
+                    longitud,
+                    descripcion: trimmedDescription,
+                    imagenes: imagenesBase64,
+                });
+            }
 
-            if (incidenciaCreada?.id != null) {
-                setSuccess('Incidencia registrada correctamente.');
+            if (incidencia?.id != null) {
+                setSuccess(esEdicion
+                    ? 'Incidencia actualizada correctamente.'
+                    : 'Incidencia registrada correctamente.'
+                );
             } else {
                 setError('No se pudo registrar la incidencia. Inténtalo de nuevo.');
             }
 
             imagenes.forEach((img) => {
-                if (img.preview) {
-                    URL.revokeObjectURL(img.preview);
-                }
+                if (img.preview) URL.revokeObjectURL(img.preview);
             });
 
             setIsSubmitting(false);
+
             const user = JSON.parse(localStorage.getItem("user"));
             if (user != null) {
-                navigate(`/incidencias-urbanas/mis-incidencias/${incidenciaCreada.id}`);
+                navigate(`/incidencias-urbanas/mis-incidencias/${incidencia.id}`);
             }
 
             setDescripcion('');
@@ -278,151 +298,151 @@ export default function RegistrarIncidencia() {
     };
 
     return (
-        <>
-            <Popups list={incidenceList} />
-            <Hero />
+    <>
+        <Popups list={incidenceList} />
+        <Hero />
 
-            <main className="registrar-incidencia__layout">
-                <Sidebar />
+        <main className="registrar-incidencia__layout">
+            <Sidebar />
 
-                <section className="registrar-incidencia__content">
-                    <h2 className="registrar-incidencia__title">
-                        Registrar Incidencia
-                    </h2>
+            <section className="registrar-incidencia__content">
+                <h2 className="registrar-incidencia__title">
+                    {esEdicion ? "Editar Incidencia" : "Registrar Incidencia"}
+                </h2>
 
-                    <p className="registrar-incidencia__subtitle">
-                        Describe la incidencia, selecciona su ubicación y adjunta imágenes si lo necesitas.
-                    </p>
+                <p className="registrar-incidencia__subtitle">
+                    Describe la incidencia, selecciona su ubicación y adjunta imágenes si lo necesitas.
+                </p>
 
-                    <div className="registrar-incidencia__form">
-                        <Recording
-                            setDescripcion={setDescripcion}
-                            handleInputChange={handleInputChange}
+                <div className="registrar-incidencia__form">
+                    <Recording
+                        setDescripcion={setDescripcion}
+                        handleInputChange={handleInputChange}
+                    />
+
+                    <textarea
+                        value={descripcion}
+                        onChange={(e) => setDescripcion(e.target.value)}
+                        placeholder="Descripción de la incidencia..."
+                        className="registrar-incidencia__textarea"
+                        rows={4}
+                    />
+
+                    <div className="registrar-incidencia__location-row">
+                        <input
+                            type="text"
+                            value={address}
+                            onFocus={() => setShowSuggestions(true)}
+                            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                            onChange={handleInputChange}
+                            placeholder="Escribe una dirección..."
+                            className="registrar-incidencia__input"
                         />
-
-                        <textarea
-                            value={descripcion}
-                            onChange={(e) => setDescripcion(e.target.value)}
-                            placeholder="Descripción de la incidencia..."
-                            className="registrar-incidencia__textarea"
-                            rows={4}
-                        />
-
-                        <div className="registrar-incidencia__location-row">
-                            <input
-                                type="text"
-                                value={address}
-                                onFocus={() => setShowSuggestions(true)}
-                                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                                onChange={handleInputChange}
-                                placeholder="Escribe una dirección..."
-                                className="registrar-incidencia__input"
-                            />
-                            <button
-                                type="button"
-                                onClick={handleCurrentLocation}
-                                className="registrar-incidencia__location-btn"
-                                title="Usar ubicación actual"
-                            >
-                                📍
-                            </button>
-
-                            {showSuggestions && suggestions.length > 0 && (
-                                <ul className="registrar-incidencia__suggestions">
-                                    {suggestions.map((sug, i) => (
-                                        <li
-                                            key={i}
-                                            onClick={() => seleccionarSugerencia(sug)}
-                                            className="registrar-incidencia__suggestion-item"
-                                        >
-                                            {sug.properties.name}{' '}
-                                            {sug.properties.city && (
-                                                <small>({sug.properties.city})</small>
-                                            )}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-
-                        <div className="registrar-incidencia__map-container">
-                            <MapRegister
-                                onCenterChanged={handleCenterChanged}
-                                targetLocation={targetLocation}
-                            />
-                        </div>
-
-                        <div className="registrar-incidencia__evidences-box">
-                            <p className="registrar-incidencia__evidences-title">
-                                Evidencias (opcional)
-                            </p>
-                            <p className="registrar-incidencia__evidences-subtitle">
-                                Solo imágenes. Máx. 5 archivos, 10 MB cada uno.
-                            </p>
-
-                            <div className="registrar-incidencia__file-input-wrapper">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    multiple
-                                    onChange={handleImagenesChange}
-                                    className="registrar-incidencia__file-input"
-                                />
-                            </div>
-
-                            {imagenes.length > 0 && (
-                                <div className="registrar-incidencia__imagenes-lista">
-                                    {imagenes.map((imagen) => (
-                                        <div
-                                            key={imagen.id}
-                                            className="registrar-incidencia__imagen-item"
-                                        >
-                                            <button
-                                                type="button"
-                                                className="registrar-incidencia__imagen-eliminar"
-                                                onClick={() => handleEliminarImagen(imagen.id)}
-                                                aria-label={`Eliminar ${imagen.file.name}`}
-                                            >
-                                                ×
-                                            </button>
-
-                                            <img
-                                                src={imagen.preview}
-                                                alt={imagen.file.name}
-                                                className="registrar-incidencia__imagen-preview"
-                                                onClick={() =>
-                                                    setMediaSeleccionada({
-                                                        src: imagen.preview,
-                                                        type: imagen.file.type,
-                                                        alt: imagen.file.name,
-                                                    })
-                                                }
-                                            />
-                                            <p className="registrar-incidencia__imagen-nombre" title={imagen.file.name}>
-                                                {imagen.file.name}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
                         <button
-                            onClick={handleRegisterIncident}
-                            disabled={isSubmitting}
-                            className="registrar-incidencia__submit-btn"
+                            type="button"
+                            onClick={handleCurrentLocation}
+                            className="registrar-incidencia__location-btn"
+                            title="Usar ubicación actual"
                         >
-                            Registrar Incidencia
+                            📍
                         </button>
-                    </div>
-                </section>
-            </main>
 
-            <MediaPopup
-                isOpen={!!mediaSeleccionada}
-                media={mediaSeleccionada}
-                onClose={() => setMediaSeleccionada(null)}
-            />
-        </>
-    );
+                        {showSuggestions && suggestions.length > 0 && (
+                            <ul className="registrar-incidencia__suggestions">
+                                {suggestions.map((sug, i) => (
+                                    <li
+                                        key={i}
+                                        onClick={() => seleccionarSugerencia(sug)}
+                                        className="registrar-incidencia__suggestion-item"
+                                    >
+                                        {sug.properties.name}{' '}
+                                        {sug.properties.city && (
+                                            <small>({sug.properties.city})</small>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
+                    <div className="registrar-incidencia__map-container">
+                        <MapRegister
+                            onCenterChanged={handleCenterChanged}
+                            targetLocation={targetLocation}
+                        />
+                    </div>
+
+                    <div className="registrar-incidencia__evidences-box">
+                        <p className="registrar-incidencia__evidences-title">
+                            Evidencias (opcional)
+                        </p>
+                        <p className="registrar-incidencia__evidences-subtitle">
+                            Solo imágenes. Máx. 5 archivos, 10 MB cada uno.
+                        </p>
+
+                        <div className="registrar-incidencia__file-input-wrapper">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleImagenesChange}
+                                className="registrar-incidencia__file-input"
+                            />
+                        </div>
+
+                        {imagenes.length > 0 && (
+                            <div className="registrar-incidencia__imagenes-lista">
+                                {imagenes.map((imagen) => (
+                                    <div
+                                        key={imagen.id}
+                                        className="registrar-incidencia__imagen-item"
+                                    >
+                                        <button
+                                            type="button"
+                                            className="registrar-incidencia__imagen-eliminar"
+                                            onClick={() => handleEliminarImagen(imagen.id)}
+                                            aria-label={`Eliminar ${imagen.file.name}`}
+                                        >
+                                            ×
+                                        </button>
+
+                                        <img
+                                            src={imagen.preview}
+                                            alt={imagen.file.name}
+                                            className="registrar-incidencia__imagen-preview"
+                                            onClick={() =>
+                                                setMediaSeleccionada({
+                                                    src: imagen.preview,
+                                                    type: imagen.file.type,
+                                                    alt: imagen.file.name,
+                                                })
+                                            }
+                                        />
+                                        <p className="registrar-incidencia__imagen-nombre" title={imagen.file.name}>
+                                            {imagen.file.name}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <button
+                        onClick={handleRegisterIncident}
+                        disabled={isSubmitting}
+                        className="registrar-incidencia__submit-btn"
+                    >
+                        {esEdicion ? "Guardar cambios" : "Registrar Incidencia"}
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <MediaPopup
+            isOpen={!!mediaSeleccionada}
+            media={mediaSeleccionada}
+            onClose={() => setMediaSeleccionada(null)}
+        />
+    </>
+);
 }
