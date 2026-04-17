@@ -568,7 +568,7 @@ export default function DetalleIncidencia() {
                 </>
               )}
 
-              {estado === "VALIDADA" && rol === "OPERADOR" && (
+              {(estado === "VALIDADA" || estado === "ASIGNADA" || estado === "EN_CURSO") && rol === "OPERADOR" && (
                 <>
                   <div className="detalle-incidencia__asignacion">
                     {especialidadesTecnico.map((especialidad) => {
