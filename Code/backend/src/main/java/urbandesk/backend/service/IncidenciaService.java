@@ -269,20 +269,25 @@ public class IncidenciaService {
         return incidenciaRepository.save(incidencia);
     }
 
-    public Incidencia aceptarIncidencia(Long id) {
+    public Incidencia aceptarIncidenciaTecnico(Long id, Long tecnicoId) {
         Incidencia incidencia = obtenerPorId(id);
 
         if (incidencia.getEstado() != Estado.VALIDADA && incidencia.getEstado() != Estado.ASIGNADA) {
             throw new DomainRuleViolation("Solo se pueden aceptar incidencias que estén en estado VALIDADA o ASIGNADA");
         }
 
+        Tecnico tecnico = incidencia.getTecnicos().stream()
+                .filter(t -> Objects.equals(t.getId(), tecnicoId))
+                .findFirst()
+                .orElseThrow(() -> new DomainRuleViolation("Técnico no asignado a esta incidencia"));
+
         incidencia.actualizarEstado(Estado.ASIGNADA);
 
-        String observacionFinal = "Incidencia aceptada por el técnico.";
+        String observacionFinal = tecnico.getEspecialidad().toString() +  " ha aceptado la incidencia.";
 
         incidencia.agregarHistorial(new Historial(
                 incidencia,
-                null,
+                tecnico,
                 Estado.ASIGNADA,
                 observacionFinal));
 
@@ -294,6 +299,45 @@ public class IncidenciaService {
                     incidencia.getId(),
                     incidencia.getDescripcion(),
                     Estado.ASIGNADA);
+        }
+        return incidenciaGuardada;
+    }
+
+    public Incidencia rechazarIncidenciaTecnico(Long id, Long tecnicoId) {
+        Incidencia incidencia = obtenerPorId(id);
+
+        if (incidencia.getEstado() != Estado.VALIDADA && incidencia.getEstado() != Estado.ASIGNADA) {
+            throw new DomainRuleViolation("Solo se pueden rechazar incidencias que estén en estado VALIDADA o ASIGNADA");
+        }
+
+        Tecnico tecnico = incidencia.getTecnicos().stream()
+                .filter(t -> Objects.equals(t.getId(), tecnicoId))
+                .findFirst()
+                .orElseThrow(() -> new DomainRuleViolation("Técnico no asignado a esta incidencia"));
+
+        String observacionFinal = tecnico.getEspecialidad().toString() +  " ha rechazado la incidencia.";
+
+        tecnico.decrementarCarga();
+        usuarioRepository.save(tecnico);
+        incidencia.eliminarTecnico(tecnico);
+
+        Estado nuevoEstado = (!incidencia.getTecnicos().isEmpty() && incidencia.getEstado() == Estado.ASIGNADA) ? Estado.ASIGNADA : Estado.VALIDADA;
+        incidencia.actualizarEstado(nuevoEstado);
+
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                tecnico,
+                nuevoEstado,
+                observacionFinal));
+
+        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+
+        if (incidencia.getCiudadano() != null) {
+            MailService.enviarCambioEstado(
+                    incidencia.getCiudadano().getEmail(),
+                    incidencia.getId(),
+                    incidencia.getDescripcion(),
+                    nuevoEstado);
         }
         return incidenciaGuardada;
     }

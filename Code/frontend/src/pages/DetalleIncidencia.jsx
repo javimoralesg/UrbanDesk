@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import MapLocate from "../components/MapLocate";
@@ -45,6 +45,18 @@ export default function DetalleIncidencia() {
       return "";
     }
   }, []);
+
+  const id_usuario = useMemo(() => {
+    const rawUser = localStorage.getItem("user");
+    if (!rawUser) return null;
+    try {
+      const user = JSON.parse(rawUser);
+      return user?.id || null;
+    } catch {
+      return null;
+    }
+  }, []);
+
 
   useEffect(() => {
     const verificarSesionYRedirigir = () => {
@@ -156,10 +168,30 @@ export default function DetalleIncidencia() {
   }, [success]);
 
   useEffect(() => {
-    if (incidencia?.estado === "EN_CURSO") {
-      setIncidenciaAceptadaPorTecnico(true);
+    if (rol !== "TECNICO" || !id_usuario || !incidencia) {
+      setIncidenciaAceptadaPorTecnico(false);
+      return;
     }
-  }, [incidencia?.estado]);
+
+    const historialApi = incidencia?.historiales ?? incidencia?.historial ?? [];
+    const historialTecnico = Array.isArray(historialApi)
+      ? historialApi
+        .filter((entrada) => Number(entrada?.usuario?.id) === Number(id_usuario))
+        .sort(
+          (a, b) =>
+            new Date(b?.fechaCambio || b?.fechaCreacion || 0) -
+            new Date(a?.fechaCambio || a?.fechaCreacion || 0)
+        )
+      : [];
+
+    const ultimaDecision = historialTecnico.find((entrada) => {
+      const observaciones = (entrada?.observaciones || "").toLowerCase();
+      return observaciones.includes("ha aceptado la incidencia");
+    });
+
+    const observacionesUltimaDecision = (ultimaDecision?.observaciones || "").toLowerCase();
+    setIncidenciaAceptadaPorTecnico(observacionesUltimaDecision.includes("ha aceptado la incidencia"));
+  }, [incidencia, id_usuario, rol]);
 
   const estado = incidencia?.estado;
   const prioridad = incidencia?.prioridad;
@@ -288,7 +320,7 @@ export default function DetalleIncidencia() {
     }
   };
 
-  const aceptarIncidencia = async () => {
+  const aceptarIncidenciaTecnico = async () => {
     if (incidenciaAceptadaPorTecnico) {
       setError("Ya has aceptado esta incidencia.");
       return;
@@ -296,7 +328,7 @@ export default function DetalleIncidencia() {
 
     try {
       setWorking("Aceptando incidencia...");
-      const data = await api.aceptarIncidencia(id);
+      const data = await api.aceptarIncidenciaTecnico(id, id_usuario);
       setIncidencia(data);
       setSuccess("Incidencia aceptada correctamente.");
       setIncidenciaAceptadaPorTecnico(true);
@@ -306,6 +338,27 @@ export default function DetalleIncidencia() {
     } finally {
       setWorking(null);
     }
+  };
+
+  const rechazarIncidenciaTecnico = async () => {
+    if (incidenciaAceptadaPorTecnico) {
+      setError("Ya has aceptado esta incidencia.");
+      return;
+    }
+
+    try {
+      setWorking("Rechazando incidencia...");
+      const data = await api.rechazarIncidenciaTecnico(id, id_usuario);
+      setIncidencia(data);
+      setSuccess("Incidencia rechazada correctamente.");
+      setIncidenciaRechazadaPorTecnico(true);
+    } catch (err) {
+      console.error("Error al rechazar incidencia:", err);
+      setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
+    } finally {
+      setWorking(null);
+      navigate("/incidencias-urbanas/mis-incidencias", { replace: true });
+    } 
   };
 
   return (
@@ -544,11 +597,14 @@ export default function DetalleIncidencia() {
                 <div>
                   <button
                     className="detalle-incidencia__main-btn"
-                    onClick={aceptarIncidencia}
+                    onClick={aceptarIncidenciaTecnico}
                   >
-                    Aceptar incidencia
+                    Aceptar incidencia {incidenciaAceptadaPorTecnico && "(Ya aceptada)"}
                   </button>
-                  <button className="detalle-incidencia__main-btn">
+                  <button
+                    className="detalle-incidencia__main-btn"
+                    onClick={rechazarIncidenciaTecnico}
+                  >
                     Rechazar incidencia
                   </button>
                 </div>

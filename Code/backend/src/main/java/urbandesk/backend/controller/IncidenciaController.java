@@ -287,9 +287,10 @@ public class IncidenciaController {
         return ResponseEntity.ok(incidenciaService.eliminarTecnico(id, tecnicoId));
     }
 
-    @PutMapping("/{id}/aceptar")
+    @PutMapping("/{id}/aceptar/{tecnicoId}")
     public ResponseEntity<Incidencia> aceptarIncidencia(
             @PathVariable Long id,
+            @PathVariable Long tecnicoId,
             Principal principal) {
 
         Usuario usuario = getAuthenticatedUser(principal);
@@ -305,6 +306,28 @@ public class IncidenciaController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No estás asignado a esta incidencia");
         }
 
-        return ResponseEntity.ok(incidenciaService.aceptarIncidencia(id));
+        return ResponseEntity.ok(incidenciaService.aceptarIncidenciaTecnico(id, tecnicoId));
     }
+
+    @DeleteMapping("/{id}/rechazar/{tecnicoId}")
+    public ResponseEntity<Incidencia> rechazarIncidencia(
+            @PathVariable Long id,
+            @PathVariable Long tecnicoId,
+            Principal principal) {
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (!(usuario instanceof Tecnico tecnico)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Solo un técnico autenticado puede rechazar una incidencia");
+        }
+
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        boolean asignado = incidencia.getTecnicos().stream()
+                .anyMatch(t -> Objects.equals(t.getId(), tecnico.getId()));
+        if (!asignado) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No estás asignado a esta incidencia");
+        }
+
+        return ResponseEntity.ok(incidenciaService.rechazarIncidenciaTecnico(id, tecnicoId));
+    }
+
 }

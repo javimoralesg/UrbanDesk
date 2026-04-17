@@ -371,15 +371,29 @@ export const api = {
         return await response.json();
     },
 
-    aceptarIncidencia: async (id) => {
+    aceptarIncidenciaTecnico: async (id, tecnicoId) => {
         resetInactivityTimer();
-        const response = await fetch(`${BASE_URL}/incidencias/${id}/aceptar`, {
+        const response = await fetch(`${BASE_URL}/incidencias/${id}/aceptar/${tecnicoId}`, {
             method: "PUT",
             headers: getAuthHeaders(),
         });
 
         if (!response.ok) {
             throw new Error("Error al aceptar la incidencia");
+        }
+
+        return await response.json();
+    },
+
+    rechazarIncidenciaTecnico: async (id, tecnicoId) => {
+        resetInactivityTimer();
+        const response = await fetch(`${BASE_URL}/incidencias/${id}/rechazar/${tecnicoId}`, {
+            method: "DELETE",
+            headers: getAuthHeaders(),
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al rechazar la incidencia");
         }
 
         return await response.json();
