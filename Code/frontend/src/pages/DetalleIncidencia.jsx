@@ -603,8 +603,7 @@ export default function DetalleIncidencia() {
                 </>
               )}
 
-              {(estado === "VALIDADA" || estado === "ASIGNADA") &&
-                rol === "TECNICO" && (
+              {(rol === "TECNICO" && !incidenciaAceptadaPorTecnico) && (
                 <div>
                   <button
                     className="detalle-incidencia__main-btn"
