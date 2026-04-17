@@ -313,6 +313,7 @@ public class IncidenciaController {
     public ResponseEntity<Incidencia> rechazarIncidencia(
             @PathVariable Long id,
             @PathVariable Long tecnicoId,
+            @RequestParam String comentario,
             Principal principal) {
         Usuario usuario = getAuthenticatedUser(principal);
         if (!(usuario instanceof Tecnico tecnico)) {
@@ -327,7 +328,7 @@ public class IncidenciaController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No estás asignado a esta incidencia");
         }
 
-        return ResponseEntity.ok(incidenciaService.rechazarIncidenciaTecnico(id, tecnicoId));
+        return ResponseEntity.ok(incidenciaService.rechazarIncidenciaTecnico(id, tecnicoId, comentario));
     }
 
 }
