@@ -358,7 +358,10 @@ public class IncidenciaService {
         return incidenciaGuardada;
     }
 
-    public Incidencia rechazarIncidenciaTecnico(Long id, Long tecnicoId) {
+    public Incidencia rechazarIncidenciaTecnico(Long id, Long tecnicoId, String comentario) {
+        if (comentario == null || comentario.isBlank()) {
+        throw new DomainRuleViolation("El técnico debe añadir un comentario al resolver la incidencia.");
+        }
         Incidencia incidencia = obtenerPorId(id);
 
         if (incidencia.getEstado() != Estado.VALIDADA && incidencia.getEstado() != Estado.ASIGNADA) {
@@ -392,6 +395,15 @@ public class IncidenciaService {
                 observacionFinal));
 
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+
+        if (incidenciaGuardada.getOperador() != null) {
+            MailService.enviarIncidenciaRechazadaPorTecnico(
+                    incidenciaGuardada.getOperador().getEmail(),
+                    incidenciaGuardada.getId(),
+                    incidenciaGuardada.getDescripcion(),
+                    tecnico.getNombre(),
+                    comentario);
+}
 
         if (incidencia.getCiudadano() != null) {
             MailService.enviarCambioEstado(
