@@ -201,5 +201,35 @@ public class MailService {
             """.formatted(idIncidencia, descripcion, ubicacion.toString());
 
     enviar(destinatario, "Nueva incidencia asignada #" + idIncidencia, html);
-    }   
+    } 
+    
+    public void enviarIncidenciaRechazadaPorTecnico(String destinatario, Long idIncidencia,
+        String descripcion, String nombreTecnico, String motivo) {
+    String html = """
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+                <div style="background-color: #ef4444; padding: 24px; text-align: center;">
+                    <h1 style="color: white; margin: 0;">UrbanDesk</h1>
+                </div>
+                <div style="padding: 32px; background-color: #f9fafb;">
+                    <h2 style="color: #1f2937;">Incidencia rechazada por técnico</h2>
+                    <p style="color: #4b5563;">
+                        El técnico <strong>%s</strong> ha rechazado la incidencia asignada.
+                        Es necesario reasignarla a otro técnico disponible.
+                    </p>
+                    <div style="background-color: white; border-left: 4px solid #ef4444;
+                                padding: 16px; margin: 16px 0; border-radius: 4px;">
+                        <p style="margin: 0; color: #6b7280;">Nº incidencia: <strong>#%d</strong></p>
+                        <p style="margin: 8px 0 0; color: #6b7280;">Descripción: <strong>%s</strong></p>
+                        <p style="margin: 8px 0 0; color: #6b7280;">Motivo del rechazo: <strong>%s</strong></p>
+                    </div>
+                    <p style="color: #4b5563;">Accede a la plataforma para reasignar la incidencia.</p>
+                </div>
+                <div style="padding: 16px; background-color: #e5e7eb; text-align: center;">
+                    <p style="color: #6b7280; font-size: 12px;">© 2026 UrbanDesk. Todos los derechos reservados.</p>
+                </div>
+            </div>
+            """.formatted(nombreTecnico, idIncidencia, descripcion, motivo);
+
+    enviar(destinatario, "Incidencia #" + idIncidencia + " rechazada por técnico", html);
+    }  
 }
