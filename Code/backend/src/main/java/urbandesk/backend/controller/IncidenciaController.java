@@ -330,5 +330,13 @@ public class IncidenciaController {
 
         return ResponseEntity.ok(incidenciaService.rechazarIncidenciaTecnico(id, tecnicoId, comentario));
     }
+    
+    @PutMapping("/{id}/tecnico/{tecnicoId}/resolver")
+    public ResponseEntity<Incidencia> resolver(
+        @PathVariable Long id,
+        @PathVariable Long tecnicoId,
+        @RequestParam String comentario) {
+    return ResponseEntity.ok(incidenciaService.resolverIncidenciaTecnico(id, tecnicoId, comentario));
+    }
 
 }

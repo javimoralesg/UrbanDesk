@@ -415,4 +415,67 @@ public class IncidenciaService {
         return incidenciaGuardada;
     }
 
+    @Transactional
+    public Incidencia resolverIncidenciaTecnico(Long incidenciaId, Long tecnicoId, String comentario) {
+
+    if (comentario == null || comentario.isBlank()) {
+        throw new DomainRuleViolation("El técnico debe añadir un comentario al resolver la incidencia.");
+    }
+
+    Incidencia incidencia = obtenerPorId(incidenciaId);
+
+    boolean esTecnicoAsignado = incidencia.getTecnicos().stream()
+            .anyMatch(t -> t.getId().equals(tecnicoId));
+
+    if (!esTecnicoAsignado) {
+        throw new DomainRuleViolation("El técnico no está asignado a esta incidencia.");
+    }
+
+    if (incidencia.getEstado() != Estado.EN_CURSO) {
+        throw new DomainRuleViolation("Solo se pueden resolver incidencias en estado EN_CURSO.");
+    }
+
+    Usuario tecnico = usuarioRepository.findById(tecnicoId)
+            .orElseThrow(() -> new DomainRuleViolation("Técnico no encontrado"));
+
+    // Marcar técnico como finalizado y liberar su carga
+    incidencia.marcarTecnicoFinalizado(tecnicoId);
+
+    if (tecnico instanceof Tecnico tecnicoCast) {
+        tecnicoCast.decrementarCarga();
+        usuarioRepository.save(tecnicoCast);
+    }
+
+    boolean todosFinalizados = incidencia.getTecnicos().stream()
+            .allMatch(t -> incidencia.getTecnicosFinalizadosIds().contains(t.getId()));
+
+    if (todosFinalizados) {
+        incidencia.actualizarEstado(Estado.RESUELTA);
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                tecnico,
+                Estado.RESUELTA,
+                "Todos los técnicos han finalizado. " + comentario));
+
+        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+
+        if (incidencia.getCiudadano() != null) {
+            MailService.enviarIncidenciaResuelta(
+                    incidencia.getCiudadano().getEmail(),
+                    incidencia.getId(),
+                    incidencia.getDescripcion());
+        }
+
+        return incidenciaGuardada;
+    }
+
+    incidencia.agregarHistorial(new Historial(
+            incidencia,
+            tecnico,
+            Estado.EN_CURSO,
+            "Técnico ha finalizado su parte. " + comentario));
+
+    return incidenciaRepository.save(incidencia);
+    }
+
 }

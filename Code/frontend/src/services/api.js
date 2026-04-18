@@ -397,5 +397,13 @@ export const api = {
         }
 
         return await response.json();
+    }, 
+    resolverIncidenciaTecnico: async (id, tecnicoId, comentario) => {
+        const response = await fetch(
+            `${BASE_URL}/incidencias/${id}/tecnico/${tecnicoId}/resolver?comentario=${encodeURIComponent(comentario)}`,
+            { method: "PUT", headers: getAuthHeaders() }
+        );
+        if (!response.ok) throw new Error("Error al resolver la incidencia");
+        return await response.json();
     }
 }
