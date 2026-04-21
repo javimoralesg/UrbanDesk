@@ -38,8 +38,21 @@ export default function Registrarse() {
     }
   }, [loading, error]);
 
+  const isPasswordValid = (value) => {
+    const hasMinLength = value.length >= 8;
+    const hasNumber = /\d/.test(value);
+    const hasSpecialChar = /[,*.!?.:;-_{}|()/¿¡#@$%&"'€+]/.test(value);
+
+    return hasMinLength && hasNumber && hasSpecialChar;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isPasswordValid(password)) {
+      setError("La contraseña debe tener al menos 8 caracteres, un número y un carácter especial (,*.!?)");
+      return;
+    }
 
     if (!acceptTerms) {
       setError("Debes aceptar la política de privacidad y protección de datos para registrarte.");
