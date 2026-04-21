@@ -87,7 +87,7 @@
 }
 
 .urban-register__input--password {
-  padding-right: 100px;
+  padding-right: 56px;
 }
 
 .urban-register__password-toggle {
@@ -103,6 +103,14 @@
   cursor: pointer;
   padding: 6px 8px;
   border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.urban-register__password-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .urban-register__password-toggle:hover {
@@ -144,7 +152,7 @@
 
 /* botón principal más pro */
 .urban-register__button:last-child {
-  padding-right: 56px;
+  background: #24364b;
   color: #fff;
 }
 
@@ -157,10 +165,7 @@
   padding: 16px;
   background: #f8fafc;
   border: 1px solid #dbe3ee;
-  border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 12px;
   margin: 20px 0;
 }
 
@@ -174,10 +179,6 @@
 
 .urban-register__checkbox-link {
   color: #24364b;
-.urban-register__password-icon {
-  width: 20px;
-  height: 20px;
-}
   text-decoration: underline;
   cursor: pointer;
   font-weight: 500;
