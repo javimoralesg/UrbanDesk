@@ -294,7 +294,7 @@ public class IncidenciaService {
                 .findFirst()
                 .orElseThrow(() -> new DomainRuleViolation("Técnico no asignado a esta incidencia"));
 
-        incidencia.actualizarEstado(Estado.ASIGNADA);
+        incidencia.actualizarEstado(Estado.EN_CURSO);
 
         String observacionFinal = tecnico.getEspecialidad().toString() +  " ha aceptado la incidencia.";
 
