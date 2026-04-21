@@ -19,6 +19,14 @@ export default function EditarPerfil() {
   const [popups, setPopups] = useState([]);
   const [confirmPopup, setConfirmPopup] = useState(null);
 
+    const isPasswordValid = (value) => {
+    const hasMinLength = value.length >= 8;
+    const hasNumber = /\d/.test(value);
+    const hasSpecialChar = /[,*.!?.:;-_{}|()/¿¡#@$%&"'€+]/.test(value);
+
+    return hasMinLength && hasNumber && hasSpecialChar;
+  };
+
   useEffect(() => {
     try {
       const rawUser = localStorage.getItem("user");
@@ -84,6 +92,11 @@ export default function EditarPerfil() {
 
     if (form.password && form.password !== form.confirmPassword) {
       setPopups([{ type: 'error', message: 'Las contraseñas no coinciden' }]);
+      return;
+    }
+
+    if (form.password && !isPasswordValid(form.password)) {
+      setPopups([{ type: 'error', message: 'La contraseña debe tener al menos 8 caracteres, un número y un carácter especial (,*.!?)' }]);
       return;
     }
 
