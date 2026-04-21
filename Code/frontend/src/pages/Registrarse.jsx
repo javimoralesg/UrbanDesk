@@ -13,6 +13,7 @@ export default function Registrarse() {
   const [cp, setCp] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -130,14 +131,24 @@ export default function Registrarse() {
               <label htmlFor="password" className="urban-register__label">
                 Contraseña:
               </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="Escribe aquí tu contraseña..."
-                className="urban-register__input"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="urban-register__password-field">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Escribe aquí tu contraseña..."
+                  className="urban-register__input urban-register__input--password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="urban-register__password-toggle"
+                  onClick={() => setShowPassword(prev => !prev)}
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  {showPassword ? "Ocultar" : "Mostrar"}
+                </button>
+              </div>
             </div>
 
             <div className="urban-register__checkbox-group">
