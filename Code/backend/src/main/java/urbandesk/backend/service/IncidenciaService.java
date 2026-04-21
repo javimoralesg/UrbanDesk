@@ -213,22 +213,7 @@ public class IncidenciaService {
         tecnico.incrementarCarga();
 
         incidencia.actualizarEstado(Estado.ASIGNADA);
-        String observacionFinal = tecnico.getEspecialidad().toString() +  " ha sido asignado a la incidencia.";
-        incidencia.agregarHistorial(new Historial(
-                incidencia,
-                tecnico,
-                Estado.ASIGNADA,
-                observacionFinal));
-
         usuarioRepository.save(tecnico);
-
-        if (incidencia.getCiudadano() != null) {
-            MailService.enviarCambioEstado(
-                    incidencia.getCiudadano().getEmail(),
-                    incidencia.getId(),
-                    incidencia.getDescripcion(),
-                    Estado.ASIGNADA);
-        }
 
         return incidenciaRepository.save(incidencia);
     }
@@ -251,25 +236,10 @@ public class IncidenciaService {
 
         incidencia.agregarTecnico(tecnicoSeleccionado);
         tecnicoSeleccionado.incrementarCarga();
-
-        incidencia.actualizarEstado(Estado.ASIGNADA);
-        String observacionFinal = tecnicoSeleccionado.getEspecialidad().toString() +  " ha sido asignado a la incidencia.";
-        incidencia.agregarHistorial(new Historial(
-                incidencia,
-                tecnicoSeleccionado,
-                Estado.ASIGNADA,
-                observacionFinal));
-
+        
         usuarioRepository.save(tecnicoSeleccionado);
 
-        if (incidencia.getCiudadano() != null) {
-            MailService.enviarCambioEstado(
-                    incidencia.getCiudadano().getEmail(),
-                    incidencia.getId(),
-                    incidencia.getDescripcion(),
-                    Estado.ASIGNADA);
-        }
-
+        incidencia.actualizarEstado(Estado.ASIGNADA);
         return incidenciaRepository.save(incidencia);
     }
 
@@ -287,12 +257,6 @@ public class IncidenciaService {
 
         Estado nuevoEstado = !incidencia.getTecnicos().isEmpty() ? Estado.ASIGNADA : Estado.VALIDADA;
         incidencia.actualizarEstado(nuevoEstado);
-        String observacionFinal = tecnicoSeleccionado.getEspecialidad().toString() +  " ha sido eliminado de la incidencia.";
-        incidencia.agregarHistorial(new Historial(
-                incidencia,
-                tecnicoSeleccionado,
-                nuevoEstado,
-                observacionFinal));
 
         usuarioRepository.save(tecnicoSeleccionado);
         return incidenciaRepository.save(incidencia);
@@ -314,12 +278,6 @@ public class IncidenciaService {
 
          Estado nuevoEstado = !incidencia.getTecnicos().isEmpty() ? Estado.ASIGNADA : Estado.VALIDADA;
         incidencia.actualizarEstado(nuevoEstado);
-        String observacionFinal = tecnico.getEspecialidad().toString() +  " ha sido eliminado de la incidencia.";
-        incidencia.agregarHistorial(new Historial(
-                incidencia,
-                tecnico,
-                nuevoEstado,
-                observacionFinal));
 
         return incidenciaRepository.save(incidencia);
     }
