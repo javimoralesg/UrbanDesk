@@ -20,6 +20,7 @@ export default function DetalleIncidencia() {
   const [success, setSuccess] = useState(null);
   const [mediaSeleccionada, setMediaSeleccionada] = useState(null);
   const [incidenciaAceptadaPorTecnico, setIncidenciaAceptadaPorTecnico] = useState(false);
+  const [mostrarAsignacion, setMostrarAsignacion] = useState(false);
 
   const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("SIN_ASIGNAR");
   const [observaciones, setObservaciones] = useState("");
@@ -570,7 +571,7 @@ export default function DetalleIncidencia() {
 
               {(estado === "VALIDADA" || estado === "ASIGNADA" || estado === "EN_CURSO") && rol === "OPERADOR" && (
                 <>
-                  <div className="detalle-incidencia__asignacion">
+                  { mostrarAsignacion && (<div className="detalle-incidencia__asignacion">
                     {especialidadesTecnico.map((especialidad) => {
                       const asignadosEspecialidad = (incidencia?.tecnicos || []).filter(
                         (tecnico) => tecnico?.especialidad === especialidad.key
@@ -578,6 +579,7 @@ export default function DetalleIncidencia() {
                       const estaAsignado = asignadosEspecialidad.length > 0;
 
                       return (
+                       
                         <div key={especialidad.key}>
                           {especialidad.label}
                           {asignadosEspecialidad.length > 0 && (
@@ -599,7 +601,10 @@ export default function DetalleIncidencia() {
                         </div>
                       );
                     })}
-                  </div>
+                  </div>)}
+                  <button className="detalle-incidencia__main-btn" onClick={() => mostrarAsignacion ? setMostrarAsignacion(false) : setMostrarAsignacion(true)}>
+                      Editar Asignación
+                    </button>
                 </>
               )}
 
@@ -619,14 +624,6 @@ export default function DetalleIncidencia() {
                   </button>
                 </div>
               )}
-
-              {/* Quizas no usamos este bloque al final */}
-              {(estado === "ASIGNADA" || estado === "EN_CURSO") &&
-                rol === "OPERADOR" && (
-                  <button className="detalle-incidencia__main-btn">
-                    Editar asignación
-                  </button>
-                )}
 
               {estado === "RESUELTA" && rol === "OPERADOR" && (
                 <button className="detalle-incidencia__main-btn">
