@@ -625,6 +625,14 @@ export default function DetalleIncidencia() {
                 </div>
               )}
 
+              {rol === "TECNICO" && incidenciaAceptadaPorTecnico && (
+                <button 
+                  className="detalle-incidencia__main-btn"
+                >
+                  Marcar mi parte como resuelta
+                </button>
+              )}
+
               {estado === "RESUELTA" && rol === "OPERADOR" && (
                 <button className="detalle-incidencia__main-btn">
                   Cerrar incidencia
