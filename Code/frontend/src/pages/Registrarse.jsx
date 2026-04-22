@@ -22,6 +22,8 @@ export default function Registrarse() {
 
   const [acceptTerms, setAcceptTerms] = useState(false);
 
+  const [mostrarPopup, setMostrarPopup] = useState(false);
+
   useEffect(() => {
     if (loading) {
       setIncidenceList(prev => ([...prev, { id: 'loading', message: 'Registrando usuario', type: 'waiting' }]));
@@ -38,10 +40,20 @@ export default function Registrarse() {
     }
   }, [loading, error]);
 
+  useEffect(() => {
+    if (password === "") {
+      setMostrarPopup(false);
+      return;
+    }
+
+    setMostrarPopup(true);
+  }, [password]);
+
+
   const isPasswordValid = (value) => {
     const hasMinLength = value.length >= 8;
     const hasNumber = /\d/.test(value);
-    const hasSpecialChar = /[,*.!?.:;-_{}|()/¿¡#@$%&"'€+]/.test(value);
+    const hasSpecialChar = /[,*.!?.:;\-_{}|()/¿¡#@$%&"'€+]/.test(value);
 
     return hasMinLength && hasNumber && hasSpecialChar;
   };
@@ -162,6 +174,11 @@ export default function Registrarse() {
                   {showPassword ? "Ocultar" : "Mostrar"}
                 </button>
               </div>
+              {mostrarPopup && (<div className= {isPasswordValid(password) ? "urban-register__password-requirements-right" : "urban-register__password-requirements-wrong"}> 
+                La contraseña contiene al menos 8 caracteres {password.length >= 8 ? "✅" : "❌"}<br />
+                La contraseña contiene un número {/\d/.test(password) ? "✅" : "❌"}<br />
+                La contraseña contiene un carácter especial (,*.!?) {/[,*.!?.:;\-_{}|()/¿¡#@$%&"'€+]/.test(password) ? "✅" : "❌"}
+                </div>)}
             </div>
 
             <div className="urban-register__checkbox-group">

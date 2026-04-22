@@ -209,3 +209,23 @@
   }
 
 }
+
+.urban-register__password-requirements-wrong {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #444;
+  background: #e99595;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.urban-register__password-requirements-right {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #444;
+  background: #91e8aa;
+  border: 1px solid #a2f5bf;
+  border-radius: 12px;
+  padding: 12px;
+}
