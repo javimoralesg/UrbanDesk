@@ -243,28 +243,40 @@ export const api = {
         return await response.json();
     },
 
-    actualizarIncidencia: async (id, { direccion, latitud, longitud, descripcion }) => {
-        resetInactivityTimer();
-        const response = await fetch(`${BASE_URL}/incidencias/${id}/editar`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                ...getAuthHeaders(),
-            },
-            body: JSON.stringify({
-                direccion,
-                latitud,
-                longitud,
-                descripcion,
-            }),
-        });
+    actualizarIncidencia: async (id,
+    {
+        direccion,
+        latitud,
+        longitud,
+        descripcion,
+        imagenesNuevas,
+        imagenesExistentes
+    }
+) => {
+    resetInactivityTimer();
 
-        if (!response.ok) {
-            throw new Error("Error al actualizar la incidencia");
-        }
+    const response = await fetch(`${BASE_URL}/incidencias/${id}/editar`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders(),
+        },
+        body: JSON.stringify({
+            direccion,
+            latitud,
+            longitud,
+            descripcion,
+            imagenesNuevas,      
+            imagenesExistentes   
+        }),
+    });
 
-        return await response.json();
-    },
+    if (!response.ok) {
+        throw new Error("Error al actualizar la incidencia");
+    }
+
+    return await response.json();
+},
 
     validarIncidencia: async (id, observaciones, prioridad) => {
         resetInactivityTimer();

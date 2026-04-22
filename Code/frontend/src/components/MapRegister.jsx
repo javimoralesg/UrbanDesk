@@ -399,6 +399,7 @@ export function useMapRegisterLogic() {
 
   return {
     address,
+    setAddress,
     suggestions,
     showSuggestions,
     setShowSuggestions,

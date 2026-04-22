@@ -37,7 +37,10 @@ public class IncidenciaController {
             Double latitud,
             Double longitud,
             String descripcion,
-            List<String> imagenes) {
+            List<String> imagenes,
+            List<String> imagenesNuevas,
+            List<Long> imagenesExistentes
+            ) {
     }
 
     public record Comentario(String comentario) {
@@ -144,9 +147,12 @@ public class IncidenciaController {
         Incidencia incidenciaActualizada = incidenciaService.actualizarIncidencia(
                 id,
                 nuevaUbicacion,
-                request.descripcion() != null && !request.descripcion().isBlank() ? request.descripcion()
-                        : incidencia.getDescripcion());
-
+                request.descripcion() != null && !request.descripcion().isBlank()
+                        ? request.descripcion()
+                        : incidencia.getDescripcion(),
+                request.imagenesNuevas() != null ? request.imagenesNuevas() : List.of(),
+                request.imagenesExistentes() != null ? request.imagenesExistentes() : List.of()
+        );
         return ResponseEntity.ok(incidenciaActualizada);
     }
 

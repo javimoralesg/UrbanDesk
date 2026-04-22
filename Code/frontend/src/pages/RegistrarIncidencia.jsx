@@ -21,6 +21,7 @@ export default function RegistrarIncidencia() {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const [mediaSeleccionada, setMediaSeleccionada] = useState(null);
+    const [cargandoEdicion, setCargandoEdicion] = useState(true);
 
     const navigate = useNavigate();
 
@@ -28,6 +29,7 @@ export default function RegistrarIncidencia() {
 
     const {
         address,
+        setAddress,
         suggestions,
         showSuggestions,
         setShowSuggestions,
@@ -44,22 +46,33 @@ export default function RegistrarIncidencia() {
     } = useMapRegisterLogic();
 
     // 🔥 EDIT: cargar datos en edición
-    useEffect(() => {
-        if (esEdicion) {
-            api.obtenerIncidenciaPorId(id).then(data => {
-                setDescripcion(data.descripcion);
+   useEffect(() => {
+    if (esEdicion) {
+        api.obtenerIncidenciaPorId(id).then(data => {
+            setDescripcion(data.descripcion);
 
-                if (data.ubicacion) {
-                    handleInputChange({ target: { value: data.ubicacion.direccion } });
+            if (data.ubicacion) {
+                setCenterLocation({
+                    lat: data.ubicacion.latitud,
+                    lon: data.ubicacion.longitud
+                });
 
-                    setCenterLocation({
-                        lat: data.ubicacion.latitud,
-                        lon: data.ubicacion.longitud
-                    });
-                }
-            });
-        }
-    }, [id]);
+                // ✅ SOLO texto, SIN validar
+                setAddress(data.ubicacion.direccion || '');
+            }
+            if (data.evidencias) {
+                const imagenesBackend = data.evidencias.map(ev => ({
+                    id: ev.id,
+                    preview: ev.url || ev.ruta,
+                    existente: true   // 🔥 CLAVE
+                }));
+
+                setImagenes(imagenesBackend);
+}
+        });
+    }
+}, [id]);
+
 
     useEffect(() => {
         if (geolocationError) {
@@ -136,8 +149,10 @@ export default function RegistrarIncidencia() {
             reader.readAsDataURL(file);
         });
 
-    const crearIdImagen = (archivo) =>
-        `${archivo.name}-${archivo.size}-${archivo.lastModified}`;
+    const crearIdImagen = (archivo) => {
+        if (!archivo) return `img-${Math.random()}`;
+        return `${archivo.name}-${archivo.size}-${archivo.lastModified}`;
+    };
 
     const handleImagenesChange = (event) => {
         const archivos = Array.from(event.target.files || []);
@@ -164,7 +179,9 @@ export default function RegistrarIncidencia() {
 
             archivos.forEach((archivo) => {
                 const yaExiste = combinadas.some(
-                    (img) => crearIdImagen(img.file) === crearIdImagen(archivo)
+                    (img) =>
+                        img.file &&
+                        crearIdImagen(img.file) === crearIdImagen(archivo)
                 );
 
                 if (!yaExiste) {
@@ -172,6 +189,7 @@ export default function RegistrarIncidencia() {
                         id: crearIdImagen(archivo),
                         file: archivo,
                         preview: URL.createObjectURL(archivo),
+                        existente: false
                     });
                 }
             });
@@ -219,17 +237,24 @@ export default function RegistrarIncidencia() {
         const latitud = targetLocation?.lat ?? centerLocation?.lat;
         const longitud = targetLocation?.lon ?? centerLocation?.lon;
 
-        if (!latitud || !longitud) {
+        if ((!latitud || !longitud) && !esEdicion) {
             setError('Selecciona una ubicación válida en el mapa.');
             return;
         }
 
-        if (isLocationValid === false) {
+        if (!cargandoEdicion && isLocationValid === false) {
             setError(addressPopup || 'La ubicación introducida no es válida.');
             return;
         }
 
-        if (address.trim() && isLocationValid === null && !targetLocation) {
+        const ubicacionOriginalValida = esEdicion && centerLocation;
+
+        if (
+            address.trim() &&
+            isLocationValid === null &&
+            !targetLocation &&
+            !ubicacionOriginalValida
+        ) {
             setError('Espera a que se valide la dirección o selecciona una sugerencia.');
             return;
         }
@@ -248,12 +273,22 @@ export default function RegistrarIncidencia() {
             let incidencia;
 
             if (esEdicion) {
+                const imagenesNuevas = imagenes.filter(img => !img.existente);
+                const imagenesExistentes = imagenes.filter(img => img.existente);
+
+                const imagenesBase64 = await Promise.all(
+                    imagenesNuevas.map(img => fileToBase64(img.file))
+                );
+
                 incidencia = await api.actualizarIncidencia(id, {
                     direccion: address || 'Ubicación sin dirección textual',
                     latitud,
                     longitud,
-                    descripcion: trimmedDescription
+                    descripcion: trimmedDescription,
+                    imagenesNuevas: imagenesBase64,
+                    imagenesExistentes: imagenesExistentes.map(img => img.id)
                 });
+            
             } else {
                 const imagenesBase64 = await Promise.all(
                     imagenes.map((imagen) => fileToBase64(imagen.file))
@@ -312,13 +347,32 @@ export default function RegistrarIncidencia() {
             <Sidebar />
 
             <section className="registrar-incidencia__content">
-                <h2 className="registrar-incidencia__title">
-                    {esEdicion ? "Editar Incidencia" : "Registrar Incidencia"}
-                </h2>
+                {esEdicion ? (
+                    <div className="editar-incidencia__header">
 
-                <p className="registrar-incidencia__subtitle">
-                    Describe la incidencia, selecciona su ubicación y adjunta imágenes si lo necesitas.
-                </p>
+                        <button
+                            className="editar-incidencia__back"
+                            onClick={() => navigate(`/incidencias-urbanas/mis-incidencias/${id}`)}
+                        >
+                            &lt; Volver
+                        </button>
+
+                        <h2 className="editar-incidencia__title">
+                            Editar Incidencia #{id}
+                        </h2>
+
+                    </div>
+                ) : (
+                    <>
+                        <h2 className="registrar-incidencia__title">
+                            Registrar Incidencia
+                        </h2>
+
+                        <p className="registrar-incidencia__subtitle">
+                            Describe la incidencia, selecciona su ubicación y adjunta imágenes si lo necesitas.
+                        </p>
+                    </>
+                )}
 
                 <div className="registrar-incidencia__form">
                     <Recording
@@ -350,7 +404,7 @@ export default function RegistrarIncidencia() {
                             className="registrar-incidencia__location-btn"
                             title="Usar ubicación actual"
                         >
-                            📍
+                        
                         </button>
 
                         {showSuggestions && suggestions.length > 0 && (
@@ -407,26 +461,25 @@ export default function RegistrarIncidencia() {
                                             type="button"
                                             className="registrar-incidencia__imagen-eliminar"
                                             onClick={() => handleEliminarImagen(imagen.id)}
-                                            aria-label={`Eliminar ${imagen.file.name}`}
-                                        >
-                                            ×
+                                            aria-label={`Eliminar ${imagen.file?.name || 'imagen'}`}                                            >
+                                            
                                         </button>
 
                                         <img
                                             src={imagen.preview}
-                                            alt={imagen.file.name}
+                                            alt={imagen.file?.name || `Imagen ${imagen.id}`}
                                             className="registrar-incidencia__imagen-preview"
                                             onClick={() =>
                                                 setMediaSeleccionada({
                                                     src: imagen.preview,
-                                                    type: imagen.file.type,
-                                                    alt: imagen.file.name,
+                                                    type: imagen.file?.type || 'image/*',
+                                                alt: imagen.file?.name || `Imagen ${imagen.id}`,
                                                 })
                                             }
                                         />
-                                        <p className="registrar-incidencia__imagen-nombre" title={imagen.file.name}>
-                                            {imagen.file.name}
-                                        </p>
+                                        {/* <p className="registrar-incidencia__imagen-nombre" title={imagen.file?.name}>
+                                            {imagen.file?.name}
+                                        </p> */}
                                     </div>
                                 ))}
                             </div>

@@ -90,11 +90,45 @@ public class IncidenciaService {
         return incidenciaGuardada;
     }
 
-    public Incidencia actualizarIncidencia(Long id, Ubicacion nuevaUbicacion, String nuevaDescripcion) {
-        Incidencia incidencia = obtenerPorId(id);
-        incidencia.modificarIncidencia(nuevaUbicacion, nuevaDescripcion);
-        return incidenciaRepository.save(incidencia);
+public Incidencia actualizarIncidencia(
+        Long id,
+        Ubicacion nuevaUbicacion,
+        String nuevaDescripcion,
+        List<String> imagenesNuevas,
+        List<Long> imagenesExistentesIds
+) {
+    Incidencia incidencia = obtenerPorId(id);
+
+    incidencia.modificarIncidencia(nuevaUbicacion, nuevaDescripcion);
+
+    List<Evidencia> evidenciasActuales = incidencia.getEvidencias();
+
+    List<Evidencia> evidenciasFiltradas = evidenciasActuales.stream()
+            .filter(ev -> imagenesExistentesIds != null && imagenesExistentesIds.contains(ev.getId()))
+            .toList();
+
+    incidencia.getEvidencias().clear();
+    incidencia.getEvidencias().addAll(evidenciasFiltradas);
+
+    if (imagenesNuevas != null) {
+        for (String imagen : imagenesNuevas) {
+            if (imagen != null && !imagen.isBlank()) {
+                incidencia.agregarEvidencia(
+                        new Evidencia(imagen, incidencia, incidencia.getCiudadano())
+                );
+            }
+        }
     }
+
+    incidencia.agregarHistorial(new Historial(
+            incidencia,
+            incidencia.getCiudadano(),
+            Estado.CREADA, // o el estado actual si quieres mantenerlo
+            "Incidencia actualizada"
+    ));
+
+    return incidenciaRepository.save(incidencia);
+}
 
     public Incidencia validarIncidencia(Long incidenciaId, Long operadorId, String observaciones, String prioridadStr) {
         Incidencia incidencia = obtenerPorId(incidenciaId);
