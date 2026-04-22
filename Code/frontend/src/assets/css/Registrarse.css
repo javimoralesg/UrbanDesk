@@ -218,6 +218,7 @@
   border: 1px solid #dbe3ee;
   border-radius: 12px;
   padding: 12px;
+  transition: background-color 0.35s ease, border-color 0.35s ease;
 }
 
 .urban-register__password-requirements-right {
@@ -228,4 +229,5 @@
   border: 1px solid #a2f5bf;
   border-radius: 12px;
   padding: 12px;
+  transition: background-color 0.35s ease, border-color 0.35s ease;
 }
