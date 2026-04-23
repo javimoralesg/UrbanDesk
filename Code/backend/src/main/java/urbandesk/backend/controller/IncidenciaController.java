@@ -1,13 +1,22 @@
 package urbandesk.backend.controller;
 
 import java.security.Principal;
-import java.util.Objects;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
@@ -44,6 +53,9 @@ public class IncidenciaController {
     }
 
     public record Comentario(String comentario) {
+    }
+
+    public record ActualizarTecnicosEspecialidadesRequest(List<String> especialidades) {
     }
 
     private Usuario getAuthenticatedUser(Principal principal) {
@@ -239,6 +251,43 @@ public class IncidenciaController {
         }
 
         return ResponseEntity.ok(incidenciaService.asignarTecnicoPorEspecialidad(id, especialidadEnum));
+    }
+
+    @PutMapping("/{id}/tecnicos/especialidades")
+    public ResponseEntity<Incidencia> actualizarTecnicosPorEspecialidad(
+            @PathVariable Long id,
+            @RequestBody(required = false) ActualizarTecnicosEspecialidadesRequest request,
+            Principal principal) {
+
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (!(usuario instanceof Operador operador)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Solo un operador autenticado puede actualizar técnicos de una incidencia");
+        }
+
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        if (incidencia.getOperador() == null
+                || !Objects.equals(incidencia.getOperador().getId(), operador.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "La incidencia no está asignada a este operador");
+        }
+
+        List<String> especialidadesRequest = request != null && request.especialidades() != null
+                ? request.especialidades()
+                : List.of();
+
+        Set<Especialidad> especialidades = especialidadesRequest.stream()
+                .map((especialidad) -> {
+                    try {
+                        return Especialidad.valueOf(especialidad.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "Especialidad no válida: " + especialidad);
+                    }
+                })
+                .collect(java.util.stream.Collectors.toSet());
+
+        return ResponseEntity.ok(incidenciaService.actualizarTecnicosPorEspecialidades(id, especialidades));
     }
 
     @DeleteMapping("/{id}/tecnico")

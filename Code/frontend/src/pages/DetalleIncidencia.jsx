@@ -21,6 +21,7 @@ export default function DetalleIncidencia() {
   const [mediaSeleccionada, setMediaSeleccionada] = useState(null);
   const [incidenciaAceptadaPorTecnico, setIncidenciaAceptadaPorTecnico] = useState(false);
   const [mostrarAsignacion, setMostrarAsignacion] = useState(false);
+  const [especialidadesSeleccionadas, setEspecialidadesSeleccionadas] = useState([]);
 
   const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("SIN_ASIGNAR");
   const [observaciones, setObservaciones] = useState("");
@@ -194,6 +195,15 @@ export default function DetalleIncidencia() {
     setIncidenciaAceptadaPorTecnico(observacionesUltimaDecision.includes("ha aceptado la incidencia"));
   }, [incidencia, id_usuario, rol]);
 
+  useEffect(() => {
+    const especialidadesAsignadas = [...new Set(
+      (incidencia?.tecnicos || [])
+        .map((tecnico) => tecnico?.especialidad)
+        .filter(Boolean)
+    )];
+    setEspecialidadesSeleccionadas(especialidadesAsignadas);
+  }, [incidencia]);
+
   const estado = incidencia?.estado;
   const prioridad = incidencia?.prioridad;
   const descripcion = incidencia?.descripcion;
@@ -293,29 +303,24 @@ export default function DetalleIncidencia() {
     }
   };
 
-  const asignarTecnicoPorEspecialidad = async (especialidad) => {
-    try {
-      setWorking(`Asignando técnico de ${especialidad.toLowerCase()}...`);
-      const data = await api.asignarTecnicoPorEspecialidadIncidencia(id, especialidad);
-      setIncidencia(data);
-      setSuccess(`Técnico de ${especialidad.toLowerCase()} asignado correctamente.`);
-    } catch (err) {
-      console.error("Error al asignar técnico por especialidad:", err);
-      setError("No se pudo asignar un técnico de esa especialidad.");
-    } finally {
-      setWorking(null);
-    }
+  const alternarEspecialidadSeleccionada = (especialidad) => {
+    setEspecialidadesSeleccionadas((prev) =>
+      prev.includes(especialidad)
+        ? prev.filter((item) => item !== especialidad)
+        : [...prev, especialidad]
+    );
   };
 
-  const eliminarTecnicoPorEspecialidad = async (especialidad) => {
+  const guardarAsignacionTecnicos = async () => {
     try {
-      setWorking(`Eliminando técnico de ${especialidad.toLowerCase()}...`);
-      const data = await api.eliminarTecnicoPorEspecialidadIncidencia(id, especialidad);
+      setWorking("Actualizando asignación de técnicos...");
+      const data = await api.actualizarTecnicosPorEspecialidadesIncidencia(id, especialidadesSeleccionadas);
       setIncidencia(data);
-      setSuccess(`Técnico de ${especialidad.toLowerCase()} eliminado correctamente.`);
+      setSuccess("Asignación de técnicos actualizada correctamente.");
+      setMostrarAsignacion(false);
     } catch (err) {
-      console.error("Error al eliminar técnico por especialidad:", err);
-      setError("No se pudo eliminar el técnico de esa especialidad.");
+      console.error("Error al actualizar técnicos por especialidad:", err);
+      setError(err?.message || "No se pudo actualizar la asignación de técnicos.");
     } finally {
       setWorking(null);
     }
@@ -576,31 +581,33 @@ export default function DetalleIncidencia() {
                       const asignadosEspecialidad = (incidencia?.tecnicos || []).filter(
                         (tecnico) => tecnico?.especialidad === especialidad.key
                       );
-                      const estaAsignado = asignadosEspecialidad.length > 0;
+                      const estaSeleccionado = especialidadesSeleccionadas.includes(especialidad.key);
 
                       return (
-                       
-                        <div key={especialidad.key}>
-                          {especialidad.label}
+                        <div key={especialidad.key} className="detalle-incidencia__asignacion-row">
+                          <label className="detalle-incidencia__asignacion-option">
+                            <input
+                              type="checkbox"
+                              checked={estaSeleccionado}
+                              onChange={() => alternarEspecialidadSeleccionada(especialidad.key)}
+                            />
+                            <span>{especialidad.label}</span>
+                          </label>
                           {asignadosEspecialidad.length > 0 && (
-                            <span>
-                              {" "}
+                            <span className="detalle-incidencia__asignacion-tecnicos">
                               ({asignadosEspecialidad.map((tecnico) => tecnico?.nombre).join(", ")})
                             </span>
                           )}
-                          <button
-                            className={estaAsignado ? "delete" : "add"}
-                            onClick={() =>
-                              estaAsignado
-                                ? eliminarTecnicoPorEspecialidad(especialidad.key)
-                                : asignarTecnicoPorEspecialidad(especialidad.key)
-                            }
-                          >
-                            {estaAsignado ? "Eliminar" : "Añadir"}
-                          </button>
                         </div>
                       );
                     })}
+                    <button
+                      className="detalle-incidencia__main-btn"
+                      onClick={guardarAsignacionTecnicos}
+                      disabled={!!working}
+                    >
+                      Guardar asignacion
+                    </button>
                   </div>)}
                   <button className="detalle-incidencia__main-btn" onClick={() => mostrarAsignacion ? setMostrarAsignacion(false) : setMostrarAsignacion(true)}>
                       Editar Asignación

@@ -21,11 +21,23 @@ async function parseJsonOrThrow(response) {
     }
     let message = `Error ${response.status}`;
     try {
-        const data = JSON.parse(await response.text());
-        if (data.error) message = data.error;
-        else if (data.message) message = data.message;
+        const rawText = await response.text();
+        if (rawText) {
+            const data = JSON.parse(rawText);
+            message =
+                data?.message ||
+                data?.detail ||
+                (data?.error && data?.error !== "Bad Request" ? data.error : null) ||
+                data?.title ||
+                data?.error ||
+                rawText ||
+                message;
+        } else {
+            message = response.statusText || message;
+        }
     } catch {
         console.error("Error al parsear el mensaje de error:", response.status);
+        message = response.statusText || message;
     }
     const error = new Error(message);
     error.status = response.status;
@@ -347,6 +359,23 @@ export const api = {
         }
 
         return await response.json();
+    },
+
+    actualizarTecnicosPorEspecialidadesIncidencia: async (id, especialidades = []) => {
+        resetInactivityTimer();
+        const response = await fetch(
+            `${BASE_URL}/incidencias/${id}/tecnicos/especialidades`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getAuthHeaders(),
+                },
+                body: JSON.stringify({ especialidades }),
+            }
+        );
+
+        return parseJsonOrThrow(response);
     },
 
     eliminarTecnicoPorEspecialidadIncidencia: async (id, especialidad) => {

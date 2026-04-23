@@ -1,8 +1,11 @@
 package urbandesk.backend.service;
 
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -286,6 +289,12 @@ public Incidencia actualizarIncidencia(
                 .orElseThrow(() -> new DomainRuleViolation(
                         "No hay técnicos asignados para la especialidad: " + especialidad));
 
+        if (tecnicoHaAceptadoIncidencia(incidencia, tecnicoSeleccionado)) {
+            throw new DomainRuleViolation(
+                "No se puede desasignar al técnico de " + especialidad
+                    + " porque ya ha aceptado la incidencia.");
+        }
+
         incidencia.eliminarTecnico(tecnicoSeleccionado);
         tecnicoSeleccionado.decrementarCarga();
 
@@ -294,6 +303,35 @@ public Incidencia actualizarIncidencia(
 
         usuarioRepository.save(tecnicoSeleccionado);
         return incidenciaRepository.save(incidencia);
+    }
+
+    @Transactional
+    public Incidencia actualizarTecnicosPorEspecialidades(Long incidenciaId, Set<Especialidad> especialidadesObjetivo) {
+        Incidencia incidencia = obtenerPorId(incidenciaId);
+
+        Set<Especialidad> objetivo = especialidadesObjetivo == null
+                ? Set.of()
+                : new LinkedHashSet<>(especialidadesObjetivo);
+
+        Set<Especialidad> especialidadesActuales = incidencia.getTecnicos().stream()
+                .map(Tecnico::getEspecialidad)
+                .collect(Collectors.toSet());
+
+        for (Especialidad especialidadActual : especialidadesActuales) {
+            if (!objetivo.contains(especialidadActual)) {
+                incidencia = eliminarTecnicoPorEspecialidad(incidencia.getId(), especialidadActual);
+            }
+        }
+
+        for (Especialidad especialidadObjetivo : objetivo) {
+            boolean yaAsignada = incidencia.getTecnicos().stream()
+                    .anyMatch(tecnico -> tecnico.getEspecialidad() == especialidadObjetivo);
+            if (!yaAsignada) {
+                incidencia = asignarTecnicoPorEspecialidad(incidencia.getId(), especialidadObjetivo);
+            }
+        }
+
+        return incidencia;
     }
 
     public Incidencia eliminarTecnico(Long incidenciaId, Long tecnicoId) {
@@ -306,6 +344,12 @@ public Incidencia actualizarIncidencia(
             throw new DomainRuleViolation("El usuario indicado no es un técnico");
         }
 
+        if (tecnicoHaAceptadoIncidencia(incidencia, tecnico)) {
+            throw new DomainRuleViolation(
+                    "No se puede desasignar al técnico " + tecnico.getNombre()
+                            + " porque ya ha aceptado la incidencia.");
+        }
+
         tecnico.decrementarCarga();
         usuarioRepository.save(tecnico);
         incidencia.eliminarTecnico(tecnico);
@@ -314,6 +358,22 @@ public Incidencia actualizarIncidencia(
         incidencia.actualizarEstado(nuevoEstado);
 
         return incidenciaRepository.save(incidencia);
+    }
+
+    private boolean tecnicoHaAceptadoIncidencia(Incidencia incidencia, Tecnico tecnico) {
+        if (incidencia == null || tecnico == null) {
+            return false;
+        }
+
+        return incidencia.getHistoriales().stream()
+                .anyMatch((entrada) -> {
+                    Usuario usuarioHistorial = entrada.getUsuario();
+                    String observaciones = entrada.getObservaciones();
+                    return usuarioHistorial != null
+                            && Objects.equals(usuarioHistorial.getId(), tecnico.getId())
+                            && observaciones != null
+                            && observaciones.toLowerCase().contains("ha aceptado la incidencia");
+                });
     }
 
     public Incidencia aceptarIncidenciaTecnico(Long id, Long tecnicoId) {

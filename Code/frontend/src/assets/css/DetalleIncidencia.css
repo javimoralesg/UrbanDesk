@@ -385,7 +385,7 @@
   box-sizing: border-box;
 }
 
-.detalle-incidencia__asignacion div {
+.detalle-incidencia__asignacion-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -396,8 +396,29 @@
   gap: 1rem;
 }
 
-.detalle-incidencia__asignacion div:last-child {
+.detalle-incidencia__asignacion-row:last-of-type {
   border-bottom: none;
+}
+
+.detalle-incidencia__asignacion-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  color: #24364b;
+}
+
+.detalle-incidencia__asignacion-option input {
+  width: 18px;
+  height: 18px;
+  accent-color: #1e88e5;
+  cursor: pointer;
+}
+
+.detalle-incidencia__asignacion-tecnicos {
+  color: #4b5c70;
+  font-size: 0.95rem;
+  text-align: right;
 }
 
 .detalle-incidencia__asignacion .delete,
