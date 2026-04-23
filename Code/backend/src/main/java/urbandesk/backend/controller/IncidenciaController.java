@@ -29,6 +29,7 @@ import urbandesk.backend.domain.user.Especialidad;
 import urbandesk.backend.domain.user.Operador;
 import urbandesk.backend.domain.user.Tecnico;
 import urbandesk.backend.domain.user.Usuario;
+import urbandesk.backend.dto.IncidenciaPublicaDTO;
 import urbandesk.backend.service.IncidenciaService;
 import urbandesk.backend.service.UsuarioService;
 
@@ -393,5 +394,9 @@ public class IncidenciaController {
         @RequestParam String comentario) {
     return ResponseEntity.ok(incidenciaService.resolverIncidenciaTecnico(id, tecnicoId, comentario));
     }
+    @GetMapping("/publicas")
+    public List<IncidenciaPublicaDTO> obtenerPublicas() {
+        return incidenciaService.obtenerIncidenciasPublicas();
+}
 
 }

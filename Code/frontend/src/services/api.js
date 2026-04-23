@@ -446,5 +446,15 @@ export const api = {
         );
         if (!response.ok) throw new Error("Error al resolver la incidencia");
         return await response.json();
+    },
+    obtenerIncidenciasPublicas: async () => {
+        resetInactivityTimer();
+
+        const response = await fetch(`${BASE_URL}/incidencias/publicas`, {
+            method: 'GET',
+            credentials: 'omit',
+        });
+
+        return parseJsonOrThrow(response);
+    },
     }
-}

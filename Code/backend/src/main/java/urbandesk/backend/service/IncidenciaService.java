@@ -25,8 +25,10 @@ import urbandesk.backend.domain.user.Especialidad;
 import urbandesk.backend.domain.user.Operador;
 import urbandesk.backend.domain.user.Tecnico;
 import urbandesk.backend.domain.user.Usuario;
+import urbandesk.backend.dto.IncidenciaPublicaDTO;
 import urbandesk.backend.repository.IncidenciaRepository;
 import urbandesk.backend.repository.UsuarioRepository;
+
 
 @Service
 @RequiredArgsConstructor
@@ -530,4 +532,24 @@ public Incidencia actualizarIncidencia(
     return incidenciaRepository.save(incidencia);
     }
 
+    public List<IncidenciaPublicaDTO> obtenerIncidenciasPublicas() {
+
+        List<Estado> estadosExcluir = List.of(
+            Estado.CERRADA,
+            Estado.RECHAZADA,
+            Estado.CREADA   // opcional (yo lo pondría)
+        );
+
+        return incidenciaRepository.findByEstadoNotIn(estadosExcluir)
+            .stream()
+            .map(i -> new IncidenciaPublicaDTO(
+                i.getId(),
+                i.getFechaCreacion(),
+                i.getEstado().name(),
+                i.getDescripcion(),
+                i.getPrioridad().name(),
+                i.getUbicacion().getDireccion()
+            ))
+            .toList();
+    }
 }

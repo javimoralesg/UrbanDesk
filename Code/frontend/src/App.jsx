@@ -11,6 +11,7 @@ import MisIncidencias from './pages/MisIncidencias';
 import DetalleIncidencia from './pages/DetalleIncidencia';
 import EditarPerfil from './pages/EditarPerfil';
 import PoliticaPrivacidad from './pages/PoliticaPrivacidad';
+import IncidenciasPublicas from "./pages/IncidenciasPublicas";
 
 
 function App() {
@@ -28,6 +29,8 @@ function App() {
         <Route path="/incidencias-urbanas/editar-perfil" element={<EditarPerfil />} />
         <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
         <Route path="/incidencias-urbanas/editar/:id" element={<RegistrarIncidencia />} />
+        <Route path="/incidencias-urbanas/incidencias-publicas" element={<IncidenciasPublicas />} />
+
       </Routes>
     </>
   )

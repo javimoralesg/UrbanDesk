@@ -11,6 +11,8 @@ const opcionesGlobales = {
     { text: "Registrarse", link: "/incidencias-urbanas/register" },
     { text: "Iniciar sesión", link: "/incidencias-urbanas/login" },
     { text: "Registrar incidencia", link: "/incidencias-urbanas/registrar-incidencia" },
+    { text: "Incidencias públicas", link: "/incidencias-urbanas/incidencias-publicas" },
+
   ],
   Usuario: [
     { text: "Portada", link: "/incidencias-urbanas" },
@@ -18,6 +20,7 @@ const opcionesGlobales = {
     { text: "Editar perfil", link: "/incidencias-urbanas/editar-perfil " },
     { text: "Mis incidencias", link: "/incidencias-urbanas/mis-incidencias" },
     { text: "Registrar incidencia", link: "/incidencias-urbanas/registrar-incidencia" },
+    { text: "Incidencias públicas", link: "/incidencias-urbanas/incidencias-publicas" },
   ],
   Operador: [
     { text: "Portada", link: "/incidencias-urbanas" },
