@@ -152,12 +152,11 @@ export default function MisIncidencias() {
           return;
         }
 
-        const rol = user?.rol?.toUpperCase?.() || "";
-        setRolUsuario(rol);
-
-        let data = [];
-
-        data = await api.getIncidents();
+        if (rol == "TECNICO") {
+          data = await api.getIncidentsByTechnician(user.id);
+        }else {
+          data = await api.getIncidents();
+        }
 
         if (Array.isArray(data) && data.length > 0) {
           setMisIncidencias(data);

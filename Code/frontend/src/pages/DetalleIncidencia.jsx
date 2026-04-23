@@ -26,6 +26,7 @@ export default function DetalleIncidencia() {
   const [prioridadSeleccionada, setPrioridadSeleccionada] = useState("SIN_ASIGNAR");
   const [observaciones, setObservaciones] = useState("");
   const [formularioAbierto, setFormularioAbierto] = useState(null);
+  const [comentarioTecnico, setComentarioTecnico] = useState("");
   // "validar" | "rechazar" | null
   const [incidenceList, setIncidenceList] = useState([]);
 
@@ -327,44 +328,69 @@ export default function DetalleIncidencia() {
   };
 
   const aceptarIncidenciaTecnico = async () => {
-    if (incidenciaAceptadaPorTecnico) {
-      setError("Ya has aceptado esta incidencia.");
-      return;
+    if (!comentarioTecnico.trim()) {
+        setError("Debes añadir un comentario para aceptar la incidencia.");
+        return;
     }
-
+    if (incidenciaAceptadaPorTecnico) {
+        setError("Ya has aceptado esta incidencia.");
+        return;
+    }
     try {
-      setWorking("Aceptando incidencia...");
-      const data = await api.aceptarIncidenciaTecnico(id, id_usuario);
-      setIncidencia(data);
-      setSuccess("Incidencia aceptada correctamente.");
-      setIncidenciaAceptadaPorTecnico(true);
+        setWorking("Aceptando incidencia...");
+        const data = await api.aceptarIncidenciaTecnico(id, id_usuario, comentarioTecnico);
+        setIncidencia(data);
+        setSuccess("Incidencia aceptada correctamente.");
+        setIncidenciaAceptadaPorTecnico(true);
+        setComentarioTecnico("");
+        setFormularioAbierto(null);
     } catch (err) {
-      console.error("Error al aceptar incidencia:", err);
-      setError("No se pudo aceptar la incidencia. Inténtalo de nuevo.");
+        console.error("Error al aceptar incidencia:", err);
+        setError("No se pudo aceptar la incidencia. Inténtalo de nuevo.");
     } finally {
-      setWorking(null);
+        setWorking(null);
     }
   };
 
   const rechazarIncidenciaTecnico = async () => {
-    if (incidenciaAceptadaPorTecnico) {
-      setError("Ya has aceptado esta incidencia.");
-      return;
+    if (!comentarioTecnico.trim()) {
+        setError("Debes añadir un comentario para rechazar la incidencia.");
+        return;
     }
-
     try {
-      setWorking("Rechazando incidencia...");
-      const data = await api.rechazarIncidenciaTecnico(id, id_usuario);
-      setIncidencia(data);
-      setSuccess("Incidencia rechazada correctamente.");
-      setIncidenciaRechazadaPorTecnico(true);
+        setWorking("Rechazando incidencia...");
+        const data = await api.rechazarIncidenciaTecnico(id, id_usuario, comentarioTecnico);
+        setIncidencia(data);
+        setSuccess("Incidencia rechazada correctamente.");
+        setComentarioTecnico("");
+        setFormularioAbierto(null);
+        navigate("/incidencias-urbanas/mis-incidencias", { replace: true });
     } catch (err) {
-      console.error("Error al rechazar incidencia:", err);
-      setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
+        console.error("Error al rechazar incidencia:", err);
+        setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
     } finally {
-      setWorking(null);
-      navigate("/incidencias-urbanas/mis-incidencias", { replace: true });
-    } 
+        setWorking(null);
+    }
+  };
+
+  const resolverIncidenciaTecnico = async () => {
+    if (!comentarioTecnico.trim()) {
+        setError("Debes añadir un comentario para resolver la incidencia.");
+        return;
+    }
+    try {
+        setWorking("Resolviendo incidencia...");
+        const data = await api.resolverIncidenciaTecnico(id, id_usuario, comentarioTecnico);
+        setIncidencia(data);
+        setSuccess("Incidencia marcada como resuelta correctamente.");
+        setComentarioTecnico("");
+        setFormularioAbierto(null);
+    } catch (err) {
+        console.error("Error al resolver incidencia:", err);
+        setError("No se pudo resolver la incidencia. Inténtalo de nuevo.");
+    } finally {
+        setWorking(null);
+    }
   };
 
   return (
@@ -615,29 +641,129 @@ export default function DetalleIncidencia() {
                 </>
               )}
 
-              {(rol === "TECNICO" && !incidenciaAceptadaPorTecnico) && (
-                <div>
-                  <button
-                    className="detalle-incidencia__main-btn"
-                    onClick={aceptarIncidenciaTecnico}
-                  >
-                    Aceptar incidencia {incidenciaAceptadaPorTecnico && "(Ya aceptada)"}
-                  </button>
-                  <button
-                    className="detalle-incidencia__main-btn"
-                    onClick={rechazarIncidenciaTecnico}
-                  >
-                    Rechazar incidencia
-                  </button>
-                </div>
-              )}
+              {rol === "TECNICO" && (estado === "ASIGNADA" || estado === "EN_CURSO") && (
+                <>
+                  <div className="detalle-incidencia__actions">
+                    {estado === "ASIGNADA" && !incidenciaAceptadaPorTecnico && (
+                      <>
+                        <button
+                          className={`detalle-incidencia__main-btn ${formularioAbierto === "aceptar-tecnico"
+                            ? "detalle-incidencia__btn--dark"
+                            : "detalle-incidencia__btn--light"}`}
+                          onClick={() => setFormularioAbierto(prev =>
+                            prev === "aceptar-tecnico" ? null : "aceptar-tecnico")}
+                        >
+                          Aceptar incidencia
+                        </button>
+                        <button
+                          className={`detalle-incidencia__main-btn ${formularioAbierto === "rechazar-tecnico"
+                            ? "detalle-incidencia__btn--dark"
+                            : "detalle-incidencia__btn--light"}`}
+                          onClick={() => setFormularioAbierto(prev =>
+                            prev === "rechazar-tecnico" ? null : "rechazar-tecnico")}
+                        >
+                          Rechazar incidencia
+                        </button>
+                      </>
+                    )}
 
-              {rol === "TECNICO" && incidenciaAceptadaPorTecnico && (
-                <button 
-                  className="detalle-incidencia__main-btn"
-                >
-                  Marcar mi parte como resuelta
-                </button>
+                    {estado === "EN_CURSO" && incidenciaAceptadaPorTecnico && (
+                      <button
+                        className={`detalle-incidencia__main-btn ${formularioAbierto === "resolver-tecnico"
+                          ? "detalle-incidencia__btn--dark"
+                          : "detalle-incidencia__btn--light"}`}
+                        onClick={() => setFormularioAbierto(prev =>
+                          prev === "resolver-tecnico" ? null : "resolver-tecnico")}
+                      >
+                        Marcar como resuelta
+                      </button>
+                    )}
+                  </div>
+
+                  {formularioAbierto === "aceptar-tecnico" && (
+                    <div className="detalle-incidencia__form-card">
+                      <h4 className="detalle-incidencia__form-title">Aceptar incidencia</h4>
+                      <div className="detalle-incidencia__form-group">
+                        <label>Comentario <span style={{ color: "red" }}>*</span></label>
+                        <textarea
+                          placeholder="Indica cómo vas a gestionar esta incidencia..."
+                          value={comentarioTecnico}
+                          onChange={(e) => setComentarioTecnico(e.target.value)}
+                        />
+                      </div>
+                      <div className="detalle-incidencia__actions">
+                        <button
+                          onClick={aceptarIncidenciaTecnico}
+                          disabled={!comentarioTecnico.trim()}
+                        >
+                          Confirmar aceptación
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setFormularioAbierto(null); setComentarioTecnico(""); }}
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {formularioAbierto === "rechazar-tecnico" && (
+                    <div className="detalle-incidencia__form-card">
+                      <h4 className="detalle-incidencia__form-title">Rechazar incidencia</h4>
+                      <div className="detalle-incidencia__form-group">
+                        <label>Motivo del rechazo <span style={{ color: "red" }}>*</span></label>
+                        <textarea
+                          placeholder="Indica el motivo por el que rechazas esta incidencia..."
+                          value={comentarioTecnico}
+                          onChange={(e) => setComentarioTecnico(e.target.value)}
+                        />
+                      </div>
+                      <div className="detalle-incidencia__actions">
+                        <button
+                          onClick={rechazarIncidenciaTecnico}
+                          disabled={!comentarioTecnico.trim()}
+                        >
+                          Confirmar rechazo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setFormularioAbierto(null); setComentarioTecnico(""); }}
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {formularioAbierto === "resolver-tecnico" && (
+                    <div className="detalle-incidencia__form-card">
+                      <h4 className="detalle-incidencia__form-title">Marcar como resuelta</h4>
+                      <div className="detalle-incidencia__form-group">
+                        <label>Comentario de resolución <span style={{ color: "red" }}>*</span></label>
+                        <textarea
+                          placeholder="Describe cómo se ha resuelto la incidencia..."
+                          value={comentarioTecnico}
+                          onChange={(e) => setComentarioTecnico(e.target.value)}
+                        />
+                      </div>
+                      <div className="detalle-incidencia__actions">
+                        <button
+                          onClick={resolverIncidenciaTecnico}
+                          disabled={!comentarioTecnico.trim()}
+                        >
+                          Confirmar resolución
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setFormularioAbierto(null); setComentarioTecnico(""); }}
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
 
               {estado === "RESUELTA" && rol === "OPERADOR" && (
