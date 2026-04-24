@@ -691,7 +691,6 @@ export default function DetalleIncidencia() {
                           disabled={tecnicoYaFinalizo}
                       >
                           {tecnicoYaFinalizo ? "Ya ha sido marcada como resuelta en esta incidencia" : "Marcar como resuelta"}
-                        Marcar como resuelta
                       </button>
                     )}
                   </div>
