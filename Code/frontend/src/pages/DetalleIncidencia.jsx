@@ -27,6 +27,7 @@ export default function DetalleIncidencia() {
   const [observaciones, setObservaciones] = useState("");
   const [formularioAbierto, setFormularioAbierto] = useState(null);
   const [comentarioTecnico, setComentarioTecnico] = useState("");
+  const [tecnicoYaFinalizo, setTecnicoYaFinalizo] = useState(false);
   // "validar" | "rechazar" | null
   const [incidenceList, setIncidenceList] = useState([]);
 
@@ -204,6 +205,19 @@ export default function DetalleIncidencia() {
     )];
     setEspecialidadesSeleccionadas(especialidadesAsignadas);
   }, [incidencia]);
+
+  useEffect(() => {
+    if (rol !== "TECNICO" || !id_usuario || !incidencia) {
+        setTecnicoYaFinalizo(false);
+        return;
+    }
+    const yaFinalizo = (incidencia?.tecnicosFinalizadosIds || [])
+        .map(Number)
+        .includes(Number(id_usuario));
+    setTecnicoYaFinalizo(yaFinalizo);
+  }, [incidencia, id_usuario, rol]);
+
+
 
   const estado = incidencia?.estado;
   const prioridad = incidencia?.prioridad;
@@ -674,7 +688,9 @@ export default function DetalleIncidencia() {
                           : "detalle-incidencia__btn--light"}`}
                         onClick={() => setFormularioAbierto(prev =>
                           prev === "resolver-tecnico" ? null : "resolver-tecnico")}
+                          disabled={tecnicoYaFinalizo}
                       >
+                          {tecnicoYaFinalizo ? "Ya ha sido marcada como resuelta en esta incidencia" : "Marcar como resuelta"}
                         Marcar como resuelta
                       </button>
                     )}

@@ -478,6 +478,10 @@ public Incidencia actualizarIncidencia(
 
     Incidencia incidencia = obtenerPorId(incidenciaId);
 
+    if (incidencia.getTecnicosFinalizadosIds().contains(tecnicoId)) {
+        throw new DomainRuleViolation("Ya ha sido marcada como resuelta en esta incidencia.");
+    }
+
     boolean esTecnicoAsignado = incidencia.getTecnicos().stream()
             .anyMatch(t -> t.getId().equals(tecnicoId));
 
