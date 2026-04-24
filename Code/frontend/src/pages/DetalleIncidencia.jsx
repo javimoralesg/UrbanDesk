@@ -644,7 +644,7 @@ export default function DetalleIncidencia() {
               {rol === "TECNICO" && (estado === "ASIGNADA" || estado === "EN_CURSO") && (
                 <>
                   <div className="detalle-incidencia__actions">
-                    {estado === "ASIGNADA" && !incidenciaAceptadaPorTecnico && (
+                    {!incidenciaAceptadaPorTecnico && (
                       <>
                         <button
                           className={`detalle-incidencia__main-btn ${formularioAbierto === "aceptar-tecnico"
@@ -667,7 +667,7 @@ export default function DetalleIncidencia() {
                       </>
                     )}
 
-                    {estado === "EN_CURSO" && incidenciaAceptadaPorTecnico && (
+                    {incidenciaAceptadaPorTecnico && (
                       <button
                         className={`detalle-incidencia__main-btn ${formularioAbierto === "resolver-tecnico"
                           ? "detalle-incidencia__btn--dark"

@@ -381,8 +381,8 @@ public Incidencia actualizarIncidencia(
     public Incidencia aceptarIncidenciaTecnico(Long id, Long tecnicoId) {
         Incidencia incidencia = obtenerPorId(id);
 
-        if (incidencia.getEstado() != Estado.VALIDADA && incidencia.getEstado() != Estado.ASIGNADA) {
-            throw new DomainRuleViolation("Solo se pueden aceptar incidencias que estén en estado VALIDADA o ASIGNADA");
+        if (incidencia.getEstado() != Estado.VALIDADA && incidencia.getEstado() != Estado.ASIGNADA && incidencia.getEstado() != Estado.EN_CURSO) {
+            throw new DomainRuleViolation("Solo se pueden aceptar incidencias que estén en estado VALIDADA, ASIGNADA o EN CURSO");
         }
 
         Tecnico tecnico = incidencia.getTecnicos().stream()
@@ -500,8 +500,7 @@ public Incidencia actualizarIncidencia(
         usuarioRepository.save(tecnicoCast);
     }
 
-    boolean todosFinalizados = incidencia.getTecnicos().stream()
-            .allMatch(t -> incidencia.getTecnicosFinalizadosIds().contains(t.getId()));
+    boolean todosFinalizados = incidencia.coincidenTecnicosFinalizadosConAsignados();
 
     if (todosFinalizados) {
         incidencia.actualizarEstado(Estado.RESUELTA);

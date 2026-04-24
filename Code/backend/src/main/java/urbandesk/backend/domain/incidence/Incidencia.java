@@ -1,16 +1,42 @@
 package urbandesk.backend.domain.incidence;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import urbandesk.backend.domain.DomainRuleViolation;
 import urbandesk.backend.domain.user.Ciudadano;
 import urbandesk.backend.domain.user.Operador;
 import urbandesk.backend.domain.user.Tecnico;
-import org.hibernate.annotations.CreationTimestamp;
-import com.fasterxml.jackson.annotation.*;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.*;
-import java.util.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -103,6 +129,16 @@ public class Incidencia {
 
     public void marcarTecnicoFinalizado(Long tecnicoId) {
         this.tecnicosFinalizadosIds.add(tecnicoId);
+    }
+
+    public boolean coincidenTecnicosFinalizadosConAsignados() {
+        Set<Long> tecnicosAsignadosIds = tecnicos.stream()
+                .map(Tecnico::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        return !tecnicosAsignadosIds.isEmpty()
+                && tecnicosFinalizadosIds.equals(tecnicosAsignadosIds);
     }
 
     public void asignarPrioridad(Prioridad prioridad) {
