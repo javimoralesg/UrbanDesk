@@ -407,6 +407,21 @@ export default function DetalleIncidencia() {
     }
   };
 
+  const cerrarIncidenciaOperador = async () => {
+    try {
+        setWorking("Cerrando incidencia...");
+        const data = await api.cerrarIncindencia(id, comentarioTecnico);
+        setIncidencia(data);
+        setSuccess("Incidencia cerrada correctamente.");
+        setComentarioTecnico("");
+    } catch (err) {
+        console.error("Error al cerrar incidencia:", err);
+        setError("No se pudo cerrar la incidencia. Inténtalo de nuevo.");
+    } finally {
+        setWorking(null);
+    }
+  };
+
   return (
     <>
       <Popups list={incidenceList} />
@@ -782,9 +797,18 @@ export default function DetalleIncidencia() {
               )}
 
               {estado === "RESUELTA" && rol === "OPERADOR" && (
-                <button className="detalle-incidencia__main-btn">
+                <div className="detalle-incidencia__form-group">
+                        <label>Comentario de resolución <span style={{ color: "red" }}>*</span></label>
+                        <textarea
+                          placeholder="Describe cómo se ha resuelto la incidencia..."
+                          value={comentarioTecnico}
+                          onChange={(e) => setComentarioTecnico(e.target.value)}
+                        />
+                     
+                <button onClick={cerrarIncidenciaOperador} className="detalle-incidencia__main-btn">
                   Cerrar incidencia
                 </button>
+                 </div>
               )}
             </div>
 

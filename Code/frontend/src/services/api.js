@@ -457,4 +457,22 @@ export const api = {
 
         return parseJsonOrThrow(response);
     },
-    }
+
+    cerrarIncindencia: async (id, comentarioTecnico = "") => {
+        resetInactivityTimer();
+        const response = await fetch(`${BASE_URL}/incidencias/${id}/cerrar`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeaders(),
+            },
+            body: JSON.stringify({ comentarioTecnico }),
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al cerrar la incidencia");
+        }
+
+        return await response.json();
+    },
+};

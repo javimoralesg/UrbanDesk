@@ -53,6 +53,9 @@ public class IncidenciaController {
             ) {
     }
 
+    public record ComentarioTecnico(String comentarioTecnico) {
+    }
+
     public record Comentario(String comentario) {
     }
 
@@ -397,6 +400,30 @@ public class IncidenciaController {
     @GetMapping("/publicas")
     public List<IncidenciaPublicaDTO> obtenerPublicas() {
         return incidenciaService.obtenerIncidenciasPublicas();
-}
+    }
+
+    @PutMapping("/{id}/cerrar")
+    public ResponseEntity<Incidencia> cerrarIncidencia(
+            @PathVariable Long id,
+            @RequestBody ComentarioTecnico comentario,
+            Principal principal) {
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (usuario == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    "Debes estar autenticado para cerrar una incidencia");
+        }
+
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        boolean esOperadorAsignado = incidencia.getOperador() != null
+                && Objects.equals(incidencia.getOperador().getId(), usuario.getId());
+
+        if (!esOperadorAsignado) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "No tienes permiso para cerrar esta incidencia");
+        }
+
+
+        return ResponseEntity.ok(incidenciaService.cerrarIncidencia(id, comentario.comentarioTecnico()));
+    }   
 
 }

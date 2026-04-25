@@ -1,16 +1,15 @@
 package urbandesk.backend.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import jakarta.persistence.criteria.CriteriaBuilder.In;
+import lombok.RequiredArgsConstructor;
+import urbandesk.backend.domain.incidence.Ubicacion;
 import urbandesk.backend.domain.user.Especialidad;
 import urbandesk.backend.repository.UsuarioRepository;
-import urbandesk.backend.service.UsuarioService;
 import urbandesk.backend.service.IncidenciaService;
-import urbandesk.backend.domain.incidence.Ubicacion;
+import urbandesk.backend.service.UsuarioService;
 
 @Component
 @RequiredArgsConstructor
@@ -34,6 +33,10 @@ public class DataInitializer implements ApplicationRunner {
         crearIncidencia(1L);
         crearIncidencia(2L);
         crearIncidencia(3L);
+        marcarIncidenciaComoValidada(1L, 2L);
+        asignarIncidenciaATecnico(1L, 2L, 5L);
+        aceptarIncidenciaPorTecnico(1L, 5L);
+        marcarIncidenciaComoResuelta(1L, 5L);
     }
 
     private void crearCiudadano() {
@@ -82,6 +85,27 @@ public class DataInitializer implements ApplicationRunner {
         if (usuarioRepository.findByEmail(email).isEmpty()) {
             usuarioService.registrarTecnico("Pintor", email, "pintor", Especialidad.PINTOR);
         }
+    }
+
+    private void marcarIncidenciaComoValidada(Long incidenciaId, Long operadorId) {
+        incidenciaService.validarIncidencia(
+                incidenciaId,
+                operadorId,
+                "Incidencia validada (DataInitializer).",
+                "URGENTE"
+        );
+    }
+
+    private void asignarIncidenciaATecnico(Long incidenciaId, Long operadorId, Long tecnicoId) {
+        incidenciaService.asignarTecnico(incidenciaId, tecnicoId);
+    }
+
+    private void aceptarIncidenciaPorTecnico(Long incidenciaId, Long tecnicoId) {
+        incidenciaService.aceptarIncidenciaTecnico(incidenciaId, tecnicoId);
+    }
+
+    private void marcarIncidenciaComoResuelta(Long incidenciaId, Long tecnicoId) {
+        incidenciaService.resolverIncidenciaTecnico(incidenciaId, tecnicoId, "Incidencia resuelta correctamente (DataInitializer).");
     }
 
     public void crearIncidencia(Long id) {

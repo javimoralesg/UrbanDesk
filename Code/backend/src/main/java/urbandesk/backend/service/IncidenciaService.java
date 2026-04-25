@@ -95,6 +95,7 @@ public class IncidenciaService {
         return incidenciaGuardada;
     }
 
+@Transactional
 public Incidencia actualizarIncidencia(
         Long id,
         Ubicacion nuevaUbicacion,
@@ -135,6 +136,7 @@ public Incidencia actualizarIncidencia(
     return incidenciaRepository.save(incidencia);
 }
 
+    @Transactional
     public Incidencia validarIncidencia(Long incidenciaId, Long operadorId, String observaciones, String prioridadStr) {
         Incidencia incidencia = obtenerPorId(incidenciaId);
 
@@ -176,6 +178,7 @@ public Incidencia actualizarIncidencia(
         return incidenciaGuardada;
     }
 
+    @Transactional
     public Incidencia rechazarIncidencia(Long id, String comentario) {
         Incidencia incidencia = obtenerPorId(id);
         incidencia.actualizarEstado(Estado.RECHAZADA);
@@ -238,6 +241,7 @@ public Incidencia actualizarIncidencia(
         return incidenciaGuardada;
     }
 
+    @Transactional
     public Incidencia asignarTecnico(Long incidenciaId, Long tecnicoId) {
         Incidencia incidencia = obtenerPorId(incidenciaId);
 
@@ -257,6 +261,7 @@ public Incidencia actualizarIncidencia(
         return incidenciaRepository.save(incidencia);
     }
 
+    @Transactional
     public Incidencia asignarTecnicoPorEspecialidad(Long incidenciaId, Especialidad especialidad) {
         Incidencia incidencia = obtenerPorId(incidenciaId);
 
@@ -282,6 +287,7 @@ public Incidencia actualizarIncidencia(
         return incidenciaRepository.save(incidencia);
     }
 
+    @Transactional
     public Incidencia eliminarTecnicoPorEspecialidad(Long incidenciaId, Especialidad especialidad) {
         Incidencia incidencia = obtenerPorId(incidenciaId);
 
@@ -336,6 +342,7 @@ public Incidencia actualizarIncidencia(
         return incidencia;
     }
 
+    @Transactional
     public Incidencia eliminarTecnico(Long incidenciaId, Long tecnicoId) {
         Incidencia incidencia = obtenerPorId(incidenciaId);
 
@@ -378,6 +385,7 @@ public Incidencia actualizarIncidencia(
                 });
     }
 
+    @Transactional
     public Incidencia aceptarIncidenciaTecnico(Long id, Long tecnicoId) {
         Incidencia incidencia = obtenerPorId(id);
 
@@ -412,6 +420,7 @@ public Incidencia actualizarIncidencia(
         return incidenciaGuardada;
     }
 
+    @Transactional
     public Incidencia rechazarIncidenciaTecnico(Long id, Long tecnicoId, String comentario) {
         if (comentario == null || comentario.isBlank()) {
         throw new DomainRuleViolation("El técnico debe añadir un comentario al resolver la incidencia.");
@@ -554,5 +563,39 @@ public Incidencia actualizarIncidencia(
                 i.getUbicacion().getDireccion()
             ))
             .toList();
+    }
+
+    @Transactional
+    public Incidencia cerrarIncidencia(Long id, String comentario) {
+        if (comentario == null || comentario.isBlank()) {
+            throw new DomainRuleViolation("El operador debe añadir un comentario al cerrar la incidencia.");
+        }
+        Incidencia incidencia = obtenerPorId(id);
+
+        if (incidencia.getEstado() != Estado.RESUELTA) {
+            throw new DomainRuleViolation("Solo se pueden cerrar incidencias que estén en estado RESUELTA");
+        }
+
+        incidencia.actualizarEstado(Estado.CERRADA);
+
+        String hayObservaciones = comentario == null || comentario.isBlank() ? "."
+                : "Observaciones del operador: " + comentario;
+
+        String observacionFinal = "Incidencia cerrada por el operador. " + hayObservaciones;
+
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                incidencia.getOperador(),
+                Estado.CERRADA,
+                observacionFinal));
+        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+        if (incidencia.getCiudadano() != null) {
+            MailService.enviarCambioEstado(
+                    incidencia.getCiudadano().getEmail(),
+                    incidencia.getId(),
+                    incidencia.getDescripcion(),
+                    Estado.CERRADA);
+        }
+        return incidenciaGuardada;
     }
 }
