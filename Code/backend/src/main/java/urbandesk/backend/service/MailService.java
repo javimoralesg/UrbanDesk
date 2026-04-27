@@ -99,25 +99,58 @@ public class MailService {
     }
 
     public void enviarIncidenciaCreada(String destinatario, Long idIncidencia, String titulo) {
-        String html = """
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
-                    <div style="background-color: #3b82f6; padding: 24px; text-align: center;">
-                        <h1 style="color: white; margin: 0;">UrbanDesk</h1>
+       String html = """
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+
+
+                <!-- Cuerpo -->
+                <div style="padding: 32px 32px 16px 32px;">
+                    <p style="font-size: 15px; line-height: 1.6;">
+                        ¡Bienvenido/a a UrbanDesk! Tu incidencia ha sido registrada con éxito. A partir de ahora, podrás gestionar tus reportes de manera eficiente y mantenerte informado/a sobre su estado.
+                    </p>
+                    <p style="font-size: 15px; line-height: 1.6;">
+                        Si tienes cualquier duda, puedes responder a este correo.
+                    </p>
+                </div>
+        
+                <!-- Tarjeta datos de acceso -->
+                <div style="margin: 0 32px 32px 32px; padding: 16px 20px;
+                            border-left: 4px solid #1e3a8a; background-color: #f8f9fa;
+                            border-radius: 0 4px 4px 0;">
+                    <p style="margin: 0 0 8px 0; font-size: 12px;
+                            font-weight: bold; color: #555; letter-spacing: 0.5px;">
+                        TUS DATOS DE ACCESO:
+                    </p>
+                    <p style="margin: 0; font-size: 14px;">
+                        <em>Email: </em>
+                        <a href="mailto:%s" style="color: #1e3a8a; text-decoration: none;">%s</a>
+                    </p>
+                </div>
+        
+                <!-- Footer -->
+                <div style="border-top: 1px solid #e5e7eb; padding: 24px 32px;
+                            display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">
+                            UrbanDesk
+                        </p>
+                        <p style="margin: 4px 0 0 0; font-size: 11px;
+                                color: #6b7280; letter-spacing: 1px;">
+                            GESTIÓN DE INCIDENCIAS URBANAS
+                        </p>
                     </div>
-                    <div style="padding: 32px; background-color: #f9fafb;">
-                        <h2 style="color: #1f2937;">Incidencia registrada</h2>
-                        <p style="color: #4b5563;">Tu incidencia ha sido creada correctamente.</p>
-                        <div style="background-color: white; border-left: 4px solid #3b82f6;
-                                    padding: 16px; margin: 16px 0; border-radius: 4px;">
-                            <p style="margin: 0; color: #6b7280;">Nº incidencia: <strong>#%d</strong></p>
-                            <p style="margin: 8px 0 0; color: #6b7280;">Título: <strong>%s</strong></p>
-                        </div>
-                        <p style="color: #4b5563;">Nos pondremos en contacto contigo pronto.</p>
-                    </div>
-                    <div style="padding: 16px; background-color: #e5e7eb; text-align: center;">
-                        <p style="color: #6b7280; font-size: 12px;">© 2026 UrbanDesk. Todos los derechos reservados.</p>
+                    <div style="text-align: right; font-size: 13px; color: #4b5563;">
+                        <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                        <p style="margin: 4px 0 0 0;">
+                            <a href="mailto:urbandesk@javimoralesg.com"
+                            style="color: #1e3a8a; text-decoration: none;">
+                                urbandesk@javimoralesg.com
+                            </a>
+                        </p>
+                        <p style="margin: 4px 0 0 0;">Madrid, España</p>
                     </div>
                 </div>
+            </div>
                 """.formatted(idIncidencia, titulo);
 
         enviar(destinatario, "Incidencia #" + idIncidencia + " creada", html);
@@ -147,6 +180,7 @@ public class MailService {
                         <p style="color: #6b7280; font-size: 12px;">© 2026 UrbanDesk. Todos los derechos reservados.</p>
                     </div>
                 </div>
+            </div>
                 """.formatted(idIncidencia, titulo, nuevoEstado.name());
 
         enviar(destinatario, "Incidencia #" + idIncidencia + " actualizada", html);
