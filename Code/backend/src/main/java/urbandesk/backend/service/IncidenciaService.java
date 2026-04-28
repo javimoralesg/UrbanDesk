@@ -52,7 +52,10 @@ public class IncidenciaService {
     }
 
     public List<Incidencia> obtenerPorTecnico(Long tecnicoId) {
-        return incidenciaRepository.findByTecnicos_Id(tecnicoId);
+        List<Incidencia> incidencias = incidenciaRepository.findByTecnicos_Id(tecnicoId);
+        return incidencias.stream()
+                .filter(incidencia -> !incidencia.getTecnicosFinalizadosIds().contains(tecnicoId))
+                .toList();
     }
 
     @Transactional
