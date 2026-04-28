@@ -307,6 +307,36 @@ public Incidencia actualizarIncidencia(
         tecnicoSeleccionado.decrementarCarga();
 
         Estado nuevoEstado = !incidencia.getTecnicos().isEmpty() ? Estado.ASIGNADA : Estado.VALIDADA;
+        if (incidencia.getEstado() == Estado.EN_CURSO) {
+            nuevoEstado = Estado.EN_CURSO;
+        }
+
+        boolean todosFinalizados = incidencia.coincidenTecnicosFinalizadosConAsignados();
+
+        Tecnico tecnico = incidencia.getTecnicos().stream()
+                .findFirst()
+                .orElse(null);
+
+        if (todosFinalizados) {
+            incidencia.actualizarEstado(Estado.RESUELTA);
+            incidencia.agregarHistorial(new Historial(
+                incidencia,
+                tecnico,
+                Estado.RESUELTA,
+                "Todos los técnicos han finalizado. "));
+
+            Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+
+            if (incidencia.getCiudadano() != null) {
+                MailService.enviarIncidenciaResuelta(
+                    incidencia.getCiudadano().getEmail(),
+                    incidencia.getId(),
+                    incidencia.getDescripcion());
+            }
+
+        return incidenciaGuardada;
+     }
+
         incidencia.actualizarEstado(nuevoEstado);
 
         usuarioRepository.save(tecnicoSeleccionado);
