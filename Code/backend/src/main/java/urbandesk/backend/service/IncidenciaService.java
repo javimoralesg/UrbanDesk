@@ -197,6 +197,7 @@ public Incidencia actualizarIncidencia(
                 Estado.RECHAZADA,
                 observacionFinal));
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+        
         if (incidencia.getCiudadano() != null) {
             MailService.enviarCambioEstado(
                     incidencia.getCiudadano().getEmail(),
@@ -236,6 +237,7 @@ public Incidencia actualizarIncidencia(
                 "Incidencia asignada a un operador"));
 
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+        
         MailService.enviarIncidenciaAsignadaOperador(
                 operadorConMenorCarga.getEmail(),
                 incidenciaGuardada.getId(),
@@ -262,6 +264,7 @@ public Incidencia actualizarIncidencia(
         usuarioRepository.save(tecnico);
 
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+        
         MailService.enviarIncidenciaAsignadaTecnico(
             tecnico.getEmail(),
             incidenciaGuardada.getId(),
@@ -296,14 +299,15 @@ public Incidencia actualizarIncidencia(
         usuarioRepository.save(tecnicoSeleccionado);
 
         incidencia.actualizarEstado(Estado.ASIGNADA);
+
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+        
         MailService.enviarIncidenciaAsignadaTecnico(
             tecnicoSeleccionado.getEmail(),
             incidenciaGuardada.getId(),
             incidenciaGuardada.getDescripcion(),
             incidenciaGuardada.getUbicacion()
     );
-
     return incidenciaGuardada;
     }
 
