@@ -236,6 +236,33 @@ public class MailService {
 
     enviar(destinatario, "Nueva incidencia asignada #" + idIncidencia, html);
     } 
+
+    public void enviarIncidenciaAsignadaTecnico(String destinatario, Long idIncidencia,
+        String descripcion, Ubicacion ubicacion) {
+    String html = """
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+                <div style="background-color: #3b82f6; padding: 24px; text-align: center;">
+                    <h1 style="color: white; margin: 0;">UrbanDesk</h1>
+                </div>
+                <div style="padding: 32px; background-color: #f9fafb;">
+                    <h2 style="color: #1f2937;">Nueva incidencia asignada</h2>
+                    <p style="color: #4b5563;">Se te ha asignado una nueva incidencia para su gestión.</p>
+                    <div style="background-color: white; border-left: 4px solid #f59e0b;
+                                padding: 16px; margin: 16px 0; border-radius: 4px;">
+                        <p style="margin: 0; color: #6b7280;">Nº incidencia: <strong>#%d</strong></p>
+                        <p style="margin: 8px 0 0; color: #6b7280;">Descripción: <strong>%s</strong></p>
+                        <p style="margin: 8px 0 0; color: #6b7280;">Ubicación: <strong>%s</strong></p>
+                    </div>
+                    <p style="color: #4b5563;">Accede a la plataforma para validar y gestionar la incidencia.</p>
+                </div>
+                <div style="padding: 16px; background-color: #e5e7eb; text-align: center;">
+                    <p style="color: #6b7280; font-size: 12px;">© 2026 UrbanDesk. Todos los derechos reservados.</p>
+                </div>
+            </div>
+            """.formatted(idIncidencia, descripcion, ubicacion.toString());
+
+    enviar(destinatario, "Nueva incidencia asignada #" + idIncidencia, html);
+    } 
     
     public void enviarIncidenciaRechazadaPorTecnico(String destinatario, Long idIncidencia,
         String descripcion, String nombreTecnico, String motivo) {

@@ -261,7 +261,16 @@ public Incidencia actualizarIncidencia(
         incidencia.actualizarEstado(Estado.ASIGNADA);
         usuarioRepository.save(tecnico);
 
-        return incidenciaRepository.save(incidencia);
+        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+        MailService.enviarIncidenciaAsignadaTecnico(
+            tecnico.getEmail(),
+            incidenciaGuardada.getId(),
+            incidenciaGuardada.getDescripcion(),
+            incidenciaGuardada.getUbicacion()
+    );
+
+    return incidenciaGuardada;
+        
     }
 
     @Transactional
@@ -287,7 +296,15 @@ public Incidencia actualizarIncidencia(
         usuarioRepository.save(tecnicoSeleccionado);
 
         incidencia.actualizarEstado(Estado.ASIGNADA);
-        return incidenciaRepository.save(incidencia);
+        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+        MailService.enviarIncidenciaAsignadaTecnico(
+            tecnicoSeleccionado.getEmail(),
+            incidenciaGuardada.getId(),
+            incidenciaGuardada.getDescripcion(),
+            incidenciaGuardada.getUbicacion()
+    );
+
+    return incidenciaGuardada;
     }
 
     @Transactional
