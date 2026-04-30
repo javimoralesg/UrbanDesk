@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import MapRegister, { useMapRegisterLogic } from '../components/MapRegister';
-import { useNavigate, useParams } from 'react-router'; // 🔥 EDIT
+import { useNavigate, useParams } from 'react-router';
 import Recording from '../components/Recording';
 import Sidebar from '../components/Sidebar';
 import Hero from "../components/Hero";
@@ -11,8 +11,8 @@ import MediaPopup from '../components/MediaPopup';
 
 export default function RegistrarIncidencia() {
 
-    const { id } = useParams(); // 🔥 EDIT
-    const esEdicion = !!id;     // 🔥 EDIT
+    const { id } = useParams();
+    const esEdicion = !!id;    
 
     const [descripcion, setDescripcion] = useState('');
     const [imagenes, setImagenes] = useState([]);
@@ -45,7 +45,6 @@ export default function RegistrarIncidencia() {
         clearGeolocationError,
     } = useMapRegisterLogic();
 
-    // 🔥 EDIT: cargar datos en edición
    useEffect(() => {
     if (esEdicion) {
         api.obtenerIncidenciaPorId(id).then(data => {
@@ -57,7 +56,6 @@ export default function RegistrarIncidencia() {
                     lon: data.ubicacion.longitud
                 });
 
-                // ✅ SOLO texto, SIN validar
                 setAddress(data.ubicacion.direccion || '');
             }
             if (data.evidencias) {

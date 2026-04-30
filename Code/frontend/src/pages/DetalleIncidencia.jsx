@@ -230,7 +230,8 @@ export default function DetalleIncidencia() {
 
   const ciudadano =
     incidencia?.ciudadano?.nombre ||
-    incidencia?.usuario?.nombre;
+    incidencia?.usuario?.nombre ||
+    "Anónimo";
 
   const operadorAsignado =
     incidencia?.operador?.nombre ||
@@ -287,7 +288,9 @@ export default function DetalleIncidencia() {
     }
 
     try {
+      setWorking("Validando incidencia...");
       const data = await api.validarIncidencia(id, observaciones, prioridadSeleccionada);
+      setWorking(null);
       setSuccess("Incidencia validada correctamente.");
       setIncidencia(data);
       setFormularioAbierto(null);
@@ -295,6 +298,7 @@ export default function DetalleIncidencia() {
       setPrioridadSeleccionada("SIN_ASIGNAR");
     } catch (err) {
       console.error("Error al validar incidencia:", err);
+      setWorking(null);
       setError("No se pudo validar la incidencia. Inténtalo de nuevo.");
     }
   };
@@ -306,7 +310,9 @@ export default function DetalleIncidencia() {
     }
 
     try {
+      setWorking("Rechazando incidencia...");
       const data = await api.rechazarIncidencia(id, observaciones);
+      setWorking(null);
       setSuccess("Incidencia rechazada correctamente.");
       setIncidencia(data);
       setFormularioAbierto(null);
@@ -314,6 +320,7 @@ export default function DetalleIncidencia() {
       setPrioridadSeleccionada("SIN_ASIGNAR");
     } catch (err) {
       console.error("Error al rechazar incidencia:", err);
+      setWorking(null);
       setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
     }
   };

@@ -59,9 +59,14 @@ export default function Recording({ setDescripcion, handleInputChange }) {
 
                             try {
                                 const parsedReply = JSON.parse(data.reply);
-                                setDescripcion(parsedReply.descripcion);
+                                if (parsedReply.descripcion.trim() !== '') {
+                                    setDescripcion(parsedReply.descripcion);
+                                }
                                 if (parsedReply.ubicacion.trim() !== '') {
                                     handleInputChange(parsedReply.ubicacion);
+                                }
+                                if (parsedReply.descripcion.trim() === '' && parsedReply.ubicacion.trim() === '') {
+                                    showError("No se ha detectado ninguna descripción ni ubicación.");
                                 }
                             } catch (e) {
                                 showError("Error al procesar la transcripción");
