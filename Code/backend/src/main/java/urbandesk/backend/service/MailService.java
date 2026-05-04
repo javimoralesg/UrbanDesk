@@ -102,31 +102,38 @@ public class MailService {
        String html = """
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
 
-
                 <!-- Cuerpo -->
                 <div style="padding: 32px 32px 16px 32px;">
                     <p style="font-size: 15px; line-height: 1.6;">
-                        ¡Bienvenido/a a UrbanDesk! Tu incidencia ha sido registrada con éxito. A partir de ahora, podrás gestionar tus reportes de manera eficiente y mantenerte informado/a sobre su estado.
+                        ¡Tu incidencia ha sido registrada con éxito! A partir de ahora, podrás gestionar tus reportes de manera eficiente y mantenerte informado/a sobre su estado.
                     </p>
                     <p style="font-size: 15px; line-height: 1.6;">
                         Si tienes cualquier duda, puedes responder a este correo.
                     </p>
                 </div>
-        
-                <!-- Tarjeta datos de acceso -->
+
+                <!-- Tarjeta datos de la incidencia -->
                 <div style="margin: 0 32px 32px 32px; padding: 16px 20px;
                             border-left: 4px solid #1e3a8a; background-color: #f8f9fa;
                             border-radius: 0 4px 4px 0;">
                     <p style="margin: 0 0 8px 0; font-size: 12px;
                             font-weight: bold; color: #555; letter-spacing: 0.5px;">
-                        TUS DATOS DE ACCESO:
+                        DATOS DE TU INCIDENCIA:
+                    </p>
+                    <p style="margin: 0 0 6px 0; font-size: 14px;">
+                        <em>Nº incidencia: </em>
+                        <strong style="color: #1e3a8a;">#%d</strong>
+                    </p>
+                    <p style="margin: 0 0 6px 0; font-size: 14px;">
+                        <em>Descripción: </em>
+                        <span>%s</span>
                     </p>
                     <p style="margin: 0; font-size: 14px;">
-                        <em>Email: </em>
-                        <a href="mailto:%s" style="color: #1e3a8a; text-decoration: none;">%s</a>
+                        <em>Estado: </em>
+                        <strong style="color: #1e3a8a;">CREADA</strong>
                     </p>
                 </div>
-        
+
                 <!-- Footer -->
                 <div style="border-top: 1px solid #e5e7eb; padding: 24px 32px;
                             display: flex; justify-content: space-between; align-items: center;">
@@ -151,7 +158,7 @@ public class MailService {
                     </div>
                 </div>
             </div>
-                """.formatted(idIncidencia, titulo);
+            """.formatted(idIncidencia, titulo);
 
         enviar(destinatario, "Incidencia #" + idIncidencia + " creada", html);
     }

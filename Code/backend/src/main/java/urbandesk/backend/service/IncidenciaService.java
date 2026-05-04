@@ -90,7 +90,7 @@ public class IncidenciaService {
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
 
         if (ciudadano != null) {
-            MailService.enviarIncidenciaCreada(ciudadano.getEmail(), incidenciaGuardada.getId(), ciudadano.getNombre());
+            MailService.enviarIncidenciaCreada(ciudadano.getEmail(), incidenciaGuardada.getId(), incidenciaGuardada.getDescripcion());
         }
 
         asignarOperadorAutomatico(incidenciaGuardada.getId());
