@@ -4,3 +4,6 @@ DB_USER=usuarioDeLaBBDDPostgreSQL
 
 MAIL_USERNAME=correoElectronico
 MAIL_PASSWORD=contraseñaCorreoElectronico
+
+APIKEY_INCIDENCIA=contraseña
+
