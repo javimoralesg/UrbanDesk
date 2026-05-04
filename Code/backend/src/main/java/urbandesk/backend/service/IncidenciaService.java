@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import urbandesk.backend.domain.user.Usuario;
 import urbandesk.backend.dto.IncidenciaPublicaDTO;
 import urbandesk.backend.repository.IncidenciaRepository;
 import urbandesk.backend.repository.UsuarioRepository;
+import urbandesk.backend.repository.OperadorRepository;
 
 
 @Service
@@ -36,6 +38,7 @@ public class IncidenciaService {
 
     private final IncidenciaRepository incidenciaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final OperadorRepository operadorRepository;
     private final MailService MailService;
 
     public Incidencia obtenerPorId(Long id) {
@@ -208,42 +211,38 @@ public Incidencia actualizarIncidencia(
         return incidenciaGuardada;
     }
 
-    @Transactional
-    public Incidencia asignarOperadorAutomatico(Long incidenciaId) {
+    public void asignarOperadorAutomatico(Long incidenciaId) {
         Incidencia incidencia = obtenerPorId(incidenciaId);
 
-        Operador operadorConMenorCarga = usuarioRepository.findAll().stream()
-                .filter(Operador.class::isInstance)
-                .map(Operador.class::cast)
-                .filter(Operador::tieneDisponibilidad)
-                .min(Comparator
-                        .comparing(Operador::getCargaActual, Comparator.nullsFirst(Integer::compareTo))
-                        .thenComparing(Operador::getId))
-                .orElse(null);
+        List<Operador> operadores = operadorRepository.findAll();
 
-        if (operadorConMenorCarga == null) {
-            return incidencia;
+        Optional<Operador> operadorOpt = operadores.stream()
+                .filter(o -> o.getCargaActual() < o.getCargaMaxima())
+                .sorted(java.util.Comparator.comparing(Operador::getCargaActual))
+                .findFirst();
+
+        if (operadorOpt.isPresent()) {
+            Operador operadorConMenorCarga = operadorOpt.get();
+
+            incidencia.asignarOperador(operadorConMenorCarga);
+
+            operadorConMenorCarga.incrementarCarga();
+            operadorRepository.save(operadorConMenorCarga);
+
+            incidencia.agregarHistorial(new Historial(
+                    incidencia,
+                    operadorConMenorCarga,
+                    Estado.CREADA,
+                    "Incidencia asignada a un operador"));
+
+            Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+            
+            MailService.enviarIncidenciaAsignadaOperador(
+                    operadorConMenorCarga.getEmail(),
+                    incidenciaGuardada.getId(),
+                    incidenciaGuardada.getDescripcion(),
+                    incidenciaGuardada.getUbicacion());
         }
-
-        operadorConMenorCarga.incrementarCarga();
-        usuarioRepository.save(operadorConMenorCarga);
-
-        incidencia.asignarOperador(operadorConMenorCarga);
-
-        incidencia.agregarHistorial(new Historial(
-                incidencia,
-                operadorConMenorCarga,
-                Estado.CREADA,
-                "Incidencia asignada a un operador"));
-
-        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
-        
-        MailService.enviarIncidenciaAsignadaOperador(
-                operadorConMenorCarga.getEmail(),
-                incidenciaGuardada.getId(),
-                incidenciaGuardada.getDescripcion(),
-                incidenciaGuardada.getUbicacion());
-        return incidenciaGuardada;
     }
 
     @Transactional
