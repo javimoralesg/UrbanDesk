@@ -87,26 +87,42 @@ public class IncidenciaController {
     @GetMapping("/{id}")
     public ResponseEntity<Incidencia> obtenerPorId(@PathVariable Long id, Principal principal) {
         Usuario usuario = getAuthenticatedUser(principal);
+
         if (usuario == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                     "Debes estar autenticado para ver las incidencias");
         }
+
         Incidencia incidencia = incidenciaService.obtenerPorId(id);
+
         if (usuario instanceof Ciudadano ciudadano) {
             if (incidencia.getCiudadano() == null
                     || !Objects.equals(incidencia.getCiudadano().getId(), ciudadano.getId())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta incidencia");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "No tienes permiso para ver esta incidencia");
             }
-        } else if (usuario instanceof Tecnico tecnico) {
+
+            return ResponseEntity.ok(incidencia);
+        }
+
+        if (usuario instanceof Tecnico tecnico) {
             boolean asignado = incidencia.getTecnicos().stream()
                     .anyMatch(t -> Objects.equals(t.getId(), tecnico.getId()));
+
             if (!asignado) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta incidencia");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "No tienes permiso para ver esta incidencia");
             }
-        } else if (usuario instanceof Operador) {
-            return ResponseEntity.ok(incidenciaService.obtenerPorId(id));
+
+            return ResponseEntity.ok(incidencia);
         }
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta incidencia");
+
+        if (usuario instanceof Operador) {
+            return ResponseEntity.ok(incidencia);
+        }
+
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                "No tienes permiso para ver esta incidencia");
     }
 
     @PostMapping
