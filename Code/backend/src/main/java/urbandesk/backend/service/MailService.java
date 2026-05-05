@@ -353,7 +353,7 @@ public class MailService {
                     </div>
 
                     <div style="margin: 0 32px 32px 32px; padding: 16px 20px;
-                                border-left: 4px solid #f59e0b; background-color: #f8f9fa;
+                                border-left: 4px solid #26f50b; background-color: #f8f9fa;
                                 border-radius: 0 4px 4px 0;">
                         <p style="margin: 0 0 8px 0; font-size: 12px;
                                 font-weight: bold; color: #555; letter-spacing: 0.5px;">
@@ -361,7 +361,7 @@ public class MailService {
                         </p>
                         <p style="margin: 0 0 6px 0; font-size: 14px;">
                             <em>Nº incidencia: </em>
-                            <strong style="color: #f59e0b;">#%d</strong>
+                            <strong style="color: #26f50b;">#%d</strong>
                         </p>
                         <p style="margin: 0 0 6px 0; font-size: 14px;">
                             <em>Descripción: </em>
@@ -369,11 +369,11 @@ public class MailService {
                         </p>
                         <p style="margin: 0; font-size: 14px;">
                             <em>Técnico: </em>
-                            <strong style="color: #f59e0b;">%s</strong>
+                            <strong style="color: #26f50b;">%s</strong>
                         </p>
                         <p style="margin: 0; font-size: 14px;">
                             <em>Comentario: </em>
-                            <strong style="color: #f59e0b;">%s</strong>
+                            <strong style="color: #26f50b;">%s</strong>
                         </p>
                     </div>
 
