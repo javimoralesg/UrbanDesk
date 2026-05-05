@@ -41,7 +41,7 @@ public class MailService {
 
     public void enviarBienvenida(String destinatario, String nombre, String email) {
         String html = """
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333;">
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
 
                     <!-- Cuerpo -->
                     <div style="padding: 32px 32px 16px 32px;">
@@ -170,7 +170,7 @@ public class MailService {
             return;
         }
         String html = """
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                     <div style="background-color: #3b82f6; padding: 24px; text-align: center;">
                         <h1 style="color: white; margin: 0;">UrbanDesk</h1>
                     </div>
@@ -195,7 +195,7 @@ public class MailService {
 
     public void enviarIncidenciaResuelta(String destinatario, Long idIncidencia, String titulo) {
         String html = """
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                     <div style="background-color: #22c55e; padding: 24px; text-align: center;">
                         <h1 style="color: white; margin: 0;">UrbanDesk</h1>
                     </div>
@@ -220,7 +220,7 @@ public class MailService {
     public void enviarIncidenciaAsignadaOperador(String destinatario, Long idIncidencia,
         String descripcion, Ubicacion ubicacion) {
     String html = """
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                 <div style="background-color: #3b82f6; padding: 24px; text-align: center;">
                     <h1 style="color: white; margin: 0;">UrbanDesk</h1>
                 </div>
@@ -247,7 +247,7 @@ public class MailService {
     public void enviarIncidenciaAsignadaTecnico(String destinatario, Long idIncidencia,
         String descripcion, Ubicacion ubicacion) {
     String html = """
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                 <div style="background-color: #3b82f6; padding: 24px; text-align: center;">
                     <h1 style="color: white; margin: 0;">UrbanDesk</h1>
                 </div>
@@ -274,7 +274,7 @@ public class MailService {
     public void enviarIncidenciaRechazadaPorTecnico(String destinatario, Long idIncidencia,
         String descripcion, String nombreTecnico, String motivo) {
     String html = """
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333;">
+           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
 
                     <div style="padding: 32px 32px 16px 32px;">
                         <p style="font-size: 15px; line-height: 1.6;">
@@ -339,7 +339,7 @@ public class MailService {
     public void enviarTareaFinalizadaPorTecnico(String destinatario, Long idIncidencia,
         String descripcion, String nombreTecnico, String comentario) {
             String html = """
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333;">
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
 
                     <div style="padding: 32px 32px 16px 32px;">
                         <p style="font-size: 15px; line-height: 1.6;">
