@@ -446,7 +446,7 @@ export default function DetalleIncidencia() {
 
             <button
               className="detalle-incidencia__back"
-              onClick={() => navigate(-1)}            >
+              onClick={() => navigate("/incidencias-urbanas/mis-incidencias")}            >
               &lt; Volver
             </button>
 
