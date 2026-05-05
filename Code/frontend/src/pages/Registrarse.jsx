@@ -169,11 +169,11 @@ export default function Registrarse() {
                   {showPassword ? "Ocultar" : "Mostrar"}
                 </button>
               </div>
-              {passwordFocused && (<div className= {isPasswordValid(password) ? "urban-register__password-requirements-right" : "urban-register__password-requirements-wrong"}> 
+              <div className={`urban-register__password-requirements ${isPasswordValid(password) ? 'right' : 'wrong'}${passwordFocused ? ' visible' : ''}`}>
                 La contraseña contiene al menos 8 caracteres {password.length >= 8 ? "✅" : "❌"}<br />
                 La contraseña contiene un número {/\d/.test(password) ? "✅" : "❌"}<br />
                 La contraseña contiene un carácter especial (,*.!?) {/[,*.!?.:;\-_{}|()/¿¡#@$%&"'€+]/.test(password) ? "✅" : "❌"}
-                </div>)}
+              </div>
             </div>
 
             <div className="urban-register__checkbox-group">
