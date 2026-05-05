@@ -274,30 +274,136 @@ public class MailService {
     public void enviarIncidenciaRechazadaPorTecnico(String destinatario, Long idIncidencia,
         String descripcion, String nombreTecnico, String motivo) {
     String html = """
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
-                <div style="background-color: #ef4444; padding: 24px; text-align: center;">
-                    <h1 style="color: white; margin: 0;">UrbanDesk</h1>
-                </div>
-                <div style="padding: 32px; background-color: #f9fafb;">
-                    <h2 style="color: #1f2937;">Incidencia rechazada por técnico</h2>
-                    <p style="color: #4b5563;">
-                        El técnico <strong>%s</strong> ha rechazado la incidencia asignada.
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333;">
+
+                    <div style="padding: 32px 32px 16px 32px;">
+                        <p style="font-size: 15px; line-height: 1.6;">
+                            El técnico <strong>%s</strong> ha rechazado la incidencia asignada.
                         Es necesario reasignarla a otro técnico disponible.
-                    </p>
-                    <div style="background-color: white; border-left: 4px solid #ef4444;
-                                padding: 16px; margin: 16px 0; border-radius: 4px;">
-                        <p style="margin: 0; color: #6b7280;">Nº incidencia: <strong>#%d</strong></p>
-                        <p style="margin: 8px 0 0; color: #6b7280;">Descripción: <strong>%s</strong></p>
-                        <p style="margin: 8px 0 0; color: #6b7280;">Motivo del rechazo: <strong>%s</strong></p>
+                        </p>
+                        <p style="font-size: 15px; line-height: 1.6;">
+                            Si tienes cualquier duda, puedes responder a este correo.
+                        </p>
                     </div>
-                    <p style="color: #4b5563;">Accede a la plataforma para reasignar la incidencia.</p>
+
+                    <div style="margin: 0 32px 32px 32px; padding: 16px 20px;
+                                border-left: 4px solid #ef4444; background-color: #f8f9fa;
+                                border-radius: 0 4px 4px 0;">
+                        <p style="margin: 0 0 8px 0; font-size: 12px;
+                                font-weight: bold; color: #555; letter-spacing: 0.5px;">
+                            DATOS DE LA INCIDENCIA:
+                        </p>
+                        <p style="margin: 0 0 6px 0; font-size: 14px;">
+                            <em>Nº incidencia: </em>
+                            <strong style="color: #ef4444;">#%d</strong>
+                        </p>
+                        <p style="margin: 0 0 6px 0; font-size: 14px;">
+                            <em>Descripción: </em>
+                            <span>%s</span>
+                        </p>
+                        <p style="margin: 0; font-size: 14px;">
+                            <em>Técnico: </em>
+                            <strong style="color: #ef4444;">%s</strong>
+                        </p>
+                    </div>
+
+                    <div style="border-top: 1px solid #e5e7eb; padding: 24px 32px;
+                                display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">
+                                UrbanDesk
+                            </p>
+                            <p style="margin: 4px 0 0 0; font-size: 11px;
+                                    color: #6b7280; letter-spacing: 1px;">
+                                GESTIÓN DE INCIDENCIAS URBANAS
+                            </p>
+                        </div>
+                        <div style="text-align: right; font-size: 13px; color: #4b5563;">
+                            <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                            <p style="margin: 4px 0 0 0;">
+                                <a href="mailto:urbandesk@javimoralesg.com"
+                                style="color: #1e3a8a; text-decoration: none;">
+                                    urbandesk@javimoralesg.com
+                                </a>
+                            </p>
+                            <p style="margin: 4px 0 0 0;">Madrid, España</p>
+                        </div>
+                    </div>
+
                 </div>
-                <div style="padding: 16px; background-color: #e5e7eb; text-align: center;">
-                    <p style="color: #6b7280; font-size: 12px;">© 2026 UrbanDesk. Todos los derechos reservados.</p>
-                </div>
-            </div>
             """.formatted(nombreTecnico, idIncidencia, descripcion, motivo);
 
     enviar(destinatario, "Incidencia #" + idIncidencia + " rechazada por técnico", html);
     }  
+
+    public void enviarTareaFinalizadaPorTecnico(String destinatario, Long idIncidencia,
+        String descripcion, String nombreTecnico, String comentario) {
+            String html = """
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333;">
+
+                    <div style="padding: 32px 32px 16px 32px;">
+                        <p style="font-size: 15px; line-height: 1.6;">
+                            El técnico <strong>%s</strong> ha marcado su parte como finalizada.
+                            Accede a la plataforma para comprobar si todos los técnicos han
+                            concluido y proceder a la validación.
+                        </p>
+                        <p style="font-size: 15px; line-height: 1.6;">
+                            Si tienes cualquier duda, puedes responder a este correo.
+                        </p>
+                    </div>
+
+                    <div style="margin: 0 32px 32px 32px; padding: 16px 20px;
+                                border-left: 4px solid #f59e0b; background-color: #f8f9fa;
+                                border-radius: 0 4px 4px 0;">
+                        <p style="margin: 0 0 8px 0; font-size: 12px;
+                                font-weight: bold; color: #555; letter-spacing: 0.5px;">
+                            DATOS DE LA INCIDENCIA:
+                        </p>
+                        <p style="margin: 0 0 6px 0; font-size: 14px;">
+                            <em>Nº incidencia: </em>
+                            <strong style="color: #f59e0b;">#%d</strong>
+                        </p>
+                        <p style="margin: 0 0 6px 0; font-size: 14px;">
+                            <em>Descripción: </em>
+                            <span>%s</span>
+                        </p>
+                        <p style="margin: 0; font-size: 14px;">
+                            <em>Técnico: </em>
+                            <strong style="color: #f59e0b;">%s</strong>
+                        </p>
+                        <p style="margin: 0; font-size: 14px;">
+                            <em>Comentario: </em>
+                            <strong style="color: #f59e0b;">%s</strong>
+                        </p>
+                    </div>
+
+                    <div style="border-top: 1px solid #e5e7eb; padding: 24px 32px;
+                                display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">
+                                UrbanDesk
+                            </p>
+                            <p style="margin: 4px 0 0 0; font-size: 11px;
+                                    color: #6b7280; letter-spacing: 1px;">
+                                GESTIÓN DE INCIDENCIAS URBANAS
+                            </p>
+                        </div>
+                        <div style="text-align: right; font-size: 13px; color: #4b5563;">
+                            <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                            <p style="margin: 4px 0 0 0;">
+                                <a href="mailto:urbandesk@javimoralesg.com"
+                                style="color: #1e3a8a; text-decoration: none;">
+                                    urbandesk@javimoralesg.com
+                                </a>
+                            </p>
+                            <p style="margin: 4px 0 0 0;">Madrid, España</p>
+                        </div>
+                    </div>
+
+                </div>
+                    """.formatted(nombreTecnico, idIncidencia, descripcion, nombreTecnico, comentario);
+
+    enviar(destinatario, "Incidencia #" + idIncidencia + " — tarea finalizada por técnico", html);
+    }
+
 }

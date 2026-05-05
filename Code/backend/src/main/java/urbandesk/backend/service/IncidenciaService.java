@@ -577,6 +577,14 @@ public Incidencia actualizarIncidencia(
                 "Todos los técnicos han finalizado. " + comentario));
 
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+        
+        MailService.enviarTareaFinalizadaPorTecnico(
+            incidencia.getOperador().getEmail(),
+            incidencia.getId(),
+            incidencia.getDescripcion(),
+            tecnico.getNombre(), 
+            comentario
+        );
 
         if (incidencia.getCiudadano() != null) {
             MailService.enviarIncidenciaResuelta(
