@@ -8,6 +8,7 @@ import { api } from "../services/api";
 import "../assets/css/RegistrarIncidencia.css";
 import Popups from '../components/Popups';
 import MediaPopup from '../components/MediaPopup';
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 export default function RegistrarIncidencia() {
 
@@ -402,7 +403,7 @@ export default function RegistrarIncidencia() {
                             className="registrar-incidencia__location-btn"
                             title="Usar ubicación actual"
                         >
-                        
+                        📍
                         </button>
 
                         {showSuggestions && suggestions.length > 0 && (

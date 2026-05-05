@@ -150,14 +150,44 @@
 }
 
 /* 🔥 input ubicación */
-.registrar-incidencia__location-row .registrar-incidencia__input {
-  border: 1px solid #dbe3ee;
-  border-radius: 8px;
+.registrar-incidencia__location-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-/* 🔥 botón ubicación */
-.registrar-incidencia__location-btn {
+.registrar-incidencia__location-row .registrar-incidencia__input {
+  width: 300px;
+  height: 36px;
+  line-height: 36px;
+
+  border: 1px solid #dbe3ee;
   border-radius: 8px;
+  padding: 0 12px;
+}
+
+.registrar-incidencia__location-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+  background-color: #f3f4f6;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.registrar-incidencia__location-btn:hover {
+  background-color: #e5e7eb;
 }
 
 .registrar-incidencia__location-btn:hover {
