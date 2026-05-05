@@ -199,6 +199,180 @@ export const api = {
         return response;
     },
 
+    generateReport: async (userMessage, onProgress) => {
+        resetInactivityTimer();
+        const response = await fetch("https://urbandeskinforme-g475okyxfq-uc.a.run.app", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'auth': import.meta.env.VITE_IA_API_KEY
+            },
+            body: JSON.stringify({ userMessage }),
+        });
+
+        if (!response.body) {
+            return parseJsonOrThrow(response);
+        }
+
+        if (!response.ok) {
+            const text = await response.text();
+            try {
+                const parsed = JSON.parse(text);
+                throw new Error(parsed?.message || parsed?.error || `Error ${response.status}`);
+            } catch {
+                throw new Error(text || `Error ${response.status}`);
+            }
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let finalPayload = null;
+
+        const handleLine = (line) => {
+            if (!line.trim()) return;
+
+            let chunk;
+            try {
+                chunk = JSON.parse(line);
+            } catch {
+                return;
+            }
+
+            if (chunk.status === "processing") {
+                if (typeof onProgress === "function") {
+                    onProgress(chunk);
+                }
+                return;
+            }
+
+            if (chunk.status === "error") {
+                throw new Error(chunk.message || chunk.details || "Error al generar informe");
+            }
+
+            if (chunk.status === "success") {
+                finalPayload = {
+                    informe: chunk.informe,
+                    datos: chunk.datos
+                };
+            }
+        };
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop() || "";
+
+            for (const line of lines) {
+                handleLine(line);
+            }
+        }
+
+        buffer += decoder.decode();
+        if (buffer.trim()) {
+            handleLine(buffer);
+        }
+
+        if (finalPayload) {
+            return finalPayload;
+        }
+
+        throw new Error("No se recibió respuesta final del generador de informes.");
+    },
+
+    askReportChatStream: async ({ question, informe, datos, history = [], onDelta, onStart }) => {
+        resetInactivityTimer();
+
+        const response = await fetch("https://urbandeskinformechat-g475okyxfq-uc.a.run.app", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "auth": import.meta.env.VITE_IA_API_KEY
+            },
+            body: JSON.stringify({ question, informe, datos, history, stream: true })
+        });
+
+        if (!response.body) {
+            return parseJsonOrThrow(response);
+        }
+
+        if (!response.ok) {
+            const text = await response.text();
+            try {
+                const parsed = JSON.parse(text);
+                throw new Error(parsed?.message || parsed?.error || `Error ${response.status}`);
+            } catch {
+                throw new Error(text || `Error ${response.status}`);
+            }
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let finalPayload = null;
+
+        const handleLine = (line) => {
+            if (!line.trim()) return;
+
+            let chunk;
+            try {
+                chunk = JSON.parse(line);
+            } catch {
+                return;
+            }
+
+            if (chunk.status === "start") {
+                if (typeof onStart === "function") onStart(chunk);
+                return;
+            }
+
+            if (chunk.status === "delta") {
+                if (typeof onDelta === "function") {
+                    onDelta(String(chunk.delta || ""), chunk);
+                }
+                return;
+            }
+
+            if (chunk.status === "error") {
+                throw new Error(chunk.message || chunk.details || "Error al responder en el chat");
+            }
+
+            if (chunk.status === "success") {
+                finalPayload = {
+                    reply: chunk.reply,
+                    modelUsed: chunk.modelUsed
+                };
+            }
+        };
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop() || "";
+
+            for (const line of lines) {
+                handleLine(line);
+            }
+        }
+
+        buffer += decoder.decode();
+        if (buffer.trim()) {
+            handleLine(buffer);
+        }
+
+        if (finalPayload) {
+            return finalPayload;
+        }
+
+        throw new Error("No se recibió respuesta final del chat de informe.");
+    },
+
     obtenerIncidenciaPorId: async (id) => {
         resetInactivityTimer();
         const response = await fetch(`${BASE_URL}/incidencias/${id}`, {
