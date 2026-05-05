@@ -1,0 +1,136 @@
+.buscar-incidencias-cercanas__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 1.5rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.buscar-incidencias-cercanas__form > *:not(:last-child) {
+  margin-right: 1.2rem;
+}
+
+.buscar-incidencias-cercanas__form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #333;
+}
+
+.buscar-incidencias-cercanas__form input[type="text"],
+.buscar-incidencias-cercanas__form input[type="number"] {
+  margin-top: 0.3rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fafbfc;
+  transition: border 0.2s;
+}
+
+.buscar-incidencias-cercanas__form input:focus {
+  border: 1.5px solid #1976d2;
+  outline: none;
+}
+
+.buscar-incidencias-cercanas__form button[type="submit"] {
+  padding: 0.6rem 1.5rem;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.buscar-incidencias-cercanas__form button[type="submit"]:hover:not(:disabled) {
+  background: #1256a3;
+}
+
+.buscar-incidencias-cercanas__map {
+  height: 420px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px #0001;
+}
+
+.buscar-incidencias-cercanas__view-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.buscar-incidencias-cercanas__view-toggle button {
+  padding: 0.5rem 1.2rem;
+  border: 1px solid #1976d2;
+  background: #fff;
+  color: #1976d2;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.buscar-incidencias-cercanas__view-toggle button.active,
+.buscar-incidencias-cercanas__view-toggle button:focus {
+  background: #1976d2;
+  color: #fff;
+}
+
+.buscar-incidencias-cercanas__table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px #0001;
+  margin-bottom: 2rem;
+}
+
+.buscar-incidencias-cercanas__table th,
+.buscar-incidencias-cercanas__table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.buscar-incidencias-cercanas__table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+.buscar-incidencias-cercanas__table tr:last-child td {
+  border-bottom: none;
+}
+
+.buscar-incidencias-cercanas__table a {
+  color: #1976d2;
+  text-decoration: underline;
+  margin-right: 0.7rem;
+}
+
+.buscar-incidencias-cercanas__table button[disabled] {
+  background: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.buscar-incidencias-cercanas__error {
+  color: #d32f2f;
+  background: #fff0f0;
+  border: 1px solid #fbb;
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.buscar-incidencias-cercanas__empty {
+  color: #888;
+  text-align: center;
+  margin: 2rem 0 1rem 0;
+  font-size: 1.1rem;
+}

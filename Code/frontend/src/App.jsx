@@ -13,6 +13,7 @@ import EditarPerfil from './pages/EditarPerfil';
 import PoliticaPrivacidad from './pages/PoliticaPrivacidad';
 import IncidenciasPublicas from "./pages/IncidenciasPublicas";
 import GenerarInforme from './pages/GenerarInforme';
+import BuscarIncidenciasCercanas from './pages/BuscarIncidenciasCercanas';
 
 
 function App() {
@@ -25,13 +26,15 @@ function App() {
         <Route path="/incidencias-urbanas/mis-incidencias/:id" element={<DetalleIncidencia />} />
         <Route path="/incidencias-urbanas/login" element={<IniciarSesion />} />
         <Route path="/incidencias-urbanas/register" element={<Registrarse />} />
-        <Route path="*" element={<NoMatch />} />
         <Route path="/incidencias-urbanas/mis-incidencias" element={<MisIncidencias />} />
         <Route path="/incidencias-urbanas/editar-perfil" element={<EditarPerfil />} />
         <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
         <Route path="/incidencias-urbanas/editar/:id" element={<RegistrarIncidencia />} />
         <Route path="/incidencias-urbanas/incidencias-publicas" element={<IncidenciasPublicas />} />
         <Route path="/incidencias-urbanas/generar-informe" element={<GenerarInforme />} />
+        <Route path="/incidencias-urbanas/buscar-incidencias-cercanas" element={<BuscarIncidenciasCercanas />} />
+        <Route path="/incidencias-urbanas/buscar-incidencias-cercanas/:id" element={<DetalleIncidencia />} />
+        <Route path="*" element={<NoMatch />} />
 
       </Routes>
     </>

@@ -2,7 +2,7 @@ import { use, useEffect, useMemo, useState } from "react";
 import Hero from "../components/Hero";
 import Sidebar from "../components/Sidebar";
 import MapLocate from "../components/MapLocate";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useLocation } from "react-router";
 import { api } from "../services/api";
 import "../assets/css/DetalleIncidencia.css";
 import Popups from '../components/Popups';
@@ -11,6 +11,8 @@ import MediaPopup from "../components/MediaPopup";
 export default function DetalleIncidencia() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const esMisIncidencias = location.pathname.includes("mis-incidencias");
 
   const [incidencia, setIncidencia] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -444,7 +446,7 @@ export default function DetalleIncidencia() {
 
             <button
               className="detalle-incidencia__back"
-              onClick={() => navigate("/incidencias-urbanas/mis-incidencias")}            >
+              onClick={() => navigate(-1)}            >
               &lt; Volver
             </button>
 
@@ -514,7 +516,7 @@ export default function DetalleIncidencia() {
               </div>
                <div className="detalle-incidencia__divider"></div>
 
-                {estado === "CREADA" && rol === "CIUDADANO" && (
+                {esMisIncidencias && estado === "CREADA" && rol === "CIUDADANO" && (
                   <div className="detalle-incidencia__actions">
                     <button
                       className="detalle-incidencia__main-btn"
@@ -525,7 +527,7 @@ export default function DetalleIncidencia() {
                   </div>
                 )}
 
-              {estado === "CREADA" && rol === "OPERADOR" && (
+              {esMisIncidencias && estado === "CREADA" && rol === "OPERADOR" && (
                 <>
                   <div className="detalle-incidencia__actions">
                     <button
@@ -636,7 +638,7 @@ export default function DetalleIncidencia() {
                 </>
               )}
 
-              {(estado === "VALIDADA" || estado === "ASIGNADA" || estado === "EN_CURSO") && rol === "OPERADOR" && (
+              {esMisIncidencias && (estado === "VALIDADA" || estado === "ASIGNADA" || estado === "EN_CURSO") && rol === "OPERADOR" && (
                 <>
                   { mostrarAsignacion && (<div className="detalle-incidencia__asignacion">
                     {especialidadesTecnico.map((especialidad) => {
@@ -677,7 +679,7 @@ export default function DetalleIncidencia() {
                 </>
               )}
 
-              {rol === "TECNICO" && (estado === "ASIGNADA" || estado === "EN_CURSO") && (
+              {esMisIncidencias && rol === "TECNICO" && (estado === "ASIGNADA" || estado === "EN_CURSO") && (
                 <>
                   <div className="detalle-incidencia__actions">
                     {!incidenciaAceptadaPorTecnico && (
@@ -803,7 +805,7 @@ export default function DetalleIncidencia() {
                 </>
               )}
 
-              {estado === "RESUELTA" && rol === "OPERADOR" && (
+              {esMisIncidencias && estado === "RESUELTA" && rol === "OPERADOR" && (
                 <div className="detalle-incidencia__form-group">
                         <label>Comentario de resolución <span style={{ color: "red" }}>*</span></label>
                         <textarea

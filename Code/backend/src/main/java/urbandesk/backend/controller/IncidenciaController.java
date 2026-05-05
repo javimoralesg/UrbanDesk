@@ -97,19 +97,16 @@ public class IncidenciaController {
                     || !Objects.equals(incidencia.getCiudadano().getId(), ciudadano.getId())) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta incidencia");
             }
-        } else if (usuario instanceof Operador operador) {
-            if (incidencia.getOperador() == null
-                    || !Objects.equals(incidencia.getOperador().getId(), operador.getId())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta incidencia");
-            }
         } else if (usuario instanceof Tecnico tecnico) {
             boolean asignado = incidencia.getTecnicos().stream()
                     .anyMatch(t -> Objects.equals(t.getId(), tecnico.getId()));
             if (!asignado) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta incidencia");
             }
+        } else if (usuario instanceof Operador) {
+            return ResponseEntity.ok(incidenciaService.obtenerPorId(id));
         }
-        return ResponseEntity.ok(incidenciaService.obtenerPorId(id));
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta incidencia");
     }
 
     @PostMapping
@@ -424,6 +421,20 @@ public class IncidenciaController {
 
 
         return ResponseEntity.ok(incidenciaService.cerrarIncidencia(id, comentario.comentarioTecnico()));
-    }   
+    }  
+    
+    @GetMapping("/buscar-cercanas")
+    public ResponseEntity<List<Incidencia>> buscarIncidenciasCercanas(
+            @RequestParam double latitud,
+            @RequestParam double longitud,
+            @RequestParam double rangoKm,
+            Principal principal) {
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (!(usuario instanceof urbandesk.backend.domain.user.Operador)) {
+            throw new urbandesk.backend.domain.DomainRuleViolation("Solo los operadores pueden buscar incidencias por proximidad.");
+        }
+        List<Incidencia> incidencias = incidenciaService.buscarIncidenciasPorProximidad(latitud, longitud, rangoKm);
+        return ResponseEntity.ok(incidencias);
+    }
 
 }

@@ -33,7 +33,7 @@ function AutoZoom({ puntos }) {
   return null;
 }
 
-export default function MapLocate({ width = "100%", height = "500px", puntos = [] }) {
+export default function MapLocate({ width = "100%", height = "500px", puntos = [], onMarkerClick }) {
   const navigate = useNavigate();
   const puntosVisibles = puntos;
 
@@ -55,7 +55,11 @@ export default function MapLocate({ width = "100%", height = "500px", puntos = [
             icon={crearIconoColor(COLORES_DISPONIBLES[i % COLORES_DISPONIBLES.length])}
             eventHandlers={{
               click: () => {
-                navigate(`/incidencias-urbanas/mis-incidencias/${p.id}`);
+                if (onMarkerClick) {
+                  onMarkerClick(p);
+                } else if (p.id) {
+                  navigate(`/incidencias-urbanas/mis-incidencias/${p.id}`);
+                }
               }
             }}
           />

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { GeoJSON, MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet';
+import { GeoJSON, MapContainer, TileLayer, useMap, useMapEvents, Circle } from 'react-leaflet';
 
 import 'leaflet/dist/leaflet.css';
 import '../assets/css/Map.css';
 
 import madridBoundary from '../assets/geo/madrid-boundary.json';
 
+// Umbral mínimo para evitar llamadas excesivas al mover el mapa muy poco
+const MIN_DELTA = 0.00005; 
 const MADRID_GEOMETRY = madridBoundary?.features?.[0]?.geometry ?? null;
 
 // Creamos una máscara exterior donde el mundo es el polígono y Madrid es el agujero
@@ -48,6 +50,7 @@ const invertedMadridBoundary = (() => {
   };
 })();
 
+/** Ray casting; vértices GeoJSON [lon, lat] */
 function pointInRing(lat, lon, ringLonLat) {
   let inside = false;
   for (let i = 0, j = ringLonLat.length - 1; i < ringLonLat.length; j = i++) {
@@ -56,11 +59,10 @@ function pointInRing(lat, lon, ringLonLat) {
     const xj = ringLonLat[j][0];
     const yj = ringLonLat[j][1];
 
-    const intersect =
-      yi > lat !== yj > lat &&
-      lon < ((xj - xi) * (lat - yi)) / (yj - yi + Number.EPSILON) + xi;
-
-    if (intersect) inside = !inside;
+    if ((yi > lat) === (yj > lat)) continue;
+    if (yj === yi) continue;
+    const xInt = xi + ((xj - xi) * (lat - yi)) / (yj - yi);
+    if (lon < xInt) inside = !inside;
   }
   return inside;
 }
@@ -98,11 +100,16 @@ function CenterController({ onCenterChanged, targetLocation }) {
   }, [map]);
 
   useEffect(() => {
-    if (!targetLocation?.lat || !targetLocation?.lon) return;
-    const lat = Number(targetLocation.lat);
-    const lon = Number(targetLocation.lon);
+    const lat = Number(targetLocation?.lat);
+    const lon = Number(targetLocation?.lon ?? targetLocation?.lng);
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
     if (!isInsideMadrid(lat, lon)) return;
+
+    // Evitar mover el mapa si ya estamos centrados en ese punto (evita bucles)
+    const currentCenter = map.getCenter();
+    if (Math.abs(currentCenter.lat - lat) < 0.0001 && Math.abs(currentCenter.lng - lon) < 0.0001) {
+        return;
+    }
 
     isProgrammaticMove.current = true;
 
@@ -119,7 +126,7 @@ function CenterController({ onCenterChanged, targetLocation }) {
       return;
     }
 
-    map.setView([lat, lon], 16);
+    map.setView([lat, lon]);
   }, [targetLocation, map]);
 
   useMapEvents({
@@ -148,6 +155,28 @@ function CenterController({ onCenterChanged, targetLocation }) {
   return null;
 }
 
+function MapReadySync({ onCenterChanged }) {
+  const map = useMap();
+  const onReadyRef = useRef(onCenterChanged);
+  onReadyRef.current = onCenterChanged;
+
+  useEffect(() => {
+    let cancelled = false;
+    const id = requestAnimationFrame(() => {
+      if (cancelled) return;
+      map.invalidateSize();
+      const c = map.getCenter();
+      onReadyRef.current?.(c);
+    });
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(id);
+    };
+  }, [map]);
+
+  return null;
+}
+
 export function useMapRegisterLogic() {
   const [address, setAddress] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -166,7 +195,6 @@ export function useMapRegisterLogic() {
   const lastCenterRef = useRef(null);
 
   const REVERSE_DEBOUNCE_MS = 1000;
-  const MIN_DELTA = 0.00015;
 
   const opcionesLocalizacionActual = {
     enableHighAccuracy: true,
@@ -174,14 +202,21 @@ export function useMapRegisterLogic() {
     maximumAge: 10,
   };
 
+  useEffect(() => {
+    if (address.trim() === '') {
+      setWarningPopup(false);
+      setAddressPopup(null);
+      setIsLocationValid(null);
+    }
+  }, [address]);
+
   const clearReverseLookup = () => {
     if (reverseDebounceRef.current) {
       clearTimeout(reverseDebounceRef.current);
       reverseDebounceRef.current = null;
     }
-
     if (reverseAbortRef.current) {
-      reverseAbortRef.current.abort();
+      try { reverseAbortRef.current.abort(); } catch {}
       reverseAbortRef.current = null;
     }
   };
@@ -204,20 +239,18 @@ export function useMapRegisterLogic() {
       );
 
       if (!res.ok) {
-        if (res.status === 429) {
-          console.warn('Nominatim rate limit (429).');
-          return;
-        }
+        if (res.status === 429) return;
         throw new Error(`HTTP ${res.status}`);
       }
 
       const data = await res.json();
 
+      if (requestId !== reverseRequestIdRef.current) return;
+
       setWarningPopup(false);
       setAddressPopup(null);
       setIsLocationValid(true);
 
-      if (requestId !== reverseRequestIdRef.current) return;
       if (data.display_name) setAddress(data.display_name);
     } catch (err) {
       if (err.name !== 'AbortError') {
@@ -226,11 +259,13 @@ export function useMapRegisterLogic() {
     }
   };
 
+  // --- PARTE CORREGIDA ---
   const scheduleReverseLookup = (lat, lon, immediate = false) => {
+    // 1. Siempre limpiamos el timeout anterior. 
+    // Si el usuario mueve el mapa antes de que pase 1s, el contador vuelve a cero.
     clearReverseLookup();
 
-    const requestId = reverseRequestIdRef.current + 1;
-    reverseRequestIdRef.current = requestId;
+    const requestId = ++reverseRequestIdRef.current;
 
     const run = () => {
       lastCenterRef.current = { lat, lon };
@@ -242,8 +277,14 @@ export function useMapRegisterLogic() {
       return;
     }
 
-    reverseDebounceRef.current = setTimeout(run, REVERSE_DEBOUNCE_MS);
+    // 2. Siempre creamos uno nuevo. Esto asegura que solo la ÚLTIMA posición
+    // después de que el mapa se detenga sea la que se envíe a la API.
+    reverseDebounceRef.current = setTimeout(() => {
+        reverseDebounceRef.current = null;
+        run();
+    }, REVERSE_DEBOUNCE_MS);
   };
+  // ------------------------
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -293,14 +334,15 @@ export function useMapRegisterLogic() {
 
   const handleMapCenterChange = (center) => {
     const current = { lat: center.lat, lon: center.lng };
+    if (!isInsideMadrid(current.lat, current.lon)) return;
 
     if (lastCenterRef.current) {
       const dLat = Math.abs(current.lat - lastCenterRef.current.lat);
       const dLon = Math.abs(current.lon - lastCenterRef.current.lon);
-
       if (dLat < MIN_DELTA && dLon < MIN_DELTA) return;
     }
 
+    setTargetLocation({ lat: current.lat, lon: current.lon });
     scheduleReverseLookup(current.lat, current.lon);
   };
 
@@ -340,11 +382,11 @@ export function useMapRegisterLogic() {
       if (data.length > 0) {
         const { lat, lon, display_name, boundingbox } = data[0];
 
-        if (!isInsideMadrid(lat, lon)) {
-          setAddressPopup('Ubicación fuera de los distritos de Madrid');
-          setWarningPopup(true);
-          setIsLocationValid(false);
-          return;
+        if (!isInsideMadrid(lat, lon)) {            
+            setAddressPopup('Ubicación fuera de los distritos de Madrid');
+            setWarningPopup(true);
+            setIsLocationValid(false);
+            return;
         }
 
         setWarningPopup(false);
@@ -383,15 +425,18 @@ export function useMapRegisterLogic() {
     }, 3000);
   };
 
-  const handleCurrentLocation = () => {
+  const handleCurrentLocation = (onError) => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        scheduleReverseLookup(latitude, longitude, true);
         setTargetLocation({ lat: latitude, lon: longitude });
+        scheduleReverseLookup(latitude, longitude, true);
       },
       () => {
         setGeolocationError('No se pudo obtener la ubicación. Asegúrate de haber dado permiso.');
+        if (onError) {
+          onError('No se pudo obtener la ubicación. Asegúrate de haber dado permiso.');
+        }
       },
       opcionesLocalizacionActual
     );
@@ -400,10 +445,11 @@ export function useMapRegisterLogic() {
   return {
     address,
     setAddress,
+    targetLocation,
+    setTargetLocation,
     suggestions,
     showSuggestions,
     setShowSuggestions,
-    targetLocation,
     handleInputChange,
     seleccionarSugerencia,
     handleMapCenterChange,
@@ -421,7 +467,13 @@ export default function MapRegister({
   height = '500px',
   onCenterChanged,
   targetLocation,
+  circleRadiusKm,
+  showCircle
 }) {
+  const lat = Number(targetLocation?.lat);
+  const lon = Number(targetLocation?.lon ?? targetLocation?.lng);
+  const showCircleOnMap = showCircle && Number.isFinite(lat) && Number.isFinite(lon) && circleRadiusKm > 0;
+
   return (
     <div
       style={{
@@ -441,7 +493,7 @@ export default function MapRegister({
         </defs>
       </svg>
 
-      <MapContainer center={[40.41, -3.7]} zoom={13} style={{ height: '100%', width: '100%' }}>
+      <MapContainer center={[40.41, -3.7]} zoom={15} minZoom={0} maxBoundsViscosity={0} style={{ height: '100%', width: '100%' }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
         {/* Renderiza el exterior con rayas rojas */}
@@ -468,6 +520,15 @@ export default function MapRegister({
           />
         )}
 
+        {showCircleOnMap && (
+          <Circle
+            center={[lat, lon]}
+            radius={circleRadiusKm * 1000}
+            pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 0.10, weight: 3 }}
+          />
+        )}
+
+        <MapReadySync onCenterChanged={onCenterChanged} />
         <CenterController onCenterChanged={onCenterChanged} targetLocation={targetLocation} />
       </MapContainer>
 
