@@ -373,6 +373,15 @@ export const api = {
         throw new Error("No se recibió respuesta final del chat de informe.");
     },
 
+    buscarIncidenciasCercanas: async ({ latitud, longitud, rangoKm }) => {
+        resetInactivityTimer();
+        const response = await fetch(`${BASE_URL}/incidencias/buscar-cercanas?latitud=${latitud}&longitud=${longitud}&rangoKm=${rangoKm}`, {
+            method: 'GET',
+            headers: getAuthHeaders(),
+        });
+        return parseJsonOrThrow(response);
+    },
+
     obtenerIncidenciaPorId: async (id) => {
         resetInactivityTimer();
         const response = await fetch(`${BASE_URL}/incidencias/${id}`, {
