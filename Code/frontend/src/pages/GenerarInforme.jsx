@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router";
 import html2pdf from "html2pdf.js";
 import mermaid from "mermaid";
 import Hero from "../components/Hero";
@@ -340,6 +341,14 @@ export default function GenerarInforme() {
   const reportRef = useRef(null);
 
   const vistaIndex = vistaActiva === "datos" ? 1 : 0;
+
+  const navigate = useNavigate();
+      useEffect(() => {
+        const raw = localStorage.getItem('user');
+        if (!raw || !JSON.parse(raw).rol || JSON.parse(raw).rol !== 'OPERADOR') {
+          navigate('/incidencias-urbanas');
+        }
+      }, [navigate]);
 
   const addPopup = (id, message, type, autoDismiss = false, extra = {}) => {
     setPopupList((prev) => [
