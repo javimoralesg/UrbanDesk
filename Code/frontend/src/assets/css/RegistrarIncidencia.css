@@ -1,16 +1,11 @@
-/* 🔥 NUEVO: pequeño ajuste para diferenciar edición (opcional visual) */
 .registrar-incidencia__title {
   position: relative;
 }
 
-/* Si quieres puedes activar esto luego */
 .registrar-incidencia__title::after {
   content: "";
 }
 
-/* ========================= */
-/* LO TUYO (SIN TOCAR) */
-/* ========================= */
 
 .registrar-incidencia__layout {
   display: grid;
@@ -62,13 +57,11 @@
   align-items: stretch;
 }
 
-/* 🔥 MEJORA: transición suave en edición */
 .registrar-incidencia__input,
 .registrar-incidencia__textarea {
   transition: all 0.2s ease;
 }
 
-/* 🔥 MEJORA: feedback visual más claro */
 .registrar-incidencia__input:focus,
 .registrar-incidencia__textarea:focus {
   border-color: #24364b;
@@ -76,13 +69,11 @@
   background-color: #fff;
 }
 
-/* 🔥 NUEVO: hover en textarea/input */
 .registrar-incidencia__input:hover,
 .registrar-incidencia__textarea:hover {
   border-color: #b8c4d6;
 }
 
-/* 🔥 BOTÓN: mejor feedback */
 .registrar-incidencia__submit-btn {
   width: 80%;
   align-self: center;
@@ -98,20 +89,17 @@
   transition: all 0.2s ease;
 }
 
-/* 🔥 CAMBIO: hover más lógico */
 .registrar-incidencia__submit-btn:hover {
   background-color: #1b2838;
   color: white;
 }
 
-/* 🔥 NUEVO: estado disabled (clave para edición) */
 .registrar-incidencia__submit-btn:disabled {
   background-color: #cbd5e1;
   cursor: not-allowed;
   color: #6b7280;
 }
 
-/* 🔥 MEJORA MAPA */
 .registrar-incidencia__map-container {
   width: 100%;
   height: auto;
@@ -120,7 +108,6 @@
   border: 1px solid #dbe3ee;
 }
 
-/* 🔥 MEJORA evidencias */
 .registrar-incidencia__evidences-box {
   background-color: #f8fafc;
   border-radius: 10px;
@@ -129,7 +116,6 @@
   border: 1px solid #e2e8f0;
 }
 
-/* 🔥 MEJORA imágenes */
 .registrar-incidencia__imagen-item {
   position: relative;
   width: 120px;
@@ -140,7 +126,6 @@
   transform: scale(1.03);
 }
 
-/* 🔥 botón eliminar más moderno */
 .registrar-incidencia__imagen-eliminar {
   background: #ef4444;
 }
@@ -149,7 +134,6 @@
   background: #dc2626;
 }
 
-/* 🔥 input ubicación */
 .registrar-incidencia__location-row {
   width: 100%;
   display: flex;
@@ -194,7 +178,6 @@
   background: #f1f5f9;
 }
 
-/* 🔥 suggestions más modernas */
 .registrar-incidencia__suggestions {
   border-radius: 8px;
   border: 1px solid #e2e8f0;
@@ -247,9 +230,6 @@
   cursor: pointer;
 }
 
-/* ========================= */
-/* RESPONSIVE (MEJORADO) */
-/* ========================= */
 
 @media (max-width: 640px) {
   .registrar-incidencia__layout {
