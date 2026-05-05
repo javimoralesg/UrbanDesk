@@ -26,7 +26,7 @@ const opcionesGlobales = {
     { text: "Editar perfil", link: "/incidencias-urbanas/editar-perfil" },
     { text: "Mis incidencias", link: "/incidencias-urbanas/mis-incidencias" },
     //{ text: "Buscar incidencias cercanas", link: "/incidencias-urbanas/buscar-incidencias-cercanas" },
-    //{ text: "Generar informe", link: "/incidencias-urbanas/generar-informe" },
+    { text: "Generar informe", link: "/incidencias-urbanas/generar-informe" },
   ],
   Tecnico: [
     { text: "Portada", link: "/incidencias-urbanas" },
@@ -65,6 +65,10 @@ export default function Sidebar() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const firstOption = opciones.slice(0, 1);
+  const secondThirdOptions = opciones.slice(1, 3);
+  const restOptions = opciones.slice(3);
+
   return (
     <aside className="urban-sidebar__sidebar">
       {isMobile ? (
@@ -78,28 +82,80 @@ export default function Sidebar() {
               <img src='/desplegable.png' alt='Desplegable' className="urban-sidebar__toggle-icon" />
             </button>
           )}
-          <nav className={`urban-sidebar__nav${menuOpen ? ' urban-sidebar__nav--open' : ''}`}>
-            {opciones.map((opcion, index) => (
-              opcion.link !== "/incidencias-urbanas/logout" ? (
-                <Link
-                  key={index}
-                  to={opcion.link}
-                  className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
-                    }`}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <span>{opcion.text}</span>
-                </Link>
-              )
-                : (<Link
-                  key={index}
-                  onClick={() => api.logout()}
-                  className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
-                    }`}
-                >
-                  <span>{opcion.text}</span>
-                </Link>)
-            ))}
+          <nav className={`urban-sidebar__nav${menuOpen ? ' urban-sidebar__nav--open' : ''} urban-sidebar__nav--mobile-groups`}>
+            {menuOpen && (
+              <>
+                <div className="sidebar-group sidebar-group--first">
+                  {firstOption.map((opcion, index) => (
+                    opcion.link !== "/incidencias-urbanas/logout" ? (
+                      <Link
+                        key={index}
+                        to={opcion.link}
+                        className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                          }`}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <span>{opcion.text}</span>
+                      </Link>
+                    )
+                      : (<Link
+                        key={index}
+                        onClick={() => api.logout()}
+                        className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                          }`}
+                      >
+                        <span>{opcion.text}</span>
+                      </Link>)
+                  ))}
+                </div>
+                <div className="sidebar-group sidebar-group--second">
+                  {secondThirdOptions.map((opcion, index) => (
+                    opcion.link !== "/incidencias-urbanas/logout" ? (
+                      <Link
+                        key={index + 1}
+                        to={opcion.link}
+                        className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                          }`}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <span>{opcion.text}</span>
+                      </Link>
+                    )
+                      : (<Link
+                        key={index + 1}
+                        onClick={() => api.logout()}
+                        className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                          }`}
+                      >
+                        <span>{opcion.text}</span>
+                      </Link>)
+                  ))}
+                </div>
+                <div className="sidebar-group sidebar-group--rest">
+                  {restOptions.map((opcion, index) => (
+                    opcion.link !== "/incidencias-urbanas/logout" ? (
+                      <Link
+                        key={index + 3}
+                        to={opcion.link}
+                        className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                          }`}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <span>{opcion.text}</span>
+                      </Link>
+                    )
+                      : (<Link
+                        key={index + 3}
+                        onClick={() => api.logout()}
+                        className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                          }`}
+                      >
+                        <span>{opcion.text}</span>
+                      </Link>)
+                  ))}
+                </div>
+              </>
+            )}
             {menuOpen && (
               <button
                 className="urban-sidebar__close-btn"
@@ -113,26 +169,74 @@ export default function Sidebar() {
         </>
       ) : (
         <nav className="urban-sidebar__nav">
-          {opciones.map((opcion, index) => (
-            opcion.link !== "/incidencias-urbanas/logout" ? (
-              <Link
-                key={index}
-                to={opcion.link}
-                className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
-                  }`}
-              >
-                <span>{opcion.text}</span>
-              </Link>
-            )
-              : (<Link
-                key={index}
-                onClick={() => api.logout()}
-                className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
-                  }`}
-              >
-                <span>{opcion.text}</span>
-              </Link>)
-          ))}
+          <div className="sidebar-group sidebar-group--first">
+            {firstOption.map((opcion, index) => (
+              opcion.link !== "/incidencias-urbanas/logout" ? (
+                <Link
+                  key={index}
+                  to={opcion.link}
+                  className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                    }`}
+                >
+                  <span>{opcion.text}</span>
+                </Link>
+              )
+                : (<Link
+                  key={index}
+                  onClick={() => api.logout()}
+                  className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                    }`}
+                >
+                  <span>{opcion.text}</span>
+                </Link>)
+            ))}
+          </div>
+          <div style={{ height: '10px' }} />
+          <div className="sidebar-group sidebar-group--second">
+            {secondThirdOptions.map((opcion, index) => (
+              opcion.link !== "/incidencias-urbanas/logout" ? (
+                <Link
+                  key={index + 1}
+                  to={opcion.link}
+                  className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                    }`}
+                >
+                  <span>{opcion.text}</span>
+                </Link>
+              )
+                : (<Link
+                  key={index + 1}
+                  onClick={() => api.logout()}
+                  className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                    }`}
+                >
+                  <span>{opcion.text}</span>
+                </Link>)
+            ))}
+          </div>
+          <div style={{ height: '10px' }} />
+          <div className="sidebar-group sidebar-group--rest">
+            {restOptions.map((opcion, index) => (
+              opcion.link !== "/incidencias-urbanas/logout" ? (
+                <Link
+                  key={index + 3}
+                  to={opcion.link}
+                  className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                    }`}
+                >
+                  <span>{opcion.text}</span>
+                </Link>
+              )
+                : (<Link
+                  key={index + 3}
+                  onClick={() => api.logout()}
+                  className={`urban-sidebar__sidebar-title ${location.pathname === opcion.link ? "urban-sidebar__sidebar-title--active" : ""
+                    }`}
+                >
+                  <span>{opcion.text}</span>
+                </Link>)
+            ))}
+          </div>
         </nav>
       )}
     </aside>

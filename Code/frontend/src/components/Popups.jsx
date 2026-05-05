@@ -68,35 +68,89 @@ export default function Popups({ list }) {
                 top: `${topPosition}px`
             }}
         >
-            {list.map((popup, index) => (
-                <div
-                    key={index}
-                    className="popup"
-                    style={{
-                        border: `2px solid ${theme[popup.type].border}`,
-                        backgroundColor: theme[popup.type].bg,
-                        color: theme[popup.type].text,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.5em',
-                        minHeight: '40px'
-                    }}
-                >
+            {list.map((popup, index) => {
+                const normalizedProgress = Number.isFinite(Number(popup.progress))
+                    ? Math.max(0, Math.min(100, Number(popup.progress)))
+                    : null;
+
+                return (
+                    <div
+                        key={index}
+                        className="popup"
+                        style={{
+                            border: `2px solid ${theme[popup.type].border}`,
+                            backgroundColor: theme[popup.type].bg,
+                            color: theme[popup.type].text,
+                            minHeight: '40px',
+                            display: 'flex',
+                            alignItems: 'stretch',
+                            gap: '0.75rem',
+                            flexDirection: (popup.onAccept && popup.onCancel) ? 'row !important' : 'column'
+                        }}
+                    >
+                        <div
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.5em',
+                                textAlign: 'center'
+                            }}
+                        >
                             <span style={{ display: 'flex', alignItems: 'center' }}>{emoji[popup.type]}</span>
-                    <span style={{ display: 'flex', alignItems: 'center' }}>{popup.message}</span>
-                    {popup.onAccept && popup.onCancel && (
-                        <div className="popup-actions">
-                            <button className="popup-button popup-button--cancel" onClick={popup.onCancel}>
-                                {popup.cancelText || 'Cancelar'}
-                            </button>
-                            <button className="popup-button popup-button--accept" onClick={popup.onAccept}>
-                                {popup.acceptText || 'Aceptar'}
-                            </button>
+                            <span style={{ display: 'flex', alignItems: 'center' }}>{popup.message}</span>
                         </div>
-                    )}
-                </div>
-            ))}
+
+                        {popup.type === "waiting" && normalizedProgress !== null && (
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.75rem',
+                                    width: '100%'
+                                }}
+                            >
+                                <div
+                                    role="progressbar"
+                                    aria-valuemin={0}
+                                    aria-valuemax={100}
+                                    aria-valuenow={normalizedProgress}
+                                    style={{
+                                        flex: 1,
+                                        height: '8px',
+                                        borderRadius: '999px',
+                                        overflow: 'hidden',
+                                        background: 'rgba(255, 255, 255, 0.45)'
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            width: `${normalizedProgress}%`,
+                                            height: '100%',
+                                            borderRadius: 'inherit',
+                                            background: 'currentColor'
+                                        }}
+                                    />
+                                </div>
+                                <span style={{ minWidth: '3rem', textAlign: 'right', fontSize: '0.85rem', fontWeight: 700 }}>
+                                    {normalizedProgress}%
+                                </span>
+                            </div>
+                        )}
+
+                        {popup.onAccept && popup.onCancel && (
+                            <div className="popup-actions">
+                                <button className="popup-button popup-button--cancel" onClick={popup.onCancel}>
+                                    {popup.cancelText || 'Cancelar'}
+                                </button>
+                                <button className="popup-button popup-button--accept" onClick={popup.onAccept}>
+                                    {popup.acceptText || 'Aceptar'}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
         </div>
     );
 }

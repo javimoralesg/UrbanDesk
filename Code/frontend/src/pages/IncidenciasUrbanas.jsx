@@ -28,7 +28,7 @@ const opcionesGlobales = {
     { text: "Editar perfil", link: "/incidencias-urbanas/editar-perfil " },
     { text: "Mis incidencias", link: "/incidencias-urbanas/mis-incidencias" },
     //{ text: "Buscar incidencias cercanas", link: "/incidencias-urbanas/buscar-incidencias-cercanas" },
-    //{ text: "Generar informe", link: "/incidencias-urbanas/generar-informe" },
+    { text: "Generar informe", link: "/incidencias-urbanas/generar-informe" },
   ],
   Tecnico: [
     { text: "Portada", link: "/incidencias-urbanas" },
@@ -56,6 +56,13 @@ export default function IncidenciasUrbanas() {
 
   const opciones = opcionesGlobales[userRole] || opcionesGlobales.SinRegistro;
 
+  const handleLinkClick = (event, link) => {
+    if (link === '/incidencias-urbanas/logout') {
+      event.preventDefault();
+      api.logout();
+    }
+  };
+
   return (
     <>
       <Hero />
@@ -73,27 +80,55 @@ export default function IncidenciasUrbanas() {
           </p>
 
           <section className="urban-cards__cards">
-            {opciones.map((opcion, index) => (
-              opcion.link !== "/incidencias-urbanas/logout" ? (
+            <div className="urban-cards__row urban-cards__row--intro">
+              {opciones[0] && (
                 <Link
-                  key={index}
+                  key={0}
+                  to={opciones[0].link}
+                  className={`urban-cards__action-card ${location.pathname === opciones[0].link ? "urban-cards__action-card--active" : ""}`}
+                  onClick={(event) => handleLinkClick(event, opciones[0].link)}
+                >
+                  <span>{opciones[0].text}</span>
+                </Link>
+              )}
+            </div>
+
+            <div className="urban-cards__row urban-cards__row--intro">
+              {opciones[1] && (
+                <Link
+                  key={1}
+                  to={opciones[1].link}
+                  className={`urban-cards__action-card ${location.pathname === opciones[1].link ? "urban-cards__action-card--active" : ""}`}
+                  onClick={(event) => handleLinkClick(event, opciones[1].link)}
+                >
+                  <span>{opciones[1].text}</span>
+                </Link>
+              )}
+
+              {opciones[2] && (
+                <Link
+                  key={2}
+                  to={opciones[2].link}
+                  className={`urban-cards__action-card ${location.pathname === opciones[2].link ? "urban-cards__action-card--active" : ""}`}
+                  onClick={(event) => handleLinkClick(event, opciones[2].link)}
+                >
+                  <span>{opciones[2].text}</span>
+                </Link>
+              )}
+            </div>
+
+            <div className="urban-cards__row">
+              {opciones.slice(3).map((opcion, index) => (
+                <Link
+                  key={index + 3}
                   to={opcion.link}
-                  className={`urban-cards__action-card ${location.pathname === opcion.link ? "urban-cards__action-card--active" : ""
-                    }`}
+                  className={`urban-cards__action-card ${location.pathname === opcion.link ? "urban-cards__action-card--active" : ""}`}
+                  onClick={(event) => handleLinkClick(event, opcion.link)}
                 >
                   <span>{opcion.text}</span>
                 </Link>
-              )
-                : (<Link
-                  key={index}
-                  onClick={() => api.logout()}
-                  className={`urban-cards__action-card ${location.pathname === opcion.link ? "urban-cards__action-card--active" : ""
-                    }`}
-                >
-                  <span>{opcion.text}</span>
-                </Link>)
-            ))}
-
+              ))}
+            </div>
           </section>
 
         </section>

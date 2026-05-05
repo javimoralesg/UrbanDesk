@@ -1,5 +1,6 @@
 .urban-home__layout {
   display: grid;
+  display: grid;
   grid-template-columns: 330px 1fr;
   gap: 0;
   min-height: 100vh;
@@ -9,6 +10,7 @@
 .urban-home__content {
   min-width: 0;
   padding: 24px;
+  min-height: 100vh;
 }
 
 .urban-home__title {
@@ -23,18 +25,33 @@
   font-size: 0.8rem;
   text-align: start;
   color: #444;
-  margin: 0;
+  margin:0;
   margin-bottom: 20px;
   margin-left: -50px;
 }
 
 
+
 .urban-cards__cards {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   gap: 2rem;
   margin-top: 3rem;
+}
+
+.urban-cards__row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.urban-cards__row--intro {
+  margin-bottom: 1.5rem;
 }
 
 .urban-cards__action-card {
@@ -65,14 +82,14 @@
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   background: #d1d1d1;
-  color: black
+  color:black
 }
 
 .urban-cards__action-card--active:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   background: #1838eb;
-  color: white
+  color:white
 }
 
 @media (max-width: 640px) {
@@ -90,14 +107,10 @@
     margin-left: 0px;
   }
 
-  .urban-home__content {
-    min-height: 100vh;
-  }
-
   .urban-cards__action-card,
   .urban-cards__action-card--active {
-    font-size: 1.2rem;
-    padding: 1rem 1.2rem;
-    min-width: 140px;
+    min-width: 120px;
+    font-size: 1.1rem;
+    padding: 0.8rem 1rem;
   }
 }
