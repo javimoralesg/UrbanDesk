@@ -22,7 +22,7 @@ export default function Registrarse() {
 
   const [acceptTerms, setAcceptTerms] = useState(false);
 
-  const [mostrarPopup, setMostrarPopup] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
   useEffect(() => {
     if (loading) {
@@ -40,14 +40,7 @@ export default function Registrarse() {
     }
   }, [loading, error]);
 
-  useEffect(() => {
-    if (password === "") {
-      setMostrarPopup(false);
-      return;
-    }
-
-    setMostrarPopup(true);
-  }, [password]);
+  // El popup ahora se muestra solo cuando el input de contraseña está enfocado
 
 
   const isPasswordValid = (value) => {
@@ -164,6 +157,8 @@ export default function Registrarse() {
                   className="urban-register__input urban-register__input--password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setPasswordFocused(true)}
+                  onBlur={() => setPasswordFocused(false)}
                 />
                 <button
                   type="button"
@@ -174,7 +169,7 @@ export default function Registrarse() {
                   {showPassword ? "Ocultar" : "Mostrar"}
                 </button>
               </div>
-              {mostrarPopup && (<div className= {isPasswordValid(password) ? "urban-register__password-requirements-right" : "urban-register__password-requirements-wrong"}> 
+              {passwordFocused && (<div className= {isPasswordValid(password) ? "urban-register__password-requirements-right" : "urban-register__password-requirements-wrong"}> 
                 La contraseña contiene al menos 8 caracteres {password.length >= 8 ? "✅" : "❌"}<br />
                 La contraseña contiene un número {/\d/.test(password) ? "✅" : "❌"}<br />
                 La contraseña contiene un carácter especial (,*.!?) {/[,*.!?.:;\-_{}|()/¿¡#@$%&"'€+]/.test(password) ? "✅" : "❌"}
