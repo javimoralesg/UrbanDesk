@@ -200,7 +200,7 @@ public class MailService {
                     </p>
                     <p style="margin: 0; font-size: 14px;">
                         <em>Estado: </em>
-                        <strong style="color: #1e3a8a;">CREADA</strong>
+                        <strong style="color: #1e3a8a;">%s</strong>
                     </p>
                 </div>
 
