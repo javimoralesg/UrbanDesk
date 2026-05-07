@@ -12,6 +12,7 @@ import urbandesk.backend.domain.user.Rol;
 import urbandesk.backend.domain.user.Tecnico;
 import urbandesk.backend.domain.user.Usuario;
 import urbandesk.backend.repository.UsuarioRepository;
+import urbandesk.backend.service.TokensService;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
-    private final MailService MailService;
+    private final TokensService tokensService;
 
     public void eliminar(Long id) {
         Usuario usuario = obtenerUsuarioPorId(id);
@@ -48,7 +49,7 @@ public class UsuarioService {
         Ciudadano ciudadano = new Ciudadano(nombre, email, hashPassword(password), codigoPostal);
 
         Ciudadano ciudadanoGuardado = usuarioRepository.save(ciudadano);
-        MailService.enviarBienvenida(ciudadano.getEmail(), ciudadano.getNombre(), ciudadano.getEmail());
+        tokensService.validarCorreo(ciudadano.getEmail());
         return ciudadanoGuardado;
     }
 
