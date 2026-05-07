@@ -212,37 +212,71 @@
 }
 
 .urban-register__password-requirements {
-  width: 100%;
-  font-size: 0.95rem;
-  color: #16202b;
-  border-radius: 10px;
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  z-index: 10;
+  width: 220px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: white;
+  border-radius: 12px;
   padding: 14px 16px;
-  box-shadow: 0 8px 20px rgba(12,18,26,0.08);
-  transition: max-height 420ms ease, opacity 420ms ease, transform 420ms ease, background-color 420ms linear;
-  margin-top: 10px;
-  overflow: hidden;
-  max-height: 0;
+  box-shadow: 0 10px 25px rgba(36, 54, 75, 0.15);
+  border: 2px solid #24364b;
+  margin: 0;
+  list-style: none;
+  
+  /* Comic bubble arrow */
+  transform-origin: top center;
+  transition: opacity 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
   opacity: 0;
-  transform: translateY(-6px);
-  --req-bg: #f6b3b3;
-  background-color: var(--req-bg);
-  border: 1px solid rgba(0,0,0,0.06);
+  pointer-events: none;
+  transform: translateY(-10px) scale(0.95);
+}
+
+.urban-register__password-requirements::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-top: 2px solid #24364b;
+  border-left: 2px solid #24364b;
+  transform: rotate(45deg);
 }
 
 .urban-register__password-requirements.visible {
-  max-height: 220px;
   opacity: 1;
-  transform: translateY(0);
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
 }
 
-.urban-register__password-requirements.wrong {
-  --req-bg: #f6b3b3;
-  border-color: rgba(185, 70, 70, 0.12);
+.urban-register__password-requirements li {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.3s ease;
 }
 
-.urban-register__password-requirements.right {
-  --req-bg: #bff3c9;
-  border-color: rgba(45, 155, 80, 0.12);
+.urban-register__password-requirements li:last-child {
+  margin-bottom: 0;
+}
+
+.urban-register__password-requirements li .icon {
+  font-weight: bolder;
+  font-size: 1rem;
+}
+
+.urban-register__password-requirements li.met {
+  color: #10a37f;
+}
+
+.urban-register__password-requirements li.unmet {
+  color: #ef4444;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -252,15 +286,13 @@
 }
 
 @media (max-width: 480px) {
-  .urban-register__password-requirements-wrong,
-  .urban-register__password-requirements-right {
+  .urban-register__password-requirements {
     position: static;
-    width: 100%;
     box-shadow: none;
-    margin-top: 8px;
+    margin-top: 12px;
+    transform: none !important;
   }
-  .urban-register__password-requirements-wrong::before,
-  .urban-register__password-requirements-right::before {
+  .urban-register__password-requirements::before {
     display: none;
   }
 }

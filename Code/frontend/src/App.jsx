@@ -10,7 +10,6 @@ import NoMatch from "./pages/NoMatch";
 import MisIncidencias from './pages/MisIncidencias';
 import DetalleIncidencia from './pages/DetalleIncidencia';
 import EditarPerfil from './pages/EditarPerfil';
-import PoliticaPrivacidad from './pages/PoliticaPrivacidad';
 import IncidenciasPublicas from "./pages/IncidenciasPublicas";
 import GenerarInforme from './pages/GenerarInforme';
 import BuscarIncidenciasCercanas from './pages/BuscarIncidenciasCercanas';
@@ -28,7 +27,6 @@ function App() {
         <Route path="/incidencias-urbanas/register" element={<Registrarse />} />
         <Route path="/incidencias-urbanas/mis-incidencias" element={<MisIncidencias />} />
         <Route path="/incidencias-urbanas/editar-perfil" element={<EditarPerfil />} />
-        <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
         <Route path="/incidencias-urbanas/editar/:id" element={<RegistrarIncidencia />} />
         <Route path="/incidencias-urbanas/incidencias-publicas" element={<IncidenciasPublicas />} />
         <Route path="/incidencias-urbanas/generar-informe" element={<GenerarInforme />} />
