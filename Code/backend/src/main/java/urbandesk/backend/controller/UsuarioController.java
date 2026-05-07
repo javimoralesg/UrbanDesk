@@ -56,12 +56,28 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Usuario> login(@RequestBody UsuarioRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.email(), request.password())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return ResponseEntity.ok(usuarioService.obtenerUsuarioPorEmail(request.email()));
+    public ResponseEntity<?> login(@RequestBody UsuarioRequest request) {
+        try {
+            Usuario usuario;
+            try {
+                usuario = usuarioService.obtenerUsuarioPorEmail(request.email());
+            } catch (DomainRuleViolation e) {
+                return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
+            }
+
+            if (!usuario.isValidado()) {
+                return ResponseEntity.status(403).body(Map.of("error", "Cuenta no validada. Por favor, revisa tu correo electrónico para validarla."));
+            }
+
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.email(), request.password())
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            return ResponseEntity.ok(usuario);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
+        }
     }
 
     @GetMapping("/perfil")

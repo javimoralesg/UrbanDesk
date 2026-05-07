@@ -33,10 +33,10 @@ public class SecurityConfig {
             .headers(headers -> headers.frameOptions(frame -> frame.disable()))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/api/tokens/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/usuarios/registro").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/usuarios/login").permitAll()
                 .requestMatchers("/api/incidencias/publicas").permitAll()
-
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/perfil").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/api/usuarios/perfil").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/incidencias/**").permitAll()
