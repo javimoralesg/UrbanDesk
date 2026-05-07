@@ -193,6 +193,7 @@ export function useMapRegisterLogic() {
   const reverseAbortRef = useRef(null);
   const reverseRequestIdRef = useRef(0);
   const lastCenterRef = useRef(null);
+  const suppressSuggestionsRef = useRef(false);
 
   const REVERSE_DEBOUNCE_MS = 1000;
 
@@ -288,6 +289,7 @@ export function useMapRegisterLogic() {
 
   useEffect(() => {
     const fetchSuggestions = async () => {
+      if (suppressSuggestionsRef.current) return;
       if (address.length < 3) {
         setSuggestions([]);
         return;
@@ -324,6 +326,16 @@ export function useMapRegisterLogic() {
     const timeoutId = setTimeout(fetchSuggestions, 300);
     return () => clearTimeout(timeoutId);
   }, [address]);
+
+  const setAddressSilently = (val) => {
+    // evita que el efecto de sugerencias haga llamadas cuando cargamos datos existentes
+    suppressSuggestionsRef.current = true;
+    setAddress(val);
+    // quitamos la supresión en el siguiente tick (después de que los effects se ejecuten)
+    setTimeout(() => {
+      suppressSuggestionsRef.current = false;
+    }, 0);
+  };
 
   useEffect(() => {
     return () => {
@@ -445,6 +457,7 @@ export function useMapRegisterLogic() {
   return {
     address,
     setAddress,
+    setAddressSilently,
     targetLocation,
     setTargetLocation,
     suggestions,

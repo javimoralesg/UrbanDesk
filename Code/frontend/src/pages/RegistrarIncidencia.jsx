@@ -30,10 +30,12 @@ export default function RegistrarIncidencia() {
     const {
         address,
         setAddress,
+        setAddressSilently,
         suggestions,
         showSuggestions,
         setShowSuggestions,
         targetLocation,
+        setTargetLocation,
         handleInputChange,
         seleccionarSugerencia,
         handleMapCenterChange,
@@ -44,6 +46,7 @@ export default function RegistrarIncidencia() {
         geolocationError,
         clearGeolocationError,
     } = useMapRegisterLogic();
+    
 
    useEffect(() => {
     if (esEdicion) {
@@ -51,23 +54,36 @@ export default function RegistrarIncidencia() {
             setDescripcion(data.descripcion);
 
             if (data.ubicacion) {
-                setCenterLocation({
-                    lat: data.ubicacion.latitud,
-                    lon: data.ubicacion.longitud
-                });
+                const lat = data.ubicacion.latitud;
+                const lon = data.ubicacion.longitud;
 
-                setAddress(data.ubicacion.direccion || '');
+                setCenterLocation({ lat, lon });
+
+                // Establece la dirección y la ubicación en el hook SIN provocar llamadas a la API
+                if (typeof setAddressSilently === 'function') {
+                    setAddressSilently(data.ubicacion.direccion || '');
+                } else {
+                    setAddress(data.ubicacion.direccion || '');
+                }
+
+                if (typeof setTargetLocation === 'function') {
+                    setTargetLocation({ lat, lon });
+                }
             }
             if (data.evidencias) {
                 const imagenesBackend = data.evidencias.map(ev => ({
                     id: ev.id,
                     preview: ev.url || ev.ruta,
-                    existente: true   // 🔥 CLAVE
+                    existente: true  
                 }));
 
                 setImagenes(imagenesBackend);
-}
+            }
+
+            setCargandoEdicion(false);
         });
+    } else {
+        setCargandoEdicion(false);
     }
 }, [id]);
 
@@ -81,7 +97,7 @@ export default function RegistrarIncidencia() {
 
     useEffect(() => {
         if (isSubmitting) {
-            const msg = esEdicion ? 'Actualizando incidencia' : 'Registrando incidencia'; // 🔥 EDIT
+            const msg = esEdicion ? 'Actualizando incidencia' : 'Registrando incidencia';
             setIncidenceList(prev => {
                 if (prev.some(m => m.id === 'loading' || m.message === msg)) return prev;
                 return [...prev, { id: 'loading', message: msg, type: 'waiting' }];
@@ -346,20 +362,17 @@ export default function RegistrarIncidencia() {
 
             <section className="registrar-incidencia__content">
                 {esEdicion ? (
-                    <div className="editar-incidencia__header">
+                    <div className="detalle-incidencia__header">
 
-                        <button
-                            className="editar-incidencia__back"
-                            onClick={() => navigate(`/incidencias-urbanas/mis-incidencias/${id}`)}
-                        >
-                            &lt; Volver
-                        </button>
+            <button
+              className="detalle-incidencia__back"
+              onClick={() => navigate(`/incidencias-urbanas/mis-incidencias/${id}`)} >
+              &lt; Volver
+            </button>
 
-                        <h2 className="editar-incidencia__title">
-                            Editar Incidencia #{id}
-                        </h2>
+            <h2 className="detalle-incidencia__title">Editar Incidencia #{id}</h2>
 
-                    </div>
+          </div>
                 ) : (
                     <>
                         <h2 className="registrar-incidencia__title">
@@ -377,7 +390,7 @@ export default function RegistrarIncidencia() {
                         setDescripcion={setDescripcion}
                         handleInputChange={handleInputChange}
                     />
-
+                    <h4 className="registrar-incidencia__section-title">Descripción de la incidencia:</h4>
                     <textarea
                         value={descripcion}
                         onChange={(e) => setDescripcion(e.target.value)}
@@ -386,6 +399,7 @@ export default function RegistrarIncidencia() {
                         rows={4}
                     />
 
+                    <h4 className="registrar-incidencia__section-title">Ubicación:</h4>
                     <div className="registrar-incidencia__location-row">
                         <input
                             type="text"
@@ -460,7 +474,7 @@ export default function RegistrarIncidencia() {
                                             className="registrar-incidencia__imagen-eliminar"
                                             onClick={() => handleEliminarImagen(imagen.id)}
                                             aria-label={`Eliminar ${imagen.file?.name || 'imagen'}`}                                            >
-                                            
+                                            ✕
                                         </button>
 
                                         <img
