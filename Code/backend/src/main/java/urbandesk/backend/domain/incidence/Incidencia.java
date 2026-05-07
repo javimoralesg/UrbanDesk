@@ -111,6 +111,28 @@ public class Incidencia {
         this.estado = Estado.CREADA;
     }
 
+    @ElementCollection
+    @CollectionTable(
+        name = "incidencia_tecnicos_aceptados",
+        joinColumns = @JoinColumn(name = "incidencia_id")
+    )
+    @Column(name = "tecnico_id")
+    private Set<Long> tecnicosAceptadosIds = new HashSet<>();
+
+    public void marcarTecnicoAceptado(Long tecnicoId) {
+        this.tecnicosAceptadosIds.add(tecnicoId);
+    }
+
+    public boolean todosLosTecnicosHanAceptado() {
+        Set<Long> tecnicosAsignadosIds = tecnicos.stream()
+                .map(Tecnico::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        return !tecnicosAsignadosIds.isEmpty()
+                && tecnicosAceptadosIds.containsAll(tecnicosAsignadosIds);
+    }
+
     public void asignarOperador(Operador operador) {
         this.operador = operador;
     }
@@ -162,6 +184,7 @@ public class Incidencia {
     public void limpiarTecnicos() {
         this.tecnicos.clear();
         this.tecnicosFinalizadosIds.clear();
+        this.tecnicosAceptadosIds.clear();
     }
 
     public void modificarIncidencia(Ubicacion nuevaUbicacion, String nuevaDescripcion) {
