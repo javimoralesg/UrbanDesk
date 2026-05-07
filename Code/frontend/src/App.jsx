@@ -26,6 +26,7 @@ function App() {
         <Route path="/incidencias-urbanas/login" element={<IniciarSesion />} />
         <Route path="/incidencias-urbanas/register" element={<Registrarse />} />
         <Route path="/incidencias-urbanas/mis-incidencias" element={<MisIncidencias />} />
+        <Route path="/incidencias-urbanas/incidencias-publicas/:id" element={<DetalleIncidencia />} />
         <Route path="/incidencias-urbanas/editar-perfil" element={<EditarPerfil />} />
         <Route path="/incidencias-urbanas/editar/:id" element={<RegistrarIncidencia />} />
         <Route path="/incidencias-urbanas/incidencias-publicas" element={<IncidenciasPublicas />} />

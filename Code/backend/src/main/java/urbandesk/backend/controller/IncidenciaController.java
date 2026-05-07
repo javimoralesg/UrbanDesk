@@ -410,9 +410,15 @@ public class IncidenciaController {
         @RequestParam String comentario) {
     return ResponseEntity.ok(incidenciaService.resolverIncidenciaTecnico(id, tecnicoId, comentario));
     }
+
     @GetMapping("/publicas")
     public List<IncidenciaPublicaDTO> obtenerPublicas() {
         return incidenciaService.obtenerIncidenciasPublicas();
+    }
+    
+    @GetMapping("/publicas/{id}")
+    public IncidenciaPublicaDTO obtenerPublicaPorId(@PathVariable Long id) {
+        return incidenciaService.obtenerIncidenciaPublicaPorId(id);
     }
 
     @PutMapping("/{id}/cerrar")

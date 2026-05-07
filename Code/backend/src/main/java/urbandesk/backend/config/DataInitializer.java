@@ -42,48 +42,62 @@ public class DataInitializer implements ApplicationRunner {
     private void crearCiudadano() {
         String email = "ciudadano@urbandesk.com";
         if (usuarioRepository.findByEmail(email).isEmpty()) {
-            usuarioService.registrarCiudadano("ciudadano", email, "ciudadano", "12345");
+            var ciudadano = usuarioService.registrarCiudadano("ciudadano", email, "ciudadano", "12345");
+            ciudadano.setValidado(true);
+            usuarioRepository.save(ciudadano);
         }
     }
 
     private void crearOperador(String name, String email, int cargaInicialForzada) {
         if (usuarioRepository.findByEmail(email).isEmpty()) {
-            usuarioService.registrarOperador(name, email, "operador", cargaInicialForzada);
+            var operador = usuarioService.registrarOperador(name, email, "operador", cargaInicialForzada);
+            operador.setValidado(true);
+            usuarioRepository.save(operador);
         }
     }
 
     private void crearTecnicoElectricista() {
         String email = "electricista@urbandesk.com";
         if (usuarioRepository.findByEmail(email).isEmpty()) {
-            usuarioService.registrarTecnico("Electricista", email, "electricista", Especialidad.ELECTRICISTA);
+            var tecnico = usuarioService.registrarTecnico("Electricista", email, "electricista", Especialidad.ELECTRICISTA);
+            tecnico.setValidado(true);
+            usuarioRepository.save(tecnico);
         }
     }
 
     private void crearTecnicoFontanero() {
         String email = "fontanero@urbandesk.com";
         if (usuarioRepository.findByEmail(email).isEmpty()) {
-            usuarioService.registrarTecnico("Fontanero", email, "fontanero", Especialidad.FONTANERO);
+            var tecnico = usuarioService.registrarTecnico("Fontanero", email, "fontanero", Especialidad.FONTANERO);
+            tecnico.setValidado(true);
+            usuarioRepository.save(tecnico);
         }
     }
 
     private void crearTecnicoJardinero() {
         String email = "jardinero@urbandesk.com";
         if (usuarioRepository.findByEmail(email).isEmpty()) {
-            usuarioService.registrarTecnico("Jardinero", email, "jardinero", Especialidad.JARDINERO);
+            var tecnico = usuarioService.registrarTecnico("Jardinero", email, "jardinero", Especialidad.JARDINERO);
+            tecnico.setValidado(true);
+            usuarioRepository.save(tecnico);
         }
     }
 
     private void crearTecnicoAlbanil() {
         String email = "albanil@urbandesk.com";
         if (usuarioRepository.findByEmail(email).isEmpty()) {
-            usuarioService.registrarTecnico("Albañil", email, "albanil", Especialidad.ALBAÑIL);
+            var tecnico = usuarioService.registrarTecnico("Albañil", email, "albanil", Especialidad.ALBAÑIL);
+            tecnico.setValidado(true);
+            usuarioRepository.save(tecnico);
         }
     }
 
     private void crearTecnicoPintor() {
         String email = "pintor@urbandesk.com";
         if (usuarioRepository.findByEmail(email).isEmpty()) {
-            usuarioService.registrarTecnico("Pintor", email, "pintor", Especialidad.PINTOR);
+            var tecnico = usuarioService.registrarTecnico("Pintor", email, "pintor", Especialidad.PINTOR);
+            tecnico.setValidado(true);
+            usuarioRepository.save(tecnico);
         }
     }
 

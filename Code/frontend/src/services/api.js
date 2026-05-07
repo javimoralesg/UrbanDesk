@@ -444,6 +444,37 @@ export const api = {
         throw error;
     },
 
+    obtenerIncidenciaPublicaPorId: async (id) => {
+        resetInactivityTimer();
+        const response = await fetch(`${BASE_URL}/incidencias/publicas/${id}`, {
+            headers: getAuthHeaders(),
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+
+        let message = "Error al obtener la incidencia";
+        try {
+            const errorData = await response.json();
+            message = errorData?.message || errorData?.error || message;
+        } catch {
+            try {
+                message = (await response.text()) || message;
+            } catch {
+            }
+        }
+
+        const error = new Error(
+            response.status === 404 || /incidencia no encontrada/i.test(message)
+                ? "Incidencia no encontrada"
+                : "Error al obtener la incidencia"
+        );
+        error.status = response.status;
+        error.message = message;
+        throw error;
+    },
+
     crearIncidencia: async ({ direccion, latitud, longitud, descripcion, ciudadanoId, imagenes = [] }) => {
         resetInactivityTimer();
         const response = await fetch(`${BASE_URL}/incidencias`, {

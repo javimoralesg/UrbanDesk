@@ -618,7 +618,8 @@ public Incidencia actualizarIncidencia(
         List<Estado> estadosExcluir = List.of(
             Estado.CERRADA,
             Estado.RECHAZADA,
-            Estado.CREADA   // opcional (yo lo pondría)
+            Estado.CREADA,
+            Estado.RESUELTA
         );
 
         return incidenciaRepository.findByEstadoNotIn(estadosExcluir)
@@ -629,7 +630,8 @@ public Incidencia actualizarIncidencia(
                 i.getEstado().name(),
                 i.getDescripcion(),
                 i.getPrioridad().name(),
-                i.getUbicacion().getDireccion()
+                i.getUbicacion(),
+                i.getHistoriales()
             ))
             .toList();
     }
@@ -689,5 +691,23 @@ public Incidencia actualizarIncidencia(
                 * Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
+    }
+
+    public IncidenciaPublicaDTO obtenerIncidenciaPublicaPorId(Long id) {
+        Incidencia incidencia = obtenerPorId(id);
+
+        if (incidencia.getEstado() == Estado.CERRADA || incidencia.getEstado() == Estado.RECHAZADA || incidencia.getEstado() == Estado.CREADA || incidencia.getEstado() == Estado.RESUELTA) {
+            throw new DomainRuleViolation("La incidencia con id " + id + " no es pública.");
+        }
+
+        return new IncidenciaPublicaDTO(
+                incidencia.getId(),
+                incidencia.getFechaCreacion(),
+                incidencia.getEstado().name(),
+                incidencia.getDescripcion(),
+                incidencia.getPrioridad().name(),
+                incidencia.getUbicacion(),
+                incidencia.getHistoriales()
+        );
     }
 }

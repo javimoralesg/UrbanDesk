@@ -1,15 +1,47 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "../services/api";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import Hero from "../components/Hero";
+import MapLocate from "../components/MapLocate";
 import Sidebar from "../components/Sidebar";
+import Popups from "../components/Popups";
 
 import "../assets/css/IncidenciasPublicas.css";
 
+const normalizarPuntoMapa = (incidencia) => {
+  const latitud = incidencia?.ubicacion?.latitud ?? incidencia?.ubicacion?.lat;
+  const longitud = incidencia?.ubicacion?.longitud ?? incidencia?.ubicacion?.lng ?? incidencia?.ubicacion?.lon;
+
+  const lat = Number(latitud);
+  const lng = Number(longitud);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return null;
+  }
+
+  return {
+    id: incidencia.id,
+    lat,
+    lng,
+  };
+};
+
 export default function IncidenciasPublicas() {
   const [incidencias, setIncidencias] = useState([]);
+  const [vista, setVista] = useState("lista");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [incidenceList, setIncidenceList] = useState([]);
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    if (error) {
+      setIncidenceList(prev => [...prev.filter(m => m.id !== 'error' && m.id !== 'success'), { id: 'error', message: error, type: 'error' }]);
+      setLoading(false);
+    }
+  }, [error]);
 
   useEffect(() => {
     const cargar = async () => {
@@ -17,6 +49,9 @@ export default function IncidenciasPublicas() {
         setLoading(true);
         const data = await api.obtenerIncidenciasPublicas();
         setIncidencias(data || []);
+        if (!data || data.length === 0) {
+          setError("No se han encontrado incidencias públicas.");
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -27,34 +62,51 @@ export default function IncidenciasPublicas() {
     cargar();
   }, []);
 
+  const puntosMapa = useMemo(() => {
+    return incidencias
+      .map(normalizarPuntoMapa)
+      .filter(Boolean);
+  }, [incidencias]);
+
   return (
     <>
       <Hero />
+
+      <Popups list={incidenceList} />
 
       <main className="mis-incidencias__layout">
         <Sidebar />
 
         <div className="mis-incidencias__content">
 
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <h2 className="mis-incidencias__title">Incidencias públicas</h2>
 
-            <Link
-              to="/incidencias-urbanas"
-              className="mis-incidencias__more-btn"
-              style={{ padding: "6px 10px", fontSize: "0.8rem" }}
-            >
-              Volver
-            </Link>
-          </div>
 
           <p className="mis-incidencias__subtitle">
             Consulta incidencias validadas en la ciudad
           </p>
 
+          <div className="mis-incidencias__view-buttons">
+            <button
+              type="button"
+              className={`mis-incidencias__view-btn ${vista === "lista" ? "mis-incidencias__view-btn--active" : ""}`}
+              onClick={() => setVista("lista")}
+            >
+              Lista
+            </button>
+
+            <button
+              type="button"
+              className={`mis-incidencias__view-btn ${vista === "mapa" ? "mis-incidencias__view-btn--active" : ""}`}
+              onClick={() => setVista("mapa")}
+            >
+              Mapa
+            </button>
+          </div>
+
           {loading ? (
             <p>Cargando incidencias...</p>
-          ) : (
+          ) : vista === "lista" ? (
             <div className="mis-incidencias__table-wrapper">
               <table className="mis-incidencias__table">
                 <thead>
@@ -71,7 +123,7 @@ export default function IncidenciasPublicas() {
                   {incidencias.map((inc) => (
                     <tr key={inc.id}>
                       <td>{inc.descripcion}</td>
-                      <td>{inc.ubicacion}</td>
+                      <td>{inc.ubicacion?.direccion}</td>
 
                       <td>
                         <span
@@ -87,7 +139,7 @@ export default function IncidenciasPublicas() {
 
                       <td>
                         <Link
-                          to={`/incidencias-urbanas/mis-incidencias/${inc.id}`}
+                          to={`/incidencias-urbanas/incidencias-publicas/${inc.id}`}
                           className="mis-incidencias__more-btn"
                         >
                           Ver detalle
@@ -99,6 +151,16 @@ export default function IncidenciasPublicas() {
 
               </table>
             </div>
+          ) : puntosMapa.length > 0 ? (
+            <div className="mis-incidencias__map-container">
+              <MapLocate
+                width="100%"
+                puntos={puntosMapa}
+                onMarkerClick={(punto) => navigate(`/incidencias-urbanas/incidencias-publicas/${punto.id}`)}
+              />
+            </div>
+          ) : (
+            <p>No hay incidencias públicas con coordenadas para mostrar en el mapa.</p>
           )}
         </div>
       </main>

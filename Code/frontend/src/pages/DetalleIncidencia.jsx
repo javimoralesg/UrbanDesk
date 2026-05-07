@@ -13,6 +13,7 @@ export default function DetalleIncidencia() {
   const navigate = useNavigate();
   const location = useLocation();
   const esMisIncidencias = location.pathname.includes("mis-incidencias");
+  const esIncidenciaPublica = location.pathname.includes("incidencias-publicas");
 
   const [incidencia, setIncidencia] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -67,7 +68,7 @@ export default function DetalleIncidencia() {
   useEffect(() => {
     const verificarSesionYRedirigir = () => {
       const rawUser = localStorage.getItem("user");
-      if (!rawUser) {
+      if (!rawUser && !esIncidenciaPublica) {
         navigate("/incidencias-urbanas/login", { replace: true });
       }
     };
@@ -77,7 +78,14 @@ export default function DetalleIncidencia() {
         setLoading(true);
         setError(null);
 
-        const data = await api.obtenerIncidenciaPorId(id);
+        let data = null;
+
+        if (!esIncidenciaPublica) {
+          data = await api.obtenerIncidenciaPorId(id);
+        }
+        else {
+          data = await api.obtenerIncidenciaPublicaPorId(id);
+        }
 
         if (data && Object.keys(data).length > 0) {
           setIncidencia(data);
@@ -446,7 +454,7 @@ export default function DetalleIncidencia() {
 
             <button
               className="detalle-incidencia__back"
-              onClick={() => navigate("/incidencias-urbanas/mis-incidencias")}            >
+              onClick={() => navigate(-1)}>
               &lt; Volver
             </button>
 
@@ -496,7 +504,8 @@ export default function DetalleIncidencia() {
                   </div>
                 </div>
 
-                <div className="detalle-incidencia__field">
+                {!esIncidenciaPublica && ( <>
+                  <div className="detalle-incidencia__field">
                   <span className="detalle-incidencia__field-label">
                     Ciudadano:
                   </span>
@@ -513,6 +522,7 @@ export default function DetalleIncidencia() {
                     {operadorAsignado}
                   </div>
                 </div>
+                </>)}
               </div>
                <div className="detalle-incidencia__divider"></div>
 
@@ -833,7 +843,8 @@ export default function DetalleIncidencia() {
               </div>
             </div>
           </div>
-
+          
+          {!esIncidenciaPublica && (
           <div className="detalle-incidencia__section">
             <h3>Adjuntos</h3>
 
@@ -863,7 +874,7 @@ export default function DetalleIncidencia() {
                 <p>No hay adjuntos disponibles.</p>
               )}
             </div>
-          </div>
+          </div>)}
 
           <div className="detalle-incidencia__section">
             <h3>Historial</h3>
