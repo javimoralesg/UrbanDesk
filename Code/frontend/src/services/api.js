@@ -97,11 +97,6 @@ export const api = {
             body: JSON.stringify(userData),
         });
         const user = await parseJsonOrThrow(response);
-        if (email && password) {
-            const authdata = window.btoa(email + ':' + password);
-            user.authdata = authdata;
-            localStorage.setItem('user', JSON.stringify(user));
-        }
         return user;
     },
 
@@ -371,6 +366,42 @@ export const api = {
         }
 
         throw new Error("No se recibió respuesta final del chat de informe.");
+    },
+
+    recuperarCuenta: async (email) => {
+        resetInactivityTimer();
+        const response = await fetch(`${BASE_URL}/tokens/recuperar-cuenta`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
+        });
+        return parseJsonOrThrow(response);
+    },
+
+    restablecerCuenta: async (token, password) => {
+        resetInactivityTimer();
+        const response = await fetch(`${BASE_URL}/tokens/restablecer-cuenta`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token, password }),
+        });
+        return parseJsonOrThrow(response);
+    },
+
+    validarCuenta: async (token) => {
+        resetInactivityTimer();
+        const response = await fetch(`${BASE_URL}/tokens/validar-cuenta`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        });
+        return parseJsonOrThrow(response);
     },
 
     buscarIncidenciasCercanas: async ({ latitud, longitud, rangoKm }) => {

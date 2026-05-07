@@ -40,9 +40,6 @@ export default function Registrarse() {
     }
   }, [loading, error]);
 
-  // El popup ahora se muestra solo cuando el input de contraseña está enfocado
-
-
   const isPasswordValid = (value) => {
     const hasMinLength = value.length >= 8;
     const hasNumber = /\d/.test(value);
@@ -76,11 +73,15 @@ export default function Registrarse() {
       });
 
       setLoading(false);
-      navigate('/incidencias-urbanas');
+      setIncidenceList(prev => ([...prev, { id: 'success', message: 'Consulte su correo para validar su cuenta', type: 'success' }]));
+      
+      setTimeout(() => {
+        navigate('/incidencias-urbanas/login');
+      }, 3500);
 
     } catch (error) {
       setLoading(false);
-      setError("Error al registrar usuario");
+      setError(error.message || "Error al registrar usuario");
     }
   };
 
