@@ -4,15 +4,27 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import urbandesk.backend.domain.DomainRuleViolation;
@@ -41,6 +53,13 @@ public class IncidenciaService {
     private final UsuarioRepository usuarioRepository;
     private final OperadorRepository operadorRepository;
     private final MailService MailService;
+    private final ObjectMapper objectMapper;
+
+    @Value("${incidencia.validacion.url:https://urbandeskvalidate-g475okyxfq-uc.a.run.app}")
+    private String descripcionValidationUrl;
+
+    @Value("${IA_API_KEY:}")
+    private String iaApiKey;
 
     public Incidencia obtenerPorId(Long id) {
         return incidenciaRepository.findById(id)
@@ -69,6 +88,8 @@ public class IncidenciaService {
     public Incidencia crearIncidencia(Ubicacion ubicacion, String descripcion, Long ciudadanoId,
             List<String> imagenes) {
         Ciudadano ciudadano = null;
+
+        validarDescripcionAntesDeGuardar(descripcion);
 
         if (ciudadanoId != null) {
             Usuario usuario = usuarioRepository.findById(ciudadanoId)
@@ -115,6 +136,8 @@ public Incidencia actualizarIncidencia(
 ) {
     Incidencia incidencia = obtenerPorId(id);
 
+    validarDescripcionAntesDeGuardar(nuevaDescripcion);
+
     incidencia.modificarIncidencia(nuevaUbicacion, nuevaDescripcion);
 
     List<Evidencia> evidenciasActuales = incidencia.getEvidencias();
@@ -145,6 +168,48 @@ public Incidencia actualizarIncidencia(
 
     return incidenciaRepository.save(incidencia);
 }
+
+    private void validarDescripcionAntesDeGuardar(String descripcion) {
+        if (descripcion == null || descripcion.isBlank()) {
+            throw new DomainRuleViolation("La descripción de la incidencia es obligatoria.");
+        }
+
+        if (iaApiKey == null || iaApiKey.isBlank()) {
+            throw new DomainRuleViolation("No se pudo validar la descripción de la incidencia.");
+        }
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("auth", iaApiKey);
+
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(
+                Map.of("userMessage", descripcion),
+                headers);
+
+        try {
+            ResponseEntity<JsonNode> response = restTemplate.postForEntity(
+                    descripcionValidationUrl,
+                    request,
+                    JsonNode.class);
+
+            JsonNode body = response.getBody();
+            if (body == null || body.get("reply") == null || body.get("reply").asText().isBlank()) {
+                throw new DomainRuleViolation("No se pudo validar la descripción de la incidencia.");
+            }
+
+            JsonNode parsedReply = objectMapper.readTree(body.get("reply").asText());
+            boolean valid = parsedReply.path("valid").asBoolean(false);
+            if (!valid) {
+                String reason = parsedReply.path("reason").asText("La descripción de la incidencia no es válida.");
+                throw new DomainRuleViolation(reason);
+            }
+        } catch (DomainRuleViolation e) {
+            throw e;
+        } catch (RestClientException | JsonProcessingException e) {
+            throw new DomainRuleViolation("No se pudo validar la descripción de la incidencia.");
+        }
+    }
 
     @Transactional
     public Incidencia validarIncidencia(Long incidenciaId, Long operadorId, String observaciones, String prioridadStr) {
@@ -576,8 +641,6 @@ public Incidencia actualizarIncidencia(
 
     
         incidencia.marcarTecnicoAceptado(tecnicoId);
-
-        boolean todosAceptaron = incidencia.todosLosTecnicosHanAceptado();
 
         Estado estadoHistorial;
         incidencia.actualizarEstado(Estado.EN_CURSO);

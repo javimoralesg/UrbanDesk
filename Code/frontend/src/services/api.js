@@ -153,29 +153,6 @@ export const api = {
         return parseJsonOrThrow(response);
     },
 
-    validateDescription: async (descripcion) => {
-        resetInactivityTimer();
-        const response = await fetch("https://urbandeskvalidate-g475okyxfq-uc.a.run.app", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'auth': import.meta.env.VITE_IA_API_KEY
-            },
-            body: JSON.stringify({ userMessage: descripcion }),
-        });
-
-        const ops = await response.json();
-        try {
-            const parsedAnswer = JSON.parse(ops.reply);
-            return JSON.stringify(parsedAnswer);
-        } catch (e) {
-            console.error("Error parsing validation response:", e);
-        }
-
-        const answer = { valid: true };
-        return answer;
-    },
-
     transcribeAndProcessAudio: async (audioBase64) => {
         resetInactivityTimer();
         const response = await fetch("https://urbandesk-g475okyxfq-uc.a.run.app", {
@@ -493,11 +470,7 @@ export const api = {
             }),
         });
 
-        if (!response.ok) {
-            throw new Error("Error al crear la incidencia");
-        }
-
-        return await response.json();
+        return parseJsonOrThrow(response);
     },
 
     actualizarIncidencia: async (id,
@@ -528,11 +501,7 @@ export const api = {
         }),
     });
 
-    if (!response.ok) {
-        throw new Error("Error al actualizar la incidencia");
-    }
-
-    return await response.json();
+    return parseJsonOrThrow(response);
 },
 
     validarIncidencia: async (id, observaciones, prioridad) => {

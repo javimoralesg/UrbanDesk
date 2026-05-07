@@ -6,4 +6,5 @@ MAIL_USERNAME=correoElectronico
 MAIL_PASSWORD=contraseñaCorreoElectronico
 
 APIKEY_INCIDENCIA=contraseña
+IA_API_KEY=tuApiKeyAqui
 

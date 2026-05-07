@@ -272,13 +272,7 @@ export default function RegistrarIncidencia() {
             setError('Espera a que se valide la dirección o selecciona una sugerencia.');
             return;
         }
-        const response = await api.validateDescription(descripcion);
-                    const parsedResponse = JSON.parse(response);
-                    if (!parsedResponse.valid) {
-                        setError(parsedResponse.reason || 'La descripción parece no ser válida para una incidencia urbana. Por favor, revisa y corrige la descripción.');
-                        setIsSubmitting(false);
-                        return;
-                    } 
+        
         try {
             setIsSubmitting(true);
             setError(null);
@@ -343,7 +337,7 @@ export default function RegistrarIncidencia() {
         } catch (error) {
             console.error('Error al crear incidencia:', error);
             setIsSubmitting(false);
-            setError('No se pudo registrar la incidencia. Inténtalo de nuevo.');
+            setError(error?.message || 'No se pudo registrar la incidencia. Inténtalo de nuevo.');
         }
     };
 
