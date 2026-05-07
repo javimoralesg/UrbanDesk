@@ -156,7 +156,7 @@ export default function MisIncidencias() {
 
         const data = await api.getIncidents();
 
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setMisIncidencias(data);
           setPersistentError(null);
         } else {
