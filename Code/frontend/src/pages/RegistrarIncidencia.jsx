@@ -8,7 +8,6 @@ import { api } from "../services/api";
 import "../assets/css/RegistrarIncidencia.css";
 import Popups from '../components/Popups';
 import MediaPopup from '../components/MediaPopup';
-import { FaMapMarkerAlt } from "react-icons/fa";
 
 export default function RegistrarIncidencia() {
 
