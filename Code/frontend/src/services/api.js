@@ -609,11 +609,14 @@ export const api = {
         return await response.json();
     },
 
-    rechazarIncidenciaTecnico: async (id, tecnicoId) => {
+    rechazarIncidenciaTecnico: async (id, tecnicoId, motivo) => {
         resetInactivityTimer();
-        const response = await fetch(`${BASE_URL}/incidencias/${id}/rechazar/${tecnicoId}`, {
+        const url = new URL(`${BASE_URL}/incidencias/${id}/rechazar/${tecnicoId}`);
+            url.searchParams.append("comentario", motivo);  
+
+        const response = await fetch(url.toString(), {
             method: "DELETE",
-            headers: getAuthHeaders(),
+            headers: getAuthHeaders(), 
         });
 
         if (!response.ok) {
