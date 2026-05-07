@@ -893,18 +893,40 @@ export default function DetalleIncidencia() {
               )}
 
               {esMisIncidencias && estado === "RESUELTA" && rol === "OPERADOR" && (
-                <div className="detalle-incidencia__form-group">
-                        <label>Comentario de resolución <span style={{ color: "red" }}>*</span></label>
-                        <textarea
-                          placeholder="Describe cómo se ha resuelto la incidencia..."
-                          value={comentarioTecnico}
-                          onChange={(e) => setComentarioTecnico(e.target.value)}
-                        />
-                     
-                <button onClick={cerrarIncidenciaOperador} className="detalle-incidencia__main-btn">
-                  Cerrar incidencia
-                </button>
-                 </div>
+                <div className="detalle-incidencia__form-card">
+                  <h4 className="detalle-incidencia__form-title">Cerrar incidencia</h4>
+
+                  <div className="detalle-incidencia__form-group">
+                    <label>
+                      Comentario de resolución <span style={{ color: "red" }}>*</span>
+                    </label>
+                    <textarea
+                      placeholder="Describe cómo se ha resuelto la incidencia..."
+                      value={comentarioTecnico}
+                      onChange={(e) => setComentarioTecnico(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="detalle-incidencia__actions">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setComentarioTecnico("");
+                      }}
+                    >
+                      Limpiar
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={cerrarIncidenciaOperador}
+                      className="detalle-incidencia__main-btn"
+                      disabled={!comentarioTecnico.trim()}
+                    >
+                      Cerrar incidencia
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
 
