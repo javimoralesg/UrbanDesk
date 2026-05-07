@@ -36,14 +36,15 @@ public class Usuario {
     private Rol rol;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private boolean validado;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @CreationTimestamp
     private LocalDateTime fechaCreacion;
-
 
     @JsonIgnore
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Historial> historiales = new ArrayList<>();
-
 
     public Usuario(String nombre, String email, String passwordHash) {
         if (nombre == null || nombre.isBlank()) {
@@ -59,6 +60,7 @@ public class Usuario {
         this.email = email;
         this.passwordHash = passwordHash;
         this.rol = Rol.CIUDADANO;
+        this.validado = false;
     }
 
     public void actualizarPassword(String nuevoPasswordHash) {
@@ -79,5 +81,16 @@ public class Usuario {
 
     protected void setRol(Rol rol) {
         this.rol = rol;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        if (passwordHash == null || passwordHash.isBlank()) {
+            throw new DomainRuleViolation("La contraseña no puede estar vacía.");
+        }
+        this.passwordHash = passwordHash;
+    }
+
+    public void setValidado(boolean validado) {
+        this.validado = validado;
     }
 }
