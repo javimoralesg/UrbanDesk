@@ -45,24 +45,19 @@ export default function Registrarse() {
     }
   }, [loading, error]);
 
-  // El popup ahora se muestra solo cuando el input de contraseña está enfocado
-
   const handlePrivacyAccept = () => {
     setAcceptTerms(true);
     setPrivacyModalOpen(false);
   };
 
   const handleTermsCheckboxChange = (e) => {
-    // Solo permitir marcar si ha llegado al final
     if (e.target.checked) {
       if (hasScrolledToEnd) {
         setAcceptTerms(true);
       } else {
-        // Abrir el modal para que lea la política
         setPrivacyModalOpen(true);
       }
     } else {
-      // Permitir desmarcar en cualquier momento
       setAcceptTerms(false);
     }
   };
@@ -116,11 +111,15 @@ export default function Registrarse() {
       });
 
       setLoading(false);
-      navigate('/incidencias-urbanas');
+      setIncidenceList(prev => ([...prev, { id: 'success', message: 'Consulte su correo para validar su cuenta', type: 'success' }]));
+      
+      setTimeout(() => {
+        navigate('/incidencias-urbanas/login');
+      }, 3500);
 
     } catch (error) {
       setLoading(false);
-      setError("Error al registrar usuario");
+      setError(error.message || "Error al registrar usuario");
     }
   };
 

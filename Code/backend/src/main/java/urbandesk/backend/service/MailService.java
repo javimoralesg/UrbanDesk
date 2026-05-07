@@ -69,28 +69,21 @@ public class MailService {
                     </div>
 
                     <!-- Footer -->
-                    <div style="border-top: 1px solid #e5e7eb; padding: 24px 32px;
-                                display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">
-                                UrbanDesk
-                            </p>
-                            <p style="margin: 4px 0 0 0; font-size: 11px;
-                                       color: #6b7280; letter-spacing: 1px;">
-                                GESTIÓN DE INCIDENCIAS URBANAS
-                            </p>
-                        </div>
-                        <div style="text-align: right; font-size: 13px; color: #4b5563;">
-                            <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
-                            <p style="margin: 4px 0 0 0;">
-                                <a href="mailto:urbandesk@javimoralesg.com"
-                                   style="color: #1e3a8a; text-decoration: none;">
-                                    urbandesk@javimoralesg.com
-                                </a>
-                            </p>
-                            <p style="margin: 4px 0 0 0;">Madrid, España</p>
-                        </div>
-                    </div>
+                    <table width="100%%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #e5e7eb; padding: 24px 32px;">
+                        <tr>
+                            <td style="vertical-align: middle;">
+                                <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">UrbanDesk</p>
+                                <p style="margin: 4px 0 0 0; font-size: 11px; color: #6b7280; letter-spacing: 1px;">GESTIÓN DE INCIDENCIAS URBANAS</p>
+                            </td>
+                            <td style="text-align: right; font-size: 13px; color: #4b5563; vertical-align: middle;">
+                                <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                                <p style="margin: 4px 0 0 0;">
+                                    <a href="mailto:urbandesk@javimoralesg.com" style="color: #1e3a8a; text-decoration: none;">urbandesk@javimoralesg.com</a>
+                                </p>
+                                <p style="margin: 4px 0 0 0;">Madrid, España</p>
+                            </td>
+                        </tr>
+                    </table>
 
                 </div>
                 """.formatted(email, email);
@@ -135,28 +128,21 @@ public class MailService {
                 </div>
 
                 <!-- Footer -->
-                <div style="border-top: 1px solid #e5e7eb; padding: 24px 32px;
-                            display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">
-                            UrbanDesk
-                        </p>
-                        <p style="margin: 4px 0 0 0; font-size: 11px;
-                                color: #6b7280; letter-spacing: 1px;">
-                            GESTIÓN DE INCIDENCIAS URBANAS
-                        </p>
-                    </div>
-                    <div style="text-align: right; font-size: 13px; color: #4b5563;">
-                        <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
-                        <p style="margin: 4px 0 0 0;">
-                            <a href="mailto:urbandesk@javimoralesg.com"
-                            style="color: #1e3a8a; text-decoration: none;">
-                                urbandesk@javimoralesg.com
-                            </a>
-                        </p>
-                        <p style="margin: 4px 0 0 0;">Madrid, España</p>
-                    </div>
-                </div>
+                <table width="100%%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #e5e7eb; padding: 24px 32px;">
+                    <tr>
+                        <td style="vertical-align: middle;">
+                            <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">UrbanDesk</p>
+                            <p style="margin: 4px 0 0 0; font-size: 11px; color: #6b7280; letter-spacing: 1px;">GESTIÓN DE INCIDENCIAS URBANAS</p>
+                        </td>
+                        <td style="text-align: right; font-size: 13px; color: #4b5563; vertical-align: middle;">
+                            <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                            <p style="margin: 4px 0 0 0;">
+                                <a href="mailto:urbandesk@javimoralesg.com" style="color: #1e3a8a; text-decoration: none;">urbandesk@javimoralesg.com</a>
+                            </p>
+                            <p style="margin: 4px 0 0 0;">Madrid, España</p>
+                        </td>
+                    </tr>
+                </table>
             </div>
             """.formatted(idIncidencia, titulo);
 
@@ -205,28 +191,21 @@ public class MailService {
                 </div>
 
                 <!-- Footer -->
-                <div style="border-top: 1px solid #e5e7eb; padding: 24px 32px;
-                            display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">
-                            UrbanDesk
-                        </p>
-                        <p style="margin: 4px 0 0 0; font-size: 11px;
-                                color: #6b7280; letter-spacing: 1px;">
-                            GESTIÓN DE INCIDENCIAS URBANAS
-                        </p>
-                    </div>
-                    <div style="text-align: right; font-size: 13px; color: #4b5563;">
-                        <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
-                        <p style="margin: 4px 0 0 0;">
-                            <a href="mailto:urbandesk@javimoralesg.com"
-                            style="color: #1e3a8a; text-decoration: none;">
-                                urbandesk@javimoralesg.com
-                            </a>
-                        </p>
-                        <p style="margin: 4px 0 0 0;">Madrid, España</p>
-                    </div>
-                </div>
+                <table width="100%%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #e5e7eb; padding: 24px 32px;">
+                    <tr>
+                        <td style="vertical-align: middle;">
+                            <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">UrbanDesk</p>
+                            <p style="margin: 4px 0 0 0; font-size: 11px; color: #6b7280; letter-spacing: 1px;">GESTIÓN DE INCIDENCIAS URBANAS</p>
+                        </td>
+                        <td style="text-align: right; font-size: 13px; color: #4b5563; vertical-align: middle;">
+                            <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                            <p style="margin: 4px 0 0 0;">
+                                <a href="mailto:urbandesk@javimoralesg.com" style="color: #1e3a8a; text-decoration: none;">urbandesk@javimoralesg.com</a>
+                            </p>
+                            <p style="margin: 4px 0 0 0;">Madrid, España</p>
+                        </td>
+                    </tr>
+                </table>
             </div>
                 """.formatted(idIncidencia, titulo, nuevoEstado.name());
 
@@ -270,28 +249,21 @@ public class MailService {
                 </div>
 
                 <!-- Footer -->
-                <div style="border-top: 1px solid #e5e7eb; padding: 24px 32px;
-                            display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">
-                            UrbanDesk
-                        </p>
-                        <p style="margin: 4px 0 0 0; font-size: 11px;
-                                color: #6b7280; letter-spacing: 1px;">
-                            GESTIÓN DE INCIDENCIAS URBANAS
-                        </p>
-                    </div>
-                    <div style="text-align: right; font-size: 13px; color: #4b5563;">
-                        <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
-                        <p style="margin: 4px 0 0 0;">
-                            <a href="mailto:urbandesk@javimoralesg.com"
-                            style="color: #1e3a8a; text-decoration: none;">
-                                urbandesk@javimoralesg.com
-                            </a>
-                        </p>
-                        <p style="margin: 4px 0 0 0;">Madrid, España</p>
-                    </div>
-                </div>
+                <table width="100%%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #e5e7eb; padding: 24px 32px;">
+                    <tr>
+                        <td style="vertical-align: middle;">
+                            <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">UrbanDesk</p>
+                            <p style="margin: 4px 0 0 0; font-size: 11px; color: #6b7280; letter-spacing: 1px;">GESTIÓN DE INCIDENCIAS URBANAS</p>
+                        </td>
+                        <td style="text-align: right; font-size: 13px; color: #4b5563; vertical-align: middle;">
+                            <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                            <p style="margin: 4px 0 0 0;">
+                                <a href="mailto:urbandesk@javimoralesg.com" style="color: #1e3a8a; text-decoration: none;">urbandesk@javimoralesg.com</a>
+                            </p>
+                            <p style="margin: 4px 0 0 0;">Madrid, España</p>
+                        </td>
+                    </tr>
+                </table>
             </div>
                 """.formatted(idIncidencia, titulo);
 
@@ -336,28 +308,21 @@ public class MailService {
                 </div>
 
                 <!-- Footer -->
-                <div style="border-top: 1px solid #e5e7eb; padding: 24px 32px;
-                            display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">
-                            UrbanDesk
-                        </p>
-                        <p style="margin: 4px 0 0 0; font-size: 11px;
-                                color: #6b7280; letter-spacing: 1px;">
-                            GESTIÓN DE INCIDENCIAS URBANAS
-                        </p>
-                    </div>
-                    <div style="text-align: right; font-size: 13px; color: #4b5563;">
-                        <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
-                        <p style="margin: 4px 0 0 0;">
-                            <a href="mailto:urbandesk@javimoralesg.com"
-                            style="color: #1e3a8a; text-decoration: none;">
-                                urbandesk@javimoralesg.com
-                            </a>
-                        </p>
-                        <p style="margin: 4px 0 0 0;">Madrid, España</p>
-                    </div>
-                </div>
+                <table width="100%%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #e5e7eb; padding: 24px 32px;">
+                    <tr>
+                        <td style="vertical-align: middle;">
+                            <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">UrbanDesk</p>
+                            <p style="margin: 4px 0 0 0; font-size: 11px; color: #6b7280; letter-spacing: 1px;">GESTIÓN DE INCIDENCIAS URBANAS</p>
+                        </td>
+                        <td style="text-align: right; font-size: 13px; color: #4b5563; vertical-align: middle;">
+                            <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                            <p style="margin: 4px 0 0 0;">
+                                <a href="mailto:urbandesk@javimoralesg.com" style="color: #1e3a8a; text-decoration: none;">urbandesk@javimoralesg.com</a>
+                            </p>
+                            <p style="margin: 4px 0 0 0;">Madrid, España</p>
+                        </td>
+                    </tr>
+                </table>
             </div>
             """.formatted(idIncidencia, descripcion, ubicacion.toString());
 
@@ -402,28 +367,21 @@ public class MailService {
                 </div>
 
                 <!-- Footer -->
-                <div style="border-top: 1px solid #e5e7eb; padding: 24px 32px;
-                            display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">
-                            UrbanDesk
-                        </p>
-                        <p style="margin: 4px 0 0 0; font-size: 11px;
-                                color: #6b7280; letter-spacing: 1px;">
-                            GESTIÓN DE INCIDENCIAS URBANAS
-                        </p>
-                    </div>
-                    <div style="text-align: right; font-size: 13px; color: #4b5563;">
-                        <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
-                        <p style="margin: 4px 0 0 0;">
-                            <a href="mailto:urbandesk@javimoralesg.com"
-                            style="color: #1e3a8a; text-decoration: none;">
-                                urbandesk@javimoralesg.com
-                            </a>
-                        </p>
-                        <p style="margin: 4px 0 0 0;">Madrid, España</p>
-                    </div>
-                </div>
+                <table width="100%%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #e5e7eb; padding: 24px 32px;">
+                    <tr>
+                        <td style="vertical-align: middle;">
+                            <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">UrbanDesk</p>
+                            <p style="margin: 4px 0 0 0; font-size: 11px; color: #6b7280; letter-spacing: 1px;">GESTIÓN DE INCIDENCIAS URBANAS</p>
+                        </td>
+                        <td style="text-align: right; font-size: 13px; color: #4b5563; vertical-align: middle;">
+                            <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                            <p style="margin: 4px 0 0 0;">
+                                <a href="mailto:urbandesk@javimoralesg.com" style="color: #1e3a8a; text-decoration: none;">urbandesk@javimoralesg.com</a>
+                            </p>
+                            <p style="margin: 4px 0 0 0;">Madrid, España</p>
+                        </td>
+                    </tr>
+                </table>
             </div>
             """.formatted(idIncidencia, descripcion, ubicacion.toString());
 
@@ -466,28 +424,21 @@ public class MailService {
                         </p>
                     </div>
 
-                    <div style="border-top: 1px solid #e5e7eb; padding: 24px 32px;
-                                display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">
-                                UrbanDesk
-                            </p>
-                            <p style="margin: 4px 0 0 0; font-size: 11px;
-                                    color: #6b7280; letter-spacing: 1px;">
-                                GESTIÓN DE INCIDENCIAS URBANAS
-                            </p>
-                        </div>
-                        <div style="text-align: right; font-size: 13px; color: #4b5563;">
-                            <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
-                            <p style="margin: 4px 0 0 0;">
-                                <a href="mailto:urbandesk@javimoralesg.com"
-                                style="color: #1e3a8a; text-decoration: none;">
-                                    urbandesk@javimoralesg.com
-                                </a>
-                            </p>
-                            <p style="margin: 4px 0 0 0;">Madrid, España</p>
-                        </div>
-                    </div>
+                    <table width="100%%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #e5e7eb; padding: 24px 32px;">
+                        <tr>
+                            <td style="vertical-align: middle;">
+                                <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">UrbanDesk</p>
+                                <p style="margin: 4px 0 0 0; font-size: 11px; color: #6b7280; letter-spacing: 1px;">GESTIÓN DE INCIDENCIAS URBANAS</p>
+                            </td>
+                            <td style="text-align: right; font-size: 13px; color: #4b5563; vertical-align: middle;">
+                                <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                                <p style="margin: 4px 0 0 0;">
+                                    <a href="mailto:urbandesk@javimoralesg.com" style="color: #1e3a8a; text-decoration: none;">urbandesk@javimoralesg.com</a>
+                                </p>
+                                <p style="margin: 4px 0 0 0;">Madrid, España</p>
+                            </td>
+                        </tr>
+                    </table>
 
                 </div>
             """.formatted(nombreTecnico, idIncidencia, descripcion, motivo);
@@ -536,33 +487,159 @@ public class MailService {
                         </p>
                     </div>
 
-                    <div style="border-top: 1px solid #e5e7eb; padding: 24px 32px;
-                                display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">
-                                UrbanDesk
-                            </p>
-                            <p style="margin: 4px 0 0 0; font-size: 11px;
-                                    color: #6b7280; letter-spacing: 1px;">
-                                GESTIÓN DE INCIDENCIAS URBANAS
-                            </p>
-                        </div>
-                        <div style="text-align: right; font-size: 13px; color: #4b5563;">
-                            <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
-                            <p style="margin: 4px 0 0 0;">
-                                <a href="mailto:urbandesk@javimoralesg.com"
-                                style="color: #1e3a8a; text-decoration: none;">
-                                    urbandesk@javimoralesg.com
-                                </a>
-                            </p>
-                            <p style="margin: 4px 0 0 0;">Madrid, España</p>
-                        </div>
-                    </div>
+                    <table width="100%%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #e5e7eb; padding: 24px 32px;">
+                        <tr>
+                            <td style="vertical-align: middle;">
+                                <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">UrbanDesk</p>
+                                <p style="margin: 4px 0 0 0; font-size: 11px; color: #6b7280; letter-spacing: 1px;">GESTIÓN DE INCIDENCIAS URBANAS</p>
+                            </td>
+                            <td style="text-align: right; font-size: 13px; color: #4b5563; vertical-align: middle;">
+                                <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                                <p style="margin: 4px 0 0 0;">
+                                    <a href="mailto:urbandesk@javimoralesg.com" style="color: #1e3a8a; text-decoration: none;">urbandesk@javimoralesg.com</a>
+                                </p>
+                                <p style="margin: 4px 0 0 0;">Madrid, España</p>
+                            </td>
+                        </tr>
+                    </table>
 
                 </div>
                     """.formatted(nombreTecnico, idIncidencia, descripcion, nombreTecnico, comentario);
 
     enviar(destinatario, "Incidencia #" + idIncidencia + " — tarea finalizada por técnico", html);
+    }
+
+
+    public void enviarRecuperacion(String destinatario, String nombre, String token) {
+        String html = """
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+
+                    <!-- Cuerpo -->
+                    <div style="padding: 32px 32px 16px 32px;">
+                        <p style="font-size: 15px; line-height: 1.6;">
+                            Hola <strong>%s</strong>, has solicitado un restablecimiento de contraseña.
+                            Utiliza el siguiente código para restablecer tu contraseña:
+                        </p>
+                        <p style="font-size: 15px; line-height: 1.6;">
+                            Si tienes cualquier duda, puedes responder a este correo.
+                        </p>
+                    </div>
+
+                    <!-- Tarjeta código -->
+                    <div style="margin: 0 32px 32px 32px; padding: 20px 24px;
+                                border-left: 4px solid #1e3a8a; background-color: #f8f9fa;
+                                border-radius: 0 4px 4px 0;">
+                        <p style="margin: 0 0 12px 0; font-size: 12px;
+                                   font-weight: bold; color: #555; letter-spacing: 0.5px;">
+                            CÓDIGO DE RECUPERACIÓN:
+                        </p>
+
+                        <!-- Código grande seleccionable -->
+                        <div style="text-align: center; margin: 0 0 12px 0;">
+                            <span style="font-family: 'Courier New', monospace; font-size: 34px;
+                                         font-weight: bold; color: #1e3a8a; letter-spacing: 8px;
+                                         background-color: #e8eef7; padding: 14px 28px;
+                                         border-radius: 6px; display: inline-block;
+                                         user-select: all; cursor: text;">
+                                %s
+                            </span>
+                        </div>
+                        <p style="margin: 0 0 14px 0; font-size: 12px; color: #9ca3af; text-align: center;">
+                            Haz clic sobre el código para seleccionarlo
+                        </p>
+
+                        <p style="margin: 0; font-size: 13px; color: #6b7280; text-align: center;">
+                            Este código expirará en <strong>15 minutos</strong>.
+                        </p>
+                    </div>
+
+                    <!-- Footer -->
+                    <table width="100%%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #e5e7eb; padding: 24px 32px;">
+                        <tr>
+                            <td style="vertical-align: middle;">
+                                <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">UrbanDesk</p>
+                                <p style="margin: 4px 0 0 0; font-size: 11px; color: #6b7280; letter-spacing: 1px;">GESTIÓN DE INCIDENCIAS URBANAS</p>
+                            </td>
+                            <td style="text-align: right; font-size: 13px; color: #4b5563; vertical-align: middle;">
+                                <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                                <p style="margin: 4px 0 0 0;">
+                                    <a href="mailto:urbandesk@javimoralesg.com" style="color: #1e3a8a; text-decoration: none;">urbandesk@javimoralesg.com</a>
+                                </p>
+                                <p style="margin: 4px 0 0 0;">Madrid, España</p>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+                """.formatted(nombre, token);
+
+        enviar(destinatario, "Recuperación de cuenta", html);
+    }
+
+    public void enviarValidacion(String destinatario, String nombre, String token) {
+        String urlDestino = "http://localhost:5173/incidencias-urbanas/login?token=" + token;
+        String html = """
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+
+                    <!-- Cuerpo -->
+                    <div style="padding: 32px 32px 8px 32px;">
+                        <p style="font-size: 15px; line-height: 1.6;">
+                            Hola <strong>%s</strong>, tu cuenta en UrbanDesk está casi lista.
+                            Solo necesitas confirmar tu dirección de correo haciendo clic en el botón de abajo.
+                        </p>
+                        <p style="font-size: 15px; line-height: 1.6;">
+                            Este paso es necesario para activar tu cuenta y poder acceder a la plataforma.
+                        </p>
+                    </div>
+
+                    <!-- CTA principal -->
+                    <div style="padding: 24px 32px 32px 32px; text-align: center;">
+                        <a href="%s"
+                           style="display: inline-block; background-color: #1e3a8a; color: #ffffff;
+                                  font-size: 15px; font-weight: bold; text-decoration: none;
+                                  padding: 14px 36px; border-radius: 6px; letter-spacing: 0.3px;">
+                            Activar mi cuenta
+                        </a>
+                        <p style="margin: 16px 0 0 0; font-size: 13px; color: #6b7280;">
+                            Este enlace expirará en <strong>30 minutos</strong>.
+                        </p>
+                    </div>
+
+                    <!-- Enlace alternativo -->
+                    <div style="margin: 0 32px 32px 32px; padding: 14px 18px;
+                                border-left: 4px solid #e5e7eb; background-color: #f8f9fa;
+                                border-radius: 0 4px 4px 0;">
+                        <p style="margin: 0 0 6px 0; font-size: 11px;
+                                   font-weight: bold; color: #9ca3af; letter-spacing: 0.5px;">
+                            ¿EL BOTÓN NO FUNCIONA?
+                        </p>
+                        <p style="margin: 0; font-size: 12px; color: #6b7280; word-break: break-all;">
+                            Copia y pega este enlace en tu navegador:<br>
+                            <a href="%s" style="color: #1e3a8a;">%s</a>
+                        </p>
+                    </div>
+
+                    <!-- Footer -->
+                    <table width="100%%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #e5e7eb; padding: 24px 32px;">
+                        <tr>
+                            <td style="vertical-align: middle;">
+                                <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1e3a8a;">UrbanDesk</p>
+                                <p style="margin: 4px 0 0 0; font-size: 11px; color: #6b7280; letter-spacing: 1px;">GESTIÓN DE INCIDENCIAS URBANAS</p>
+                            </td>
+                            <td style="text-align: right; font-size: 13px; color: #4b5563; vertical-align: middle;">
+                                <p style="margin: 0; font-weight: bold;">UrbanDesk</p>
+                                <p style="margin: 4px 0 0 0;">
+                                    <a href="mailto:urbandesk@javimoralesg.com" style="color: #1e3a8a; text-decoration: none;">urbandesk@javimoralesg.com</a>
+                                </p>
+                                <p style="margin: 4px 0 0 0;">Madrid, España</p>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+                """.formatted(nombre, urlDestino, urlDestino, urlDestino);
+
+        enviar(destinatario, "Activa tu cuenta en UrbanDesk", html);
     }
 
 }

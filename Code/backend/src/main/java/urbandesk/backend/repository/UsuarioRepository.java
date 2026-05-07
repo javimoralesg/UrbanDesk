@@ -10,6 +10,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
     boolean existsByEmail(String email);
 
     Optional<Usuario> findById(Long id);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("DELETE FROM Usuario u WHERE u.validado = false AND u.fechaCreacion < :threshold")
+    void deleteUnvalidatedUsersOlderThan(java.time.LocalDateTime threshold);
     
 } 
 

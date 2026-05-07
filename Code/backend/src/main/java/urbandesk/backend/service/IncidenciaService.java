@@ -442,8 +442,10 @@ public Incidencia actualizarIncidencia(
     public Incidencia aceptarIncidenciaTecnico(Long id, Long tecnicoId) {
         Incidencia incidencia = obtenerPorId(id);
 
-        if (incidencia.getEstado() != Estado.VALIDADA && incidencia.getEstado() != Estado.ASIGNADA && incidencia.getEstado() != Estado.EN_CURSO) {
-            throw new DomainRuleViolation("Solo se pueden aceptar incidencias que estén en estado VALIDADA, ASIGNADA o EN CURSO");
+        if (incidencia.getEstado() != Estado.VALIDADA 
+                && incidencia.getEstado() != Estado.ASIGNADA 
+                && incidencia.getEstado() != Estado.EN_CURSO) {
+            throw new DomainRuleViolation("Solo se pueden aceptar incidencias en estado VALIDADA, ASIGNADA o EN_CURSO");
         }
 
         Tecnico tecnico = incidencia.getTecnicos().stream()
@@ -451,27 +453,33 @@ public Incidencia actualizarIncidencia(
                 .findFirst()
                 .orElseThrow(() -> new DomainRuleViolation("Técnico no asignado a esta incidencia"));
 
-        incidencia.actualizarEstado(Estado.EN_CURSO);
+    
+        incidencia.marcarTecnicoAceptado(tecnicoId);
 
-        String observacionFinal = tecnico.getEspecialidad().toString() +  " ha aceptado la incidencia.";
+        boolean todosAceptaron = incidencia.todosLosTecnicosHanAceptado();
 
-        incidencia.agregarHistorial(new Historial(
-                incidencia,
-                tecnico,
-                Estado.EN_CURSO,
-                observacionFinal));
+        Estado estadoHistorial;
+        if (todosAceptaron) {
+            incidencia.actualizarEstado(Estado.EN_CURSO);
+            estadoHistorial = Estado.EN_CURSO;
 
-        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
-
-        if (incidencia.getCiudadano() != null) {
-            MailService.enviarCambioEstado(
-                    incidencia.getCiudadano().getEmail(),
-                    incidencia.getId(),
-                    incidencia.getDescripcion(),
-                    Estado.EN_CURSO);
+            if (incidencia.getCiudadano() != null) {
+                MailService.enviarCambioEstado(
+                        incidencia.getCiudadano().getEmail(),
+                        incidencia.getId(),
+                        incidencia.getDescripcion(),
+                        Estado.EN_CURSO);
+            }
+        } else {
+            estadoHistorial = incidencia.getEstado();
         }
-        return incidenciaGuardada;
-    }
+
+    String observacion = tecnico.getEspecialidad().toString() + " ha aceptado la incidencia.";
+    incidencia.agregarHistorial(new Historial(incidencia, tecnico, estadoHistorial, observacion));
+
+    return incidenciaRepository.save(incidencia);
+}
+
 
     @Transactional
     public Incidencia rechazarIncidenciaTecnico(Long id, Long tecnicoId, String comentario) {
