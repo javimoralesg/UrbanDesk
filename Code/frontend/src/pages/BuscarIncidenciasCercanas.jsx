@@ -203,7 +203,7 @@ export default function BuscarIncidenciasCercanas() {
         <Sidebar />
         <section className="urban-home__content">
           <h2 className="urban-home__title">Buscar incidencias cercanas</h2>
-          <p className="consultar-incidencias__subtitle">
+          <p className="urban-home__subtitle">
             Busque las incidencias cercanas a una dirección dentro de un rango.
           </p>
           <div style={{ background: '#f3f3f3', padding: '24px', borderRadius: '10px', marginBottom: '32px' }}>

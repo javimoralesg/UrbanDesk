@@ -234,6 +234,40 @@ export default function DetalleIncidencia() {
   const descripcion = incidencia?.descripcion;
   const fechaCreacion = incidencia?.fechaCreacion;
 
+  const estadoParaUsuario = useMemo(() => {
+    if (rol === "TECNICO" && id_usuario) {
+      const idU = Number(id_usuario);
+      const asignado = Array.isArray(incidencia?.tecnicos)
+        && incidencia.tecnicos.some((t) => Number(t?.id) === idU);
+
+      if (asignado) {
+        const finalizados = (incidencia?.tecnicosFinalizadosIds || []).map(Number);
+        if (finalizados.includes(idU)) return "RESUELTA";
+
+        const historialApi = incidencia?.historiales ?? incidencia?.historial ?? [];
+        if (Array.isArray(historialApi)) {
+          const historialTec = historialApi
+            .filter((entrada) => Number(entrada?.usuario?.id) === idU)
+            .sort(
+              (a, b) =>
+                new Date(b?.fechaCambio || b?.fechaCreacion || 0) -
+                new Date(a?.fechaCambio || a?.fechaCreacion || 0)
+            );
+
+          const ultima = historialTec.find((e) => !!e);
+          const observ = (ultima?.observaciones || "").toLowerCase();
+          if (observ.includes("ha aceptado la incidencia") || (ultima?.estadoNuevo === "EN_CURSO")) {
+            return "EN_CURSO";
+          }
+        }
+
+        return "ASIGNADA";
+      }
+    }
+
+    return estado;
+  }, [estado, id_usuario, incidencia, rol]);
+
   const ubicacion = incidencia?.ubicacion?.direccion;
   const latitud = incidencia?.ubicacion?.latitud;
   const longitud = incidencia?.ubicacion?.longitud;
@@ -255,7 +289,7 @@ export default function DetalleIncidencia() {
     RESUELTA: "Resuelta",
     RECHAZADA: "Rechazada",
     CERRADA: "Cerrada",
-  }[estado] || estado;
+  }[estadoParaUsuario] || estadoParaUsuario;
 
   const prioridadLabel = {
     ALTA: "Alta",
@@ -289,6 +323,31 @@ export default function DetalleIncidencia() {
   const formatearFecha = (fecha) => {
     if (!fecha) return;
     return new Date(fecha).toLocaleString("es-ES");
+  };
+
+  const obtenerEstadoTecnico = (tecnico) => {
+    const idTec = Number(tecnico?.id);
+    const finalizados = (incidencia?.tecnicosFinalizadosIds || []).map(Number);
+    if (finalizados.includes(idTec)) return "Finalizado";
+
+    const historialApi = incidencia?.historiales ?? incidencia?.historial ?? [];
+    if (Array.isArray(historialApi)) {
+      const historialTec = historialApi
+        .filter((entrada) => Number(entrada?.usuario?.id) === idTec)
+        .sort(
+          (a, b) =>
+            new Date(b?.fechaCambio || b?.fechaCreacion || 0) -
+            new Date(a?.fechaCambio || a?.fechaCreacion || 0)
+        );
+
+      const ultima = historialTec.find((e) => !!e);
+      const observ = (ultima?.observaciones || "").toLowerCase();
+      if (observ.includes("ha aceptado la incidencia") || (ultima?.estadoNuevo === "EN_CURSO")) {
+        return "En curso";
+      }
+    }
+
+    return "Asignada";
   };
 
   const validarIncidencia = async () => {
@@ -461,7 +520,7 @@ export default function DetalleIncidencia() {
             <h2 className="detalle-incidencia__title">Incidencia #{id}</h2>
 
             <span
-              className={`detalle-incidencia__estado-badge detalle-incidencia__estado-badge--${estado
+              className={`detalle-incidencia__estado-badge detalle-incidencia__estado-badge--${estadoParaUsuario
                 ?.toLowerCase()
                 ?.replaceAll("_", "-") ?? "desconocido"}`}
             >
@@ -594,12 +653,6 @@ export default function DetalleIncidencia() {
 
                       <div className="detalle-incidencia__actions">
                         <button
-                          onClick={validarIncidencia}
-                          disabled={prioridadSeleccionada === "SIN_ASIGNAR"}
-                        >
-                          Confirmar validación
-                        </button>
-                        <button
                           type="button"
                           onClick={() => {
                             setFormularioAbierto(null);
@@ -608,6 +661,13 @@ export default function DetalleIncidencia() {
                           }}
                         >
                           Cancelar
+                        </button>
+
+                        <button
+                          onClick={validarIncidencia}
+                          disabled={prioridadSeleccionada === "SIN_ASIGNAR"}
+                        >
+                          Confirmar validación
                         </button>
                       </div>
                     </div>
@@ -650,6 +710,9 @@ export default function DetalleIncidencia() {
 
               {esMisIncidencias && (estado === "VALIDADA" || estado === "ASIGNADA" || estado === "EN_CURSO") && rol === "OPERADOR" && (
                 <>
+                  <button className="detalle-incidencia__main-btn" onClick={() => mostrarAsignacion ? setMostrarAsignacion(false) : setMostrarAsignacion(true)}>
+                    Editar Asignación
+                  </button>
                   { mostrarAsignacion && (<div className="detalle-incidencia__asignacion">
                     {especialidadesTecnico.map((especialidad) => {
                       const asignadosEspecialidad = (incidencia?.tecnicos || []).filter(
@@ -664,54 +727,66 @@ export default function DetalleIncidencia() {
                               type="checkbox"
                               checked={estaSeleccionado}
                               onChange={() => alternarEspecialidadSeleccionada(especialidad.key)}
+                              disabled={asignadosEspecialidad.some((t) => obtenerEstadoTecnico(t) === "Finalizado")}
                             />
                             <span>{especialidad.label}</span>
                           </label>
                           {asignadosEspecialidad.length > 0 && (
                             <span className="detalle-incidencia__asignacion-tecnicos">
-                              ({asignadosEspecialidad.map((tecnico) => tecnico?.nombre).join(", ")})
+                              ({asignadosEspecialidad.map((tecnico) => `${obtenerEstadoTecnico(tecnico)}`)})
                             </span>
                           )}
                         </div>
                       );
                     })}
-                    <button
-                      className="detalle-incidencia__main-btn"
-                      onClick={guardarAsignacionTecnicos}
-                      disabled={!!working}
-                    >
-                      Guardar asignacion
-                    </button>
+
+
+                    <div className="detalle-incidencia__actions">
+                      <button
+                        type="button"
+                        onClick={() => mostrarAsignacion ? setMostrarAsignacion(false) : setMostrarAsignacion(true)}
+                      >
+                        Cancelar
+                      </button>
+
+                      <button
+                        className="detalle-incidencia__main-btn"
+                        onClick={guardarAsignacionTecnicos}
+                        disabled={!!working}
+                      >
+                        Confirmar asignación
+                      </button>
+                    </div>
+
                   </div>)}
-                  <button className="detalle-incidencia__main-btn" onClick={() => mostrarAsignacion ? setMostrarAsignacion(false) : setMostrarAsignacion(true)}>
-                      Editar Asignación
-                    </button>
+                  
                 </>
               )}
 
-              {esMisIncidencias && rol === "TECNICO" && (estado === "ASIGNADA" || estado === "EN_CURSO") && (
+              {esMisIncidencias && rol === "TECNICO" && (estadoParaUsuario === "ASIGNADA" || estadoParaUsuario === "EN_CURSO") && (
                 <>
                   <div className="detalle-incidencia__actions">
                     {!incidenciaAceptadaPorTecnico && (
                       <>
-                        <button
-                          className={`detalle-incidencia__main-btn ${formularioAbierto === "aceptar-tecnico"
-                            ? "detalle-incidencia__btn--dark"
-                            : "detalle-incidencia__btn--light"}`}
-                          onClick={() => setFormularioAbierto(prev =>
-                            prev === "aceptar-tecnico" ? null : "aceptar-tecnico")}
-                        >
-                          Aceptar incidencia
-                        </button>
-                        <button
-                          className={`detalle-incidencia__main-btn ${formularioAbierto === "rechazar-tecnico"
-                            ? "detalle-incidencia__btn--dark"
-                            : "detalle-incidencia__btn--light"}`}
-                          onClick={() => setFormularioAbierto(prev =>
+
+                        <div className="detalle-incidencia__actions">
+                          <button
+                            type="button"
+                            onClick={() => setFormularioAbierto(prev =>
                             prev === "rechazar-tecnico" ? null : "rechazar-tecnico")}
-                        >
-                          Rechazar incidencia
-                        </button>
+                          >
+                            Rechazar incidencia
+                          </button>
+
+                          <button
+                            className="detalle-incidencia__main-btn"
+                            onClick={() => setFormularioAbierto(prev =>
+                            prev === "aceptar-tecnico" ? null : "aceptar-tecnico")}
+                            
+                          >
+                            Aceptar incidencia
+                          </button>
+                        </div>
                       </>
                     )}
 
@@ -742,16 +817,17 @@ export default function DetalleIncidencia() {
                       </div>
                       <div className="detalle-incidencia__actions">
                         <button
-                          onClick={aceptarIncidenciaTecnico}
-                          disabled={!comentarioTecnico.trim()}
-                        >
-                          Confirmar aceptación
-                        </button>
-                        <button
                           type="button"
                           onClick={() => { setFormularioAbierto(null); setComentarioTecnico(""); }}
                         >
                           Cancelar
+                        </button>
+                        
+                        <button
+                          onClick={aceptarIncidenciaTecnico}
+                          disabled={!comentarioTecnico.trim()}
+                        >
+                          Confirmar aceptación
                         </button>
                       </div>
                     </div>
@@ -798,17 +874,18 @@ export default function DetalleIncidencia() {
                       </div>
                       <div className="detalle-incidencia__actions">
                         <button
-                          onClick={resolverIncidenciaTecnico}
-                          disabled={!comentarioTecnico.trim()}
-                        >
-                          Confirmar resolución
-                        </button>
-                        <button
                           type="button"
                           onClick={() => { setFormularioAbierto(null); setComentarioTecnico(""); }}
                         >
                           Cancelar
                         </button>
+                        <button
+                          onClick={resolverIncidenciaTecnico}
+                          disabled={!comentarioTecnico.trim()}
+                        >
+                          Confirmar resolución
+                        </button>
+                        
                       </div>
                     </div>
                   )}

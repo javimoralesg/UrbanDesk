@@ -1,5 +1,6 @@
 package urbandesk.backend.service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -51,7 +52,10 @@ public class IncidenciaService {
     }
 
     public List<Incidencia> obtenerPorOperador(Long operadorId) {
-        return incidenciaRepository.findByOperadorId(operadorId);
+        List<Estado> estadosExcluir = List.of(Estado.RECHAZADA, Estado.CERRADA);
+        return incidenciaRepository.findByOperadorId(operadorId).stream()
+                .filter(incidencia -> !estadosExcluir.contains(incidencia.getEstado()))
+                .collect(Collectors.toList());
     }
 
     public List<Incidencia> obtenerPorTecnico(Long tecnicoId) {
@@ -161,10 +165,10 @@ public Incidencia actualizarIncidencia(
 
         incidencia.actualizarEstado(Estado.VALIDADA);
 
-        String hayObservaciones = observaciones == null || observaciones.isBlank() ? "."
-                : ". Observaciones del operador: " + observaciones;
-
-        String observacionFinal = "Incidencia validada con una prioridad: " + prioridadStr + hayObservaciones;
+        String observacionFinal = "Incidencia validada con una prioridad: " + prioridadStr;
+        if (observaciones != null && !observaciones.isBlank()) {
+            observacionFinal += ". Observaciones del operador: " + observaciones;
+        }
 
         incidencia.agregarHistorial(new Historial(
                 incidencia,
@@ -189,10 +193,10 @@ public Incidencia actualizarIncidencia(
         Incidencia incidencia = obtenerPorId(id);
         incidencia.actualizarEstado(Estado.RECHAZADA);
 
-        String hayObservaciones = comentario == null || comentario.isBlank() ? "."
-                : ". Observaciones del operador:" + comentario;
-
-        String observacionFinal = "Incidencia rechazada" + hayObservaciones;
+        String observacionFinal = "Incidencia rechazada";
+        if (comentario != null && !comentario.isBlank()) {
+            observacionFinal += ". Observaciones del operador: " + comentario;
+        }
 
         incidencia.agregarHistorial(new Historial(
                 incidencia,
@@ -262,6 +266,12 @@ public Incidencia actualizarIncidencia(
         incidencia.actualizarEstado(Estado.ASIGNADA);
         usuarioRepository.save(tecnico);
 
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                incidencia.getOperador(),
+                Estado.ASIGNADA,
+                "Se ha asignado el técnico " + tecnico.getNombre() + " (" + tecnico.getEspecialidad() + ")"));
+
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
         
         MailService.enviarIncidenciaAsignadaTecnico(
@@ -299,6 +309,12 @@ public Incidencia actualizarIncidencia(
 
         incidencia.actualizarEstado(Estado.ASIGNADA);
 
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                incidencia.getOperador(),
+                Estado.ASIGNADA,
+                "Se ha asignado el técnico " + tecnicoSeleccionado.getNombre() + " (" + especialidad + ")"));
+
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
         
         MailService.enviarIncidenciaAsignadaTecnico(
@@ -333,6 +349,12 @@ public Incidencia actualizarIncidencia(
         if (incidencia.getEstado() == Estado.EN_CURSO) {
             nuevoEstado = Estado.EN_CURSO;
         }
+
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                incidencia.getOperador(),
+                nuevoEstado,
+                "Se ha desasignado el técnico de " + especialidad));
 
         boolean todosFinalizados = incidencia.coincidenTecnicosFinalizadosConAsignados();
 
@@ -378,9 +400,19 @@ public Incidencia actualizarIncidencia(
                 .map(Tecnico::getEspecialidad)
                 .collect(Collectors.toSet());
 
+        List<String> tecnicosEliminados = new ArrayList<>();
+        List<String> tecnicosAsignados = new ArrayList<>();
+
         for (Especialidad especialidadActual : especialidadesActuales) {
             if (!objetivo.contains(especialidadActual)) {
-                incidencia = eliminarTecnicoPorEspecialidad(incidencia.getId(), especialidadActual);
+                Tecnico tecnicoEliminado = incidencia.getTecnicos().stream()
+                        .filter(t -> t.getEspecialidad() == especialidadActual)
+                        .findFirst()
+                        .orElse(null);
+                if (tecnicoEliminado != null) {
+                    tecnicosEliminados.add(tecnicoEliminado.getNombre() + " (" + especialidadActual + ")");
+                }
+                incidencia = eliminarTecnicoPorEspecialidadSinHistorial(incidencia.getId(), especialidadActual);
             }
         }
 
@@ -388,11 +420,35 @@ public Incidencia actualizarIncidencia(
             boolean yaAsignada = incidencia.getTecnicos().stream()
                     .anyMatch(tecnico -> tecnico.getEspecialidad() == especialidadObjetivo);
             if (!yaAsignada) {
-                incidencia = asignarTecnicoPorEspecialidad(incidencia.getId(), especialidadObjetivo);
+                Tecnico tecnicoAsignado = asignarTecnicoPorEspecialidadSinHistorial(incidencia.getId(), especialidadObjetivo);
+                if (tecnicoAsignado != null) {
+                    tecnicosAsignados.add(tecnicoAsignado.getNombre() + " (" + especialidadObjetivo + ")");
+                }
+                incidencia = obtenerPorId(incidenciaId);
             }
         }
 
-        return incidencia;
+        // Registrar un único mensaje de historial consolidado
+        StringBuilder mensajeHistorial = new StringBuilder();
+        if (!tecnicosEliminados.isEmpty()) {
+            mensajeHistorial.append("Desasignados: ").append(String.join(", ", tecnicosEliminados));
+        }
+        if (!tecnicosAsignados.isEmpty()) {
+            if (mensajeHistorial.length() > 0) {
+                mensajeHistorial.append(". ");
+            }
+            mensajeHistorial.append("Asignados: ").append(String.join(", ", tecnicosAsignados));
+        }
+
+        if (mensajeHistorial.length() > 0) {
+            incidencia.agregarHistorial(new Historial(
+                    incidencia,
+                    incidencia.getOperador(),
+                    incidencia.getEstado(),
+                    mensajeHistorial.toString()));
+        }
+
+        return incidenciaRepository.save(incidencia);
     }
 
     @Transactional
@@ -419,6 +475,71 @@ public Incidencia actualizarIncidencia(
          Estado nuevoEstado = !incidencia.getTecnicos().isEmpty() ? Estado.ASIGNADA : Estado.VALIDADA;
         incidencia.actualizarEstado(nuevoEstado);
 
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                incidencia.getOperador(),
+                nuevoEstado,
+                "Se ha desasignado el técnico " + tecnico.getNombre() + " (" + tecnico.getEspecialidad() + ")"));
+
+        return incidenciaRepository.save(incidencia);
+    }
+
+    private Tecnico asignarTecnicoPorEspecialidadSinHistorial(Long incidenciaId, Especialidad especialidad) {
+        Incidencia incidencia = obtenerPorId(incidenciaId);
+
+        Tecnico tecnicoSeleccionado = usuarioRepository.findAll().stream()
+                .filter(Tecnico.class::isInstance)
+                .map(Tecnico.class::cast)
+                .filter(tecnico -> tecnico.getEspecialidad() == especialidad)
+                .filter(Tecnico::tieneDisponibilidad)
+                .filter(tecnico -> incidencia.getTecnicos().stream()
+                        .noneMatch(t -> Objects.equals(t.getId(), tecnico.getId())))
+                .min(Comparator
+                        .comparing(Tecnico::getCargaActual, Comparator.nullsFirst(Integer::compareTo))
+                        .thenComparing(Tecnico::getId))
+                .orElseThrow(() -> new DomainRuleViolation(
+                        "No hay técnicos disponibles para la especialidad: " + especialidad));
+
+        incidencia.agregarTecnico(tecnicoSeleccionado);
+        tecnicoSeleccionado.incrementarCarga();
+        usuarioRepository.save(tecnicoSeleccionado);
+        incidencia.actualizarEstado(Estado.ASIGNADA);
+        incidenciaRepository.save(incidencia);
+
+        MailService.enviarIncidenciaAsignadaTecnico(
+            tecnicoSeleccionado.getEmail(),
+            incidencia.getId(),
+            incidencia.getDescripcion(),
+            incidencia.getUbicacion());
+
+        return tecnicoSeleccionado;
+    }
+
+    private Incidencia eliminarTecnicoPorEspecialidadSinHistorial(Long incidenciaId, Especialidad especialidad) {
+        Incidencia incidencia = obtenerPorId(incidenciaId);
+
+        Tecnico tecnicoSeleccionado = incidencia.getTecnicos().stream()
+                .filter(tecnico -> tecnico.getEspecialidad() == especialidad)
+                .findFirst()
+                .orElseThrow(() -> new DomainRuleViolation(
+                        "No hay técnicos asignados para la especialidad: " + especialidad));
+
+        if (tecnicoHaAceptadoIncidencia(incidencia, tecnicoSeleccionado)) {
+            throw new DomainRuleViolation(
+                "No se puede desasignar al técnico de " + especialidad
+                    + " porque ya ha aceptado la incidencia.");
+        }
+
+        incidencia.eliminarTecnico(tecnicoSeleccionado);
+        tecnicoSeleccionado.decrementarCarga();
+
+        Estado nuevoEstado = !incidencia.getTecnicos().isEmpty() ? Estado.ASIGNADA : Estado.VALIDADA;
+        if (incidencia.getEstado() == Estado.EN_CURSO) {
+            nuevoEstado = Estado.EN_CURSO;
+        }
+
+        incidencia.actualizarEstado(nuevoEstado);
+        usuarioRepository.save(tecnicoSeleccionado);
         return incidenciaRepository.save(incidencia);
     }
 
@@ -459,19 +580,15 @@ public Incidencia actualizarIncidencia(
         boolean todosAceptaron = incidencia.todosLosTecnicosHanAceptado();
 
         Estado estadoHistorial;
-        if (todosAceptaron) {
-            incidencia.actualizarEstado(Estado.EN_CURSO);
-            estadoHistorial = Estado.EN_CURSO;
+        incidencia.actualizarEstado(Estado.EN_CURSO);
+        estadoHistorial = Estado.EN_CURSO;
 
-            if (incidencia.getCiudadano() != null) {
-                MailService.enviarCambioEstado(
-                        incidencia.getCiudadano().getEmail(),
-                        incidencia.getId(),
-                        incidencia.getDescripcion(),
-                        Estado.EN_CURSO);
-            }
-        } else {
-            estadoHistorial = incidencia.getEstado();
+        if (incidencia.getCiudadano() != null) {
+            MailService.enviarCambioEstado(
+                    incidencia.getCiudadano().getEmail(),
+                    incidencia.getId(),
+                    incidencia.getDescripcion(),
+                    Estado.EN_CURSO);
         }
 
     String observacion = tecnico.getEspecialidad().toString() + " ha aceptado la incidencia.";
@@ -497,7 +614,10 @@ public Incidencia actualizarIncidencia(
                 .findFirst()
                 .orElseThrow(() -> new DomainRuleViolation("Técnico no asignado a esta incidencia"));
 
-        String observacionFinal = tecnico.getEspecialidad().toString() +  " ha rechazado la incidencia.";
+        String observacionFinal = tecnico.getEspecialidad().toString() + " ha rechazado la incidencia";
+        if (comentario != null && !comentario.isBlank()) {
+            observacionFinal += ". Observaciones del técnico: " + comentario;
+        }
 
         tecnico.decrementarCarga();
         usuarioRepository.save(tecnico);
@@ -578,11 +698,15 @@ public Incidencia actualizarIncidencia(
 
     if (todosFinalizados) {
         incidencia.actualizarEstado(Estado.RESUELTA);
+        String observacionHistorial = "Todos los técnicos han finalizado";
+        if (comentario != null && !comentario.isBlank()) {
+            observacionHistorial += ". Observaciones del técnico: " + comentario;
+        }
         incidencia.agregarHistorial(new Historial(
                 incidencia,
                 tecnico,
                 Estado.RESUELTA,
-                "Todos los técnicos han finalizado. " + comentario));
+                observacionHistorial));
 
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
         
@@ -604,11 +728,15 @@ public Incidencia actualizarIncidencia(
         return incidenciaGuardada;
     }
 
+    String observacionHistorial2 = "Técnico ha finalizado su parte";
+    if (comentario != null && !comentario.isBlank()) {
+        observacionHistorial2 += ". Observaciones del técnico: " + comentario;
+    }
     incidencia.agregarHistorial(new Historial(
             incidencia,
             tecnico,
             Estado.EN_CURSO,
-            "Técnico ha finalizado su parte. " + comentario));
+            observacionHistorial2));
 
     return incidenciaRepository.save(incidencia);
     }
@@ -649,16 +777,23 @@ public Incidencia actualizarIncidencia(
 
         incidencia.actualizarEstado(Estado.CERRADA);
 
-        String hayObservaciones = comentario == null || comentario.isBlank() ? "."
-                : "Observaciones del operador: " + comentario;
-
-        String observacionFinal = "Incidencia cerrada por el operador. " + hayObservaciones;
+        String observacionFinal = "Incidencia cerrada por el operador";
+        if (comentario != null && !comentario.isBlank()) {
+            observacionFinal += ". Observaciones del operador: " + comentario;
+        }
 
         incidencia.agregarHistorial(new Historial(
                 incidencia,
                 incidencia.getOperador(),
                 Estado.CERRADA,
                 observacionFinal));
+
+        if (incidencia.getOperador() != null) {
+            Operador operador = incidencia.getOperador();
+            operador.decrementarCarga();
+            operadorRepository.save(operador);
+        }
+
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
         if (incidencia.getCiudadano() != null) {
             MailService.enviarCambioEstado(

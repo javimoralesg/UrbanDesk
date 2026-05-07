@@ -198,21 +198,21 @@
   max-width: 300px;
 }
 
-.detalle-incidencia__actions button:first-child {
+.detalle-incidencia__actions button:last-child {
   background: #24364b;
   color: white;
 }
 
-.detalle-incidencia__actions button:first-child:hover {
+.detalle-incidencia__actions button:last-child:hover {
   background: #1a2a3b;
 }
 
-.detalle-incidencia__actions button:last-child {
+.detalle-incidencia__actions button:first-child {
   background: #e5e7eb;
   color: #24364b;
 }
 
-.detalle-incidencia__actions button:last-child:hover {
+.detalle-incidencia__actions button:first-child:hover {
   background: #d1d5db;
 }
 

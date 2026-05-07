@@ -176,14 +176,56 @@ export default function MisIncidencias() {
     cargarMisIncidencias();
   }, []);
 
+  const idUsuario = useMemo(() => {
+    const raw = localStorage.getItem("user");
+    if (!raw) return null;
+    try {
+      const u = JSON.parse(raw);
+      return u?.id || null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const getEstadoParaUsuario = (inc) => {
+    if (rolUsuario === "TECNICO" && idUsuario) {
+      const idU = Number(idUsuario);
+      const asignado = Array.isArray(inc?.tecnicos) && inc.tecnicos.some((t) => Number(t?.id) === idU);
+      if (asignado) {
+        const finalizados = (inc?.tecnicosFinalizadosIds || []).map(Number);
+        if (finalizados.includes(idU)) return "RESUELTA";
+
+        const historialApi = inc?.historiales ?? inc?.historial ?? [];
+        if (Array.isArray(historialApi)) {
+          const historialTec = historialApi
+            .filter((entrada) => Number(entrada?.usuario?.id) === idU)
+            .sort(
+              (a, b) =>
+                new Date(b?.fechaCambio || b?.fechaCreacion || 0) -
+                new Date(a?.fechaCambio || a?.fechaCreacion || 0)
+            );
+
+          const ultima = historialTec.find((e) => !!e);
+          const observ = (ultima?.observaciones || "").toLowerCase();
+          if (observ.includes("ha aceptado la incidencia") || (ultima?.estadoNuevo === "EN_CURSO")) {
+            return "EN_CURSO";
+          }
+        }
+
+        return "ASIGNADA";
+      }
+    }
+
+    return inc.estado;
+  };
+
   const totalTodas = misIncidencias.length;
-  const totalCreadas = misIncidencias.filter((inc) => inc.estado === "CREADA").length;
-  const totalValidadas = misIncidencias.filter((inc) => inc.estado === "VALIDADA").length;
-  const totalAsignadas = misIncidencias.filter((inc) => inc.estado === "ASIGNADA").length;
-  const totalEnCurso = misIncidencias.filter((inc) => inc.estado === "EN_CURSO").length;
-  const totalResueltas = misIncidencias.filter((inc) => inc.estado === "RESUELTA").length;
-  const totalCerradas = misIncidencias.filter((inc) => inc.estado === "CERRADA").length;
-  const totalRechazadas = misIncidencias.filter((inc) => inc.estado === "RECHAZADA").length;
+  const totalCreadas = misIncidencias.filter((inc) => getEstadoParaUsuario(inc) === "CREADA").length;
+  const totalValidadas = misIncidencias.filter((inc) => getEstadoParaUsuario(inc) === "VALIDADA").length;
+  const totalAsignadas = misIncidencias.filter((inc) => getEstadoParaUsuario(inc) === "ASIGNADA").length;
+  const totalEnCurso = misIncidencias.filter((inc) => getEstadoParaUsuario(inc) === "EN_CURSO").length;
+  const totalResueltas = misIncidencias.filter((inc) => getEstadoParaUsuario(inc) === "RESUELTA").length;
+
 
   const filtrosVisibles = useMemo(() => {
     if (rolUsuario === "TECNICO") {
@@ -201,8 +243,6 @@ export default function MisIncidencias() {
       { key: "ASIGNADA", label: "Asignada", total: totalAsignadas },
       { key: "EN_CURSO", label: "En curso", total: totalEnCurso },
       { key: "RESUELTA", label: "Resuelta", total: totalResueltas },
-      { key: "CERRADA", label: "Cerrada", total: totalCerradas },
-      { key: "RECHAZADA", label: "Rechazada", total: totalRechazadas },
     ];
   }, [
     rolUsuario,
@@ -212,17 +252,21 @@ export default function MisIncidencias() {
     totalAsignadas,
     totalEnCurso,
     totalResueltas,
-    totalCerradas,
-    totalRechazadas,
   ]);
 
+  useEffect(() => {
+    if (misIncidencias.length === 0 && !loading) {
+     setPersistentError("No se han encontrado incidencias públicas.");
+    }
+  }, [misIncidencias]);
+
   const incidenciasFiltradas = useMemo(() => {
-    const filtradas =
-      filtroEstado === "TODAS"
-        ? misIncidencias
-        : misIncidencias.filter((inc) => inc.estado === filtroEstado);
+    const filtradas = misIncidencias.filter((inc) => {
+      const estadoReal = getEstadoParaUsuario(inc);
+      return filtroEstado === "TODAS" ? true : estadoReal === filtroEstado;
+    });
     return ordenarIncidencias(filtradas);
-  }, [filtroEstado, misIncidencias]);
+  }, [filtroEstado, misIncidencias, rolUsuario, idUsuario]);
 
   const puntosMapa = incidenciasFiltradas
     .filter(
@@ -308,11 +352,11 @@ export default function MisIncidencias() {
                       <td>{incidencia.descripcion}</td>
                       <td>
                         <span
-                          className={`mis-incidencias__estado-badge mis-incidencias__estado-badge--${incidencia.estado
+                          className={`mis-incidencias__estado-badge mis-incidencias__estado-badge--${getEstadoParaUsuario(incidencia)
                             .toLowerCase()
                             .replaceAll("_", "-")}`}
                         >
-                          {ESTADOS_LABELS[incidencia.estado] || incidencia.estado}
+                          {ESTADOS_LABELS[getEstadoParaUsuario(incidencia)] || getEstadoParaUsuario(incidencia)}
                         </span>
                       </td>
                       <td>{incidencia.prioridad}</td>
