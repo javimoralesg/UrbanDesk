@@ -498,6 +498,16 @@ export default function DetalleIncidencia() {
     }
   };
 
+  const navegarARutaPadre = () => {
+    const pathSinSlashFinal = location.pathname.replace(/\/+$/, "");
+    const indiceUltimoSlash = pathSinSlashFinal.lastIndexOf("/");
+    const rutaPadre = indiceUltimoSlash > 0
+      ? pathSinSlashFinal.slice(0, indiceUltimoSlash)
+      : "/";
+
+    navigate(rutaPadre);
+  };
+
   return (
     <>
       <Popups list={incidenceList} />
@@ -513,7 +523,7 @@ export default function DetalleIncidencia() {
 
             <button
               className="detalle-incidencia__back"
-              onClick={() => navigate(-1)}>
+              onClick={navegarARutaPadre}>
               &lt; Volver
             </button>
 
