@@ -38,10 +38,18 @@ export default function IncidenciasPublicas() {
 
   useEffect(() => {
     if (error) {
-      setIncidenceList(prev => [...prev.filter(m => m.id !== 'error' && m.id !== 'success'), { id: 'error', message: error, type: 'error' }]);
+      setIncidenceList(prev => [...prev.filter(m => m.id !== 'error' && m.id !== 'success' && m.id !== 'loading'), { id: 'error', message: error, type: 'error' }]);
       setLoading(false);
     }
   }, [error]);
+  
+  useEffect(() => {
+    if (loading) {
+      setIncidenceList(prev => [...prev.filter(m => m.id !== 'loading'), { id: 'loading', message: 'Cargando incidencias...', type: 'waiting' }]);
+    } else {
+      setIncidenceList(prev => prev.filter(m => m.id !== 'loading'));
+    }
+  }, [loading]);
 
   useEffect(() => {
     const cargar = async () => {
@@ -49,9 +57,6 @@ export default function IncidenciasPublicas() {
         setLoading(true);
         const data = await api.obtenerIncidenciasPublicas();
         setIncidencias(data || []);
-        if (!data || data.length === 0) {
-          setError("No se han encontrado incidencias públicas.");
-        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -61,6 +66,15 @@ export default function IncidenciasPublicas() {
 
     cargar();
   }, []);
+  
+  useEffect(() => {
+    if (incidencias.length === 0 && !loading) {
+     setError("No se han encontrado incidencias públicas.");
+    } else if (incidencias.length === 0 && loading) {
+     setError("");
+    }
+  }, [incidencias, loading]);
+
 
   const puntosMapa = useMemo(() => {
     return incidencias
@@ -104,9 +118,7 @@ export default function IncidenciasPublicas() {
             </button>
           </div>
 
-          {loading ? (
-            <p>Cargando incidencias...</p>
-          ) : vista === "lista" ? (
+          {vista === "lista" ? (
             <div className="mis-incidencias__table-wrapper">
               <table className="mis-incidencias__table">
                 <thead>

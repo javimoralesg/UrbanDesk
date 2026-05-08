@@ -257,8 +257,10 @@ export default function MisIncidencias() {
   useEffect(() => {
     if (misIncidencias.length === 0 && !loading) {
      setPersistentError("No se han encontrado incidencias públicas.");
+     } else if (misIncidencias.length === 0 && loading) {
+     setPersistentError("");
     }
-  }, [misIncidencias]);
+  }, [misIncidencias, loading]);
 
   const incidenciasFiltradas = useMemo(() => {
     const filtradas = misIncidencias.filter((inc) => {
@@ -330,9 +332,7 @@ export default function MisIncidencias() {
             ))}
           </div>
 
-          {loading ? (
-            <p>Cargando incidencias...</p>
-          ) : vista === "lista" ? (
+          {vista === "lista" ? (
             <div className="mis-incidencias__table-wrapper">
               <table className="mis-incidencias__table">
                 <thead>
