@@ -407,7 +407,18 @@ public class IncidenciaController {
     public ResponseEntity<Incidencia> resolver(
         @PathVariable Long id,
         @PathVariable Long tecnicoId,
-        @RequestParam String comentario) {
+        @RequestParam String comentario,
+        Principal principal) {
+        Usuario usuario = getAuthenticatedUser(principal);
+        if (!(usuario instanceof Tecnico tecnico)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Solo un técnico autenticado puede resolver una incidencia");
+        }
+        Incidencia incidencia = incidenciaService.obtenerPorId(id);
+        boolean asignado = incidencia.getTecnicos().stream()                .anyMatch(t -> Objects.equals(t.getId(), tecnico.getId()));
+        if (!asignado) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No estás asignado a esta incidencia");
+        }
     return ResponseEntity.ok(incidenciaService.resolverIncidenciaTecnico(id, tecnicoId, comentario));
     }
 
