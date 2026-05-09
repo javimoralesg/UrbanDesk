@@ -1,7 +1,7 @@
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { api } from "../services/api";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import MapRegister, { useMapRegisterLogic } from "../components/MapRegister";
 import MapLocate from "../components/MapLocate";
 import Hero from "../components/Hero";
@@ -14,13 +14,17 @@ import Popups from '../components/Popups';
 
 export default function BuscarIncidenciasCercanas() {
   const navigate = useNavigate();
-    useEffect(() => {
-      const raw = localStorage.getItem('user');
-      if (!raw || !JSON.parse(raw).rol || JSON.parse(raw).rol !== 'OPERADOR') {
-        navigate('/incidencias-urbanas');
-      }
-    }, [navigate]);
+  const [searchParams] = useSearchParams();
+  const autoSearchDone = useRef(false);
+
+  useEffect(() => {
+    const raw = localStorage.getItem('user');
+    if (!raw || !JSON.parse(raw).rol || JSON.parse(raw).rol !== 'OPERADOR') {
+      navigate('/incidencias-urbanas');
+    }
+  }, [navigate]);
   const [rangoKm, setRangoKm] = useState(1);
+  const [descripcionFiltro, setDescripcionFiltro] = useState("");
   const [incidencias, setIncidencias] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -36,14 +40,37 @@ export default function BuscarIncidenciasCercanas() {
     showSuggestions,
     setShowSuggestions,
     targetLocation,
+    setTargetLocation,
     handleInputChange,
     seleccionarSugerencia,
     handleMapCenterChange,
     handleCurrentLocation,
     addressPopup,
     warningPopup,
+    setAddress,
   } = useMapRegisterLogic();
-    
+
+  useEffect(() => {
+    const lat = searchParams.get("lat");
+    const lng = searchParams.get("lng");
+    const rango = searchParams.get("rango");
+    const desc = searchParams.get("descripcion");
+    const direccion = searchParams.get("direccion");
+
+    if (lat && lng) {
+      setTargetLocation({ lat: parseFloat(lat), lon: parseFloat(lng) });
+    }
+    if (rango) {
+      setRangoKm(parseFloat(rango));
+    }
+    if (desc) {
+      setDescripcionFiltro(desc);
+    }
+    if (direccion) {
+      setAddress(direccion);
+    }
+  }, []);
+
   useEffect(() => {
     let timeout;
     if (error) {
@@ -94,26 +121,38 @@ export default function BuscarIncidenciasCercanas() {
     }
   }, [warningPopup, addressPopup]);
 
+  useEffect(() => {
+    if (autoSearchDone.current) return;
+    const lat = searchParams.get("lat");
+    const lng = searchParams.get("lng");
+    const rango = searchParams.get("rango");
+    const autoSearch = searchParams.get("autoSearch");
+
+    if (autoSearch === "true" && lat && lng && rango && targetLocation) {
+      autoSearchDone.current = true;
+      setTimeout(() => {
+        ejecutarBusqueda(parseFloat(lat), parseFloat(lng), parseFloat(rango), searchParams.get("descripcion") || "");
+      }, 500);
+    }
+  }, [searchParams, targetLocation]);
+
 
   const handleRangoChange = (e) => {
     setRangoKm(e.target.value);
   };
 
-  const handleBuscar = async (e) => {
-    e.preventDefault();
+  const ejecutarBusqueda = async (lat, lon, rango, desc) => {
     setError("");
     setLoading(true);
     setIncidencias([]);
     setBusquedaRealizada(true);
-    const lat = Number(targetLocation?.lat);
-    const lon = Number(targetLocation?.lng ?? targetLocation?.lon);
-    if (!Number.isFinite(lat) || !Number.isFinite(lon) || !rangoKm) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || !rango) {
       setError("Debes introducir una dirección y un rango válido");
       setLoading(false);
       return;
     }
     try {
-      const res = await api.buscarIncidenciasCercanas({ latitud: lat, longitud: lon, rangoKm });
+      const res = await api.buscarIncidenciasCercanas({ latitud: lat, longitud: lon, rangoKm: rango, descripcion: desc || null });
       const incidenciasConDistancia = (res || []).map((inc, idx) => {
         let ilat = null;
         let ilng = null;
@@ -151,6 +190,13 @@ export default function BuscarIncidenciasCercanas() {
     }
   };
 
+  const handleBuscar = async (e) => {
+    e.preventDefault();
+    const lat = Number(targetLocation?.lat);
+    const lon = Number(targetLocation?.lng ?? targetLocation?.lon);
+    await ejecutarBusqueda(lat, lon, rangoKm, descripcionFiltro);
+  };
+
   function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
     const R = 6371; // Radio de la Tierra en km
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -158,8 +204,8 @@ export default function BuscarIncidenciasCercanas() {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
@@ -259,6 +305,21 @@ export default function BuscarIncidenciasCercanas() {
                 Buscar
               </button>
             </form>
+
+            <div className="buscar-incidencias-cercanas__ai-filter">
+              <div className="buscar-incidencias-cercanas__ai-label">
+                <img src="/ai.png" alt="IA" className="buscar-incidencias-cercanas__ai-icon" />
+                <span>Filtrar por descripción similar (IA) <span style={{ color: '#999', fontWeight: 400 }}>(Opcional)</span></span>
+              </div>
+              <input
+                type="text"
+                value={descripcionFiltro}
+                onChange={(e) => setDescripcionFiltro(e.target.value)}
+                placeholder="Describe la incidencia a buscar... (opcional, si se deja vacío no se filtrará por descripción)"
+                className="buscar-incidencias-cercanas__ai-input"
+              />
+            </div>
+
             <div className="buscar-incidencias-cercanas__map">
               <MapRegister
                 onCenterChanged={handleMapCenterChange}

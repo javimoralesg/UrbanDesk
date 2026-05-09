@@ -381,11 +381,15 @@ export const api = {
         return parseJsonOrThrow(response);
     },
 
-    buscarIncidenciasCercanas: async ({ latitud, longitud, rangoKm }) => {
+    buscarIncidenciasCercanas: async ({ latitud, longitud, rangoKm, descripcion }) => {
         resetInactivityTimer();
-        const response = await fetch(`${BASE_URL}/incidencias/buscar-cercanas?latitud=${latitud}&longitud=${longitud}&rangoKm=${rangoKm}`, {
-            method: 'GET',
-            headers: getAuthHeaders(),
+        const response = await fetch(`${BASE_URL}/incidencias/buscar-cercanas`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders(),
+            },
+            body: JSON.stringify({ latitud, longitud, rangoKm, descripcion: descripcion || null }),
         });
         return parseJsonOrThrow(response);
     },

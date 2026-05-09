@@ -31,8 +31,11 @@ export default function DetalleIncidencia() {
   const [formularioAbierto, setFormularioAbierto] = useState(null);
   const [comentarioTecnico, setComentarioTecnico] = useState("");
   const [tecnicoYaFinalizo, setTecnicoYaFinalizo] = useState(false);
-  // "validar" | "rechazar" | null
   const [incidenceList, setIncidenceList] = useState([]);
+
+  const [rangoSimilares, setRangoSimilares] = useState(1);
+  const [resultadosSimilares, setResultadosSimilares] = useState(null);
+  const [loadingSimilares, setLoadingSimilares] = useState(false);
 
   const especialidadesTecnico = [
     { key: "JARDINERO", label: "Jardinero" },
@@ -158,6 +161,20 @@ export default function DetalleIncidencia() {
   }, [loading, working, persistentError]);
 
   useEffect(() => {
+    setIncidenceList(prev => {
+      const id = 'loading-similares';
+      if (loadingSimilares) {
+        if (!prev.find(m => m.id === id)) {
+          return [...prev, { id, message: 'Buscando incidencias similares...', type: 'waiting' }];
+        }
+        return prev;
+      } else {
+        return prev.filter(m => m.id !== id);
+      }
+    });
+  }, [loadingSimilares]);
+
+  useEffect(() => {
     if (error) {
       setIncidenceList(prev => [...prev.filter(m => m.id !== 'error' && m.id !== 'success'), { id: 'error', message: error, type: 'error' }]);
       setSuccess(null);
@@ -218,12 +235,12 @@ export default function DetalleIncidencia() {
 
   useEffect(() => {
     if (rol !== "TECNICO" || !id_usuario || !incidencia) {
-        setTecnicoYaFinalizo(false);
-        return;
+      setTecnicoYaFinalizo(false);
+      return;
     }
     const yaFinalizo = (incidencia?.tecnicosFinalizadosIds || [])
-        .map(Number)
-        .includes(Number(id_usuario));
+      .map(Number)
+      .includes(Number(id_usuario));
     setTecnicoYaFinalizo(yaFinalizo);
   }, [incidencia, id_usuario, rol]);
 
@@ -419,82 +436,82 @@ export default function DetalleIncidencia() {
 
   const aceptarIncidenciaTecnico = async () => {
     if (!comentarioTecnico.trim()) {
-        setError("Debes añadir un comentario para aceptar la incidencia.");
-        return;
+      setError("Debes añadir un comentario para aceptar la incidencia.");
+      return;
     }
     if (incidenciaAceptadaPorTecnico) {
-        setError("Ya has aceptado esta incidencia.");
-        return;
+      setError("Ya has aceptado esta incidencia.");
+      return;
     }
     try {
-        setWorking("Aceptando incidencia...");
-        const data = await api.aceptarIncidenciaTecnico(id, id_usuario, comentarioTecnico);
-        setIncidencia(data);
-        setSuccess("Incidencia aceptada correctamente.");
-        setIncidenciaAceptadaPorTecnico(true);
-        setComentarioTecnico("");
-        setFormularioAbierto(null);
+      setWorking("Aceptando incidencia...");
+      const data = await api.aceptarIncidenciaTecnico(id, id_usuario, comentarioTecnico);
+      setIncidencia(data);
+      setSuccess("Incidencia aceptada correctamente.");
+      setIncidenciaAceptadaPorTecnico(true);
+      setComentarioTecnico("");
+      setFormularioAbierto(null);
     } catch (err) {
-        console.error("Error al aceptar incidencia:", err);
-        setError("No se pudo aceptar la incidencia. Inténtalo de nuevo.");
+      console.error("Error al aceptar incidencia:", err);
+      setError("No se pudo aceptar la incidencia. Inténtalo de nuevo.");
     } finally {
-        setWorking(null);
+      setWorking(null);
     }
   };
 
   const rechazarIncidenciaTecnico = async () => {
     if (!comentarioTecnico.trim()) {
-        setError("Debes añadir un comentario para rechazar la incidencia.");
-        return;
+      setError("Debes añadir un comentario para rechazar la incidencia.");
+      return;
     }
     try {
-        setWorking("Rechazando incidencia...");
-        const data = await api.rechazarIncidenciaTecnico(id, id_usuario, comentarioTecnico);
-        setIncidencia(data);
-        setSuccess("Incidencia rechazada correctamente.");
-        setComentarioTecnico("");
-        setFormularioAbierto(null);
-        navigate("/incidencias-urbanas/mis-incidencias", { replace: true });
+      setWorking("Rechazando incidencia...");
+      const data = await api.rechazarIncidenciaTecnico(id, id_usuario, comentarioTecnico);
+      setIncidencia(data);
+      setSuccess("Incidencia rechazada correctamente.");
+      setComentarioTecnico("");
+      setFormularioAbierto(null);
+      navigate("/incidencias-urbanas/mis-incidencias", { replace: true });
     } catch (err) {
-        console.error("Error al rechazar incidencia:", err);
-        setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
+      console.error("Error al rechazar incidencia:", err);
+      setError("No se pudo rechazar la incidencia. Inténtalo de nuevo.");
     } finally {
-        setWorking(null);
+      setWorking(null);
     }
   };
 
   const resolverIncidenciaTecnico = async () => {
     if (!comentarioTecnico.trim()) {
-        setError("Debes añadir un comentario para resolver la incidencia.");
-        return;
+      setError("Debes añadir un comentario para resolver la incidencia.");
+      return;
     }
     try {
-        setWorking("Resolviendo incidencia...");
-        const data = await api.resolverIncidenciaTecnico(id, id_usuario, comentarioTecnico);
-        setIncidencia(data);
-        setSuccess("Incidencia marcada como resuelta correctamente.");
-        setComentarioTecnico("");
-        setFormularioAbierto(null);
+      setWorking("Resolviendo incidencia...");
+      const data = await api.resolverIncidenciaTecnico(id, id_usuario, comentarioTecnico);
+      setIncidencia(data);
+      setSuccess("Incidencia marcada como resuelta correctamente.");
+      setComentarioTecnico("");
+      setFormularioAbierto(null);
     } catch (err) {
-        console.error("Error al resolver incidencia:", err);
-        setError("No se pudo resolver la incidencia. Inténtalo de nuevo.");
+      console.error("Error al resolver incidencia:", err);
+      setError("No se pudo resolver la incidencia. Inténtalo de nuevo.");
     } finally {
-        setWorking(null);
+      setWorking(null);
     }
   };
 
   const cerrarIncidenciaOperador = async () => {
     try {
-        setWorking("Cerrando incidencia...");
-        const data = await api.cerrarIncindencia(id, comentarioTecnico);
-        setIncidencia(data);
-        setSuccess("Incidencia cerrada correctamente.");
-        setComentarioTecnico("");
+      setWorking("Cerrando incidencia...");
+      const data = await api.cerrarIncindencia(id, comentarioTecnico);
+      setIncidencia(data);
+      setSuccess("Incidencia cerrada correctamente.");
+      setComentarioTecnico("");
     } catch (err) {
-        console.error("Error al cerrar incidencia:", err);
-        setError("No se pudo cerrar la incidencia. Inténtalo de nuevo.");
+      console.error("Error al cerrar incidencia:", err);
+      setError("No se pudo cerrar la incidencia. Inténtalo de nuevo.");
     } finally {
-        setWorking(null);
+      setWorking(null);
     }
   };
 
@@ -573,46 +590,46 @@ export default function DetalleIncidencia() {
                   </div>
                 </div>
 
-                {!esIncidenciaPublica && ( <>
+                {!esIncidenciaPublica && (<>
                   <div className="detalle-incidencia__field">
-                  <span className="detalle-incidencia__field-label">
-                    Ciudadano:
-                  </span>
-                  <div className="detalle-incidencia__field-value">
-                    {ciudadano}
+                    <span className="detalle-incidencia__field-label">
+                      Ciudadano:
+                    </span>
+                    <div className="detalle-incidencia__field-value">
+                      {ciudadano}
+                    </div>
                   </div>
-                </div>
 
-                <div className="detalle-incidencia__field">
-                  <span className="detalle-incidencia__field-label">
-                    Operador Asignado:
-                  </span>
-                  <div className="detalle-incidencia__field-value">
-                    {operadorAsignado}
+                  <div className="detalle-incidencia__field">
+                    <span className="detalle-incidencia__field-label">
+                      Operador Asignado:
+                    </span>
+                    <div className="detalle-incidencia__field-value">
+                      {operadorAsignado}
+                    </div>
                   </div>
-                </div>
                 </>)}
               </div>
-               <div className="detalle-incidencia__divider"></div>
+              <div className="detalle-incidencia__divider"></div>
 
-                {esMisIncidencias && estado === "CREADA" && rol === "CIUDADANO" && (
-                  <div className="detalle-incidencia__actions">
-                    <button
-                      className="detalle-incidencia__main-btn"
-                      onClick={() => navigate(`/incidencias-urbanas/editar/${id}`)}
-                    >
-                      Editar incidencia
-                    </button>
-                  </div>
-                )}
+              {esMisIncidencias && estado === "CREADA" && rol === "CIUDADANO" && (
+                <div className="detalle-incidencia__actions">
+                  <button
+                    className="detalle-incidencia__main-btn"
+                    onClick={() => navigate(`/incidencias-urbanas/editar/${id}`)}
+                  >
+                    Editar incidencia
+                  </button>
+                </div>
+              )}
 
               {esMisIncidencias && estado === "CREADA" && rol === "OPERADOR" && (
                 <>
                   <div className="detalle-incidencia__actions">
                     <button
-                      className={`detalle-incidencia__main-btn ${formularioAbierto === "rechazar"
-                        ? "detalle-incidencia__btn--light"
-                        : "detalle-incidencia__btn--dark"
+                      className={`detalle-incidencia__main-btn ${formularioAbierto === "validar"
+                        ? "detalle-incidencia__btn--dark"
+                        : "detalle-incidencia__btn--light"
                         }`}
                       onClick={() =>
                         setFormularioAbierto((prev) => (prev === "validar" ? null : "validar"))
@@ -631,6 +648,20 @@ export default function DetalleIncidencia() {
                       }
                     >
                       Rechazar incidencia
+                    </button>
+
+                    <button
+                      className={`detalle-incidencia__main-btn ${formularioAbierto === "buscar-similares"
+                        ? "detalle-incidencia__btn--dark"
+                        : "detalle-incidencia__btn--light"
+                        }`}
+                      onClick={() => {
+                        setFormularioAbierto((prev) => (prev === "buscar-similares" ? null : "buscar-similares"));
+                        setResultadosSimilares(null);
+                      }}
+                    >
+                      <img src="/ai.png" alt="IA" style={{ width: 18, height: 18, verticalAlign: 'middle', marginRight: 6 }} />
+                      Buscar similares
                     </button>
                   </div>
 
@@ -715,6 +746,103 @@ export default function DetalleIncidencia() {
                       </div>
                     </div>
                   )}
+
+                  {formularioAbierto === "buscar-similares" && (
+                    <div className="detalle-incidencia__form-card">
+                      <h4 className="detalle-incidencia__form-title">
+                        <img src="/ai.png" alt="IA" style={{ width: 22, height: 22, verticalAlign: 'middle', marginRight: 8 }} />
+                        Buscar incidencias similares
+                      </h4>
+                      <p style={{ color: '#666', fontSize: '0.9rem', margin: '0 0 12px 0' }}>
+                        Busca incidencias cercanas a esta ubicación con una descripción similar.
+                      </p>
+
+                      <div className="detalle-incidencia__form-group">
+                        <label>Rango de búsqueda (km) <span style={{ color: "red" }}>*</span></label>
+                        <input
+                          type="number"
+                          min="0.1"
+                          step="0.1"
+                          value={rangoSimilares}
+                          onChange={(e) => setRangoSimilares(parseFloat(e.target.value) || 1)}
+                          style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ccc', fontSize: '1rem' }}
+                        />
+                      </div>
+
+                      <div className="detalle-incidencia__actions">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormularioAbierto(null);
+                            setResultadosSimilares(null);
+                          }}
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          className="detalle-incidencia__main-btn"
+                          disabled={loadingSimilares || !rangoSimilares || rangoSimilares <= 0}
+                          onClick={async () => {
+                            setLoadingSimilares(true);
+                            setResultadosSimilares(null);
+                            try {
+                              const res = await api.buscarIncidenciasCercanas({
+                                latitud: latitud,
+                                longitud: longitud,
+                                rangoKm: rangoSimilares,
+                                descripcion: descripcion
+                              });
+                              setResultadosSimilares(res || []);
+                            } catch (err) {
+                              setError("Error al buscar incidencias similares.");
+                              setResultadosSimilares([]);
+                            } finally {
+                              setLoadingSimilares(false);
+                            }
+                          }}
+                        >
+                          Buscar
+                        </button>
+                      </div>
+
+                      {resultadosSimilares !== null && (
+                        <div style={{
+                          marginTop: '16px',
+                          padding: '14px 18px',
+                          background: resultadosSimilares.length > 0 ? 'linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%)' : '#fff3e0',
+                          borderRadius: '8px',
+                          border: resultadosSimilares.length > 0 ? '1px solid #a5d6a7' : '1px solid #ffcc80'
+                        }}>
+                          <p style={{ margin: 0, fontWeight: 600, fontSize: '1rem' }}>
+                            {resultadosSimilares.length > 0
+                              ? `Se ${resultadosSimilares.length === 1 ? 'ha' : 'han'} encontrado ${resultadosSimilares.length} incidencia${resultadosSimilares.length === 1 ? '' : 's'} similar${resultadosSimilares.length === 1 ? '' : 'es'}.`
+                              : "No se han encontrado incidencias similares en el rango especificado."}
+                          </p>
+
+                          {resultadosSimilares.length > 0 && (
+                            <button
+                              type="button"
+                              className="detalle-incidencia__main-btn"
+                              style={{ marginTop: '12px', fontSize: '0.9rem' }}
+                              onClick={() => {
+                                const params = new URLSearchParams({
+                                  lat: latitud,
+                                  lng: longitud,
+                                  rango: rangoSimilares,
+                                  descripcion: descripcion || '',
+                                  direccion: ubicacion || '',
+                                  autoSearch: 'true'
+                                });
+                                navigate(`/incidencias-urbanas/buscar-incidencias-cercanas?${params.toString()}`);
+                              }}
+                            >
+                              Ver en el buscador de incidencias cercanas
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
 
@@ -723,7 +851,7 @@ export default function DetalleIncidencia() {
                   <button className="detalle-incidencia__main-btn" onClick={() => mostrarAsignacion ? setMostrarAsignacion(false) : setMostrarAsignacion(true)}>
                     Editar Asignación
                   </button>
-                  { mostrarAsignacion && (<div className="detalle-incidencia__asignacion">
+                  {mostrarAsignacion && (<div className="detalle-incidencia__asignacion">
                     {especialidadesTecnico.map((especialidad) => {
                       const asignadosEspecialidad = (incidencia?.tecnicos || []).filter(
                         (tecnico) => tecnico?.especialidad === especialidad.key
@@ -769,7 +897,7 @@ export default function DetalleIncidencia() {
                     </div>
 
                   </div>)}
-                  
+
                 </>
               )}
 
@@ -783,7 +911,7 @@ export default function DetalleIncidencia() {
                           <button
                             type="button"
                             onClick={() => setFormularioAbierto(prev =>
-                            prev === "rechazar-tecnico" ? null : "rechazar-tecnico")}
+                              prev === "rechazar-tecnico" ? null : "rechazar-tecnico")}
                           >
                             Rechazar incidencia
                           </button>
@@ -791,8 +919,8 @@ export default function DetalleIncidencia() {
                           <button
                             className="detalle-incidencia__main-btn"
                             onClick={() => setFormularioAbierto(prev =>
-                            prev === "aceptar-tecnico" ? null : "aceptar-tecnico")}
-                            
+                              prev === "aceptar-tecnico" ? null : "aceptar-tecnico")}
+
                           >
                             Aceptar incidencia
                           </button>
@@ -807,9 +935,9 @@ export default function DetalleIncidencia() {
                           : "detalle-incidencia__btn--light"}`}
                         onClick={() => setFormularioAbierto(prev =>
                           prev === "resolver-tecnico" ? null : "resolver-tecnico")}
-                          disabled={tecnicoYaFinalizo}
+                        disabled={tecnicoYaFinalizo}
                       >
-                          {tecnicoYaFinalizo ? "Ya ha sido marcada como resuelta en esta incidencia" : "Marcar como resuelta"}
+                        {tecnicoYaFinalizo ? "Ya ha sido marcada como resuelta en esta incidencia" : "Marcar como resuelta"}
                       </button>
                     )}
                   </div>
@@ -832,7 +960,7 @@ export default function DetalleIncidencia() {
                         >
                           Cancelar
                         </button>
-                        
+
                         <button
                           onClick={aceptarIncidenciaTecnico}
                           disabled={!comentarioTecnico.trim()}
@@ -895,7 +1023,7 @@ export default function DetalleIncidencia() {
                         >
                           Confirmar resolución
                         </button>
-                        
+
                       </div>
                     </div>
                   )}
@@ -952,38 +1080,38 @@ export default function DetalleIncidencia() {
               </div>
             </div>
           </div>
-          
-          {!esIncidenciaPublica && (
-          <div className="detalle-incidencia__section">
-            <h3>Adjuntos</h3>
 
-            <div className="detalle-incidencia__attachments">
-              {adjuntos.length > 0 ? (
-                adjuntos.map((adjunto, index) => (
-                  <div
-                    key={index}
-                    className="detalle-incidencia__adjunto-item"
-                    onClick={() => setMediaSeleccionada(adjunto)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    {adjunto.type?.startsWith("video/") ? (
-                      <video className="detalle-incidencia__attachment-image">
-                        <source src={adjunto.src} type={adjunto.type} />
-                      </video>
-                    ) : (
-                      <img
-                        src={adjunto.src}
-                        alt={adjunto.alt}
-                        className="detalle-incidencia__attachment-image"
-                      />
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p>No hay adjuntos disponibles.</p>
-              )}
-            </div>
-          </div>)}
+          {!esIncidenciaPublica && (
+            <div className="detalle-incidencia__section">
+              <h3>Adjuntos</h3>
+
+              <div className="detalle-incidencia__attachments">
+                {adjuntos.length > 0 ? (
+                  adjuntos.map((adjunto, index) => (
+                    <div
+                      key={index}
+                      className="detalle-incidencia__adjunto-item"
+                      onClick={() => setMediaSeleccionada(adjunto)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {adjunto.type?.startsWith("video/") ? (
+                        <video className="detalle-incidencia__attachment-image">
+                          <source src={adjunto.src} type={adjunto.type} />
+                        </video>
+                      ) : (
+                        <img
+                          src={adjunto.src}
+                          alt={adjunto.alt}
+                          className="detalle-incidencia__attachment-image"
+                        />
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <p>No hay adjuntos disponibles.</p>
+                )}
+              </div>
+            </div>)}
 
           <div className="detalle-incidencia__section">
             <h3>Historial</h3>

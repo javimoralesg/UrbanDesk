@@ -256,9 +256,9 @@ export default function MisIncidencias() {
 
   useEffect(() => {
     if (misIncidencias.length === 0 && !loading) {
-     setPersistentError("No se han encontrado incidencias públicas.");
-     } else if (misIncidencias.length === 0 && loading) {
-     setPersistentError("");
+      setPersistentError("No se han encontrado incidencias asociadas a usted.");
+    } else if (misIncidencias.length === 0 && loading) {
+      setPersistentError("");
     }
   }, [misIncidencias, loading]);
 

@@ -44,7 +44,6 @@ import urbandesk.backend.repository.IncidenciaRepository;
 import urbandesk.backend.repository.UsuarioRepository;
 import urbandesk.backend.repository.OperadorRepository;
 
-
 @Service
 @RequiredArgsConstructor
 public class IncidenciaService {
@@ -60,6 +59,9 @@ public class IncidenciaService {
 
     @Value("${IA_API_KEY:}")
     private String iaApiKey;
+
+    @Value("${incidencia.comparacion.url:https://urbandeskcompare-g475okyxfq-uc.a.run.app}")
+    private String comparacionUrl;
 
     public Incidencia obtenerPorId(Long id) {
         return incidenciaRepository.findById(id)
@@ -118,7 +120,8 @@ public class IncidenciaService {
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
 
         if (ciudadano != null) {
-            MailService.enviarIncidenciaCreada(ciudadano.getEmail(), incidenciaGuardada.getId(), incidenciaGuardada.getDescripcion());
+            MailService.enviarIncidenciaCreada(ciudadano.getEmail(), incidenciaGuardada.getId(),
+                    incidenciaGuardada.getDescripcion());
         }
 
         asignarOperadorAutomatico(incidenciaGuardada.getId());
@@ -126,48 +129,45 @@ public class IncidenciaService {
         return incidenciaGuardada;
     }
 
-@Transactional
-public Incidencia actualizarIncidencia(
-        Long id,
-        Ubicacion nuevaUbicacion,
-        String nuevaDescripcion,
-        List<String> imagenesNuevas,
-        List<Long> imagenesExistentesIds
-) {
-    Incidencia incidencia = obtenerPorId(id);
+    @Transactional
+    public Incidencia actualizarIncidencia(
+            Long id,
+            Ubicacion nuevaUbicacion,
+            String nuevaDescripcion,
+            List<String> imagenesNuevas,
+            List<Long> imagenesExistentesIds) {
+        Incidencia incidencia = obtenerPorId(id);
 
-    validarDescripcionAntesDeGuardar(nuevaDescripcion);
+        validarDescripcionAntesDeGuardar(nuevaDescripcion);
 
-    incidencia.modificarIncidencia(nuevaUbicacion, nuevaDescripcion);
+        incidencia.modificarIncidencia(nuevaUbicacion, nuevaDescripcion);
 
-    List<Evidencia> evidenciasActuales = incidencia.getEvidencias();
+        List<Evidencia> evidenciasActuales = incidencia.getEvidencias();
 
-    List<Evidencia> evidenciasFiltradas = evidenciasActuales.stream()
-            .filter(ev -> imagenesExistentesIds != null && imagenesExistentesIds.contains(ev.getId()))
-            .toList();
+        List<Evidencia> evidenciasFiltradas = evidenciasActuales.stream()
+                .filter(ev -> imagenesExistentesIds != null && imagenesExistentesIds.contains(ev.getId()))
+                .toList();
 
-    incidencia.getEvidencias().clear();
-    incidencia.getEvidencias().addAll(evidenciasFiltradas);
+        incidencia.getEvidencias().clear();
+        incidencia.getEvidencias().addAll(evidenciasFiltradas);
 
-    if (imagenesNuevas != null) {
-        for (String imagen : imagenesNuevas) {
-            if (imagen != null && !imagen.isBlank()) {
-                incidencia.agregarEvidencia(
-                        new Evidencia(imagen, incidencia, incidencia.getCiudadano())
-                );
+        if (imagenesNuevas != null) {
+            for (String imagen : imagenesNuevas) {
+                if (imagen != null && !imagen.isBlank()) {
+                    incidencia.agregarEvidencia(
+                            new Evidencia(imagen, incidencia, incidencia.getCiudadano()));
+                }
             }
         }
+
+        incidencia.agregarHistorial(new Historial(
+                incidencia,
+                incidencia.getCiudadano(),
+                Estado.CREADA, // o el estado actual si quieres mantenerlo
+                "Incidencia actualizada"));
+
+        return incidenciaRepository.save(incidencia);
     }
-
-    incidencia.agregarHistorial(new Historial(
-            incidencia,
-            incidencia.getCiudadano(),
-            Estado.CREADA, // o el estado actual si quieres mantenerlo
-            "Incidencia actualizada"
-    ));
-
-    return incidenciaRepository.save(incidencia);
-}
 
     private void validarDescripcionAntesDeGuardar(String descripcion) {
         if (descripcion == null || descripcion.isBlank()) {
@@ -269,7 +269,7 @@ public Incidencia actualizarIncidencia(
                 Estado.RECHAZADA,
                 observacionFinal));
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
-        
+
         if (incidencia.getCiudadano() != null) {
             MailService.enviarCambioEstado(
                     incidencia.getCiudadano().getEmail(),
@@ -305,7 +305,7 @@ public Incidencia actualizarIncidencia(
                     "Incidencia asignada a un operador"));
 
             Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
-            
+
             MailService.enviarIncidenciaAsignadaOperador(
                     operadorConMenorCarga.getEmail(),
                     incidenciaGuardada.getId(),
@@ -338,16 +338,15 @@ public Incidencia actualizarIncidencia(
                 "Se ha asignado el técnico " + tecnico.getNombre() + " (" + tecnico.getEspecialidad() + ")"));
 
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
-        
-        MailService.enviarIncidenciaAsignadaTecnico(
-            tecnico.getEmail(),
-            incidenciaGuardada.getId(),
-            incidenciaGuardada.getDescripcion(),
-            incidenciaGuardada.getUbicacion()
-    );
 
-    return incidenciaGuardada;
-        
+        MailService.enviarIncidenciaAsignadaTecnico(
+                tecnico.getEmail(),
+                incidenciaGuardada.getId(),
+                incidenciaGuardada.getDescripcion(),
+                incidenciaGuardada.getUbicacion());
+
+        return incidenciaGuardada;
+
     }
 
     @Transactional
@@ -369,7 +368,7 @@ public Incidencia actualizarIncidencia(
 
         incidencia.agregarTecnico(tecnicoSeleccionado);
         tecnicoSeleccionado.incrementarCarga();
-        
+
         usuarioRepository.save(tecnicoSeleccionado);
 
         incidencia.actualizarEstado(Estado.ASIGNADA);
@@ -381,14 +380,13 @@ public Incidencia actualizarIncidencia(
                 "Se ha asignado el técnico " + tecnicoSeleccionado.getNombre() + " (" + especialidad + ")"));
 
         Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
-        
+
         MailService.enviarIncidenciaAsignadaTecnico(
-            tecnicoSeleccionado.getEmail(),
-            incidenciaGuardada.getId(),
-            incidenciaGuardada.getDescripcion(),
-            incidenciaGuardada.getUbicacion()
-    );
-    return incidenciaGuardada;
+                tecnicoSeleccionado.getEmail(),
+                incidenciaGuardada.getId(),
+                incidenciaGuardada.getDescripcion(),
+                incidenciaGuardada.getUbicacion());
+        return incidenciaGuardada;
     }
 
     @Transactional
@@ -403,8 +401,8 @@ public Incidencia actualizarIncidencia(
 
         if (tecnicoHaAceptadoIncidencia(incidencia, tecnicoSeleccionado)) {
             throw new DomainRuleViolation(
-                "No se puede desasignar al técnico de " + especialidad
-                    + " porque ya ha aceptado la incidencia.");
+                    "No se puede desasignar al técnico de " + especialidad
+                            + " porque ya ha aceptado la incidencia.");
         }
 
         incidencia.eliminarTecnico(tecnicoSeleccionado);
@@ -430,22 +428,22 @@ public Incidencia actualizarIncidencia(
         if (todosFinalizados) {
             incidencia.actualizarEstado(Estado.RESUELTA);
             incidencia.agregarHistorial(new Historial(
-                incidencia,
-                tecnico,
-                Estado.RESUELTA,
-                "Todos los técnicos han finalizado. "));
+                    incidencia,
+                    tecnico,
+                    Estado.RESUELTA,
+                    "Todos los técnicos han finalizado. "));
 
             Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
 
             if (incidencia.getCiudadano() != null) {
                 MailService.enviarIncidenciaResuelta(
-                    incidencia.getCiudadano().getEmail(),
-                    incidencia.getId(),
-                    incidencia.getDescripcion());
+                        incidencia.getCiudadano().getEmail(),
+                        incidencia.getId(),
+                        incidencia.getDescripcion());
             }
 
-        return incidenciaGuardada;
-     }
+            return incidenciaGuardada;
+        }
 
         incidencia.actualizarEstado(nuevoEstado);
 
@@ -485,7 +483,8 @@ public Incidencia actualizarIncidencia(
             boolean yaAsignada = incidencia.getTecnicos().stream()
                     .anyMatch(tecnico -> tecnico.getEspecialidad() == especialidadObjetivo);
             if (!yaAsignada) {
-                Tecnico tecnicoAsignado = asignarTecnicoPorEspecialidadSinHistorial(incidencia.getId(), especialidadObjetivo);
+                Tecnico tecnicoAsignado = asignarTecnicoPorEspecialidadSinHistorial(incidencia.getId(),
+                        especialidadObjetivo);
                 if (tecnicoAsignado != null) {
                     tecnicosAsignados.add(tecnicoAsignado.getNombre() + " (" + especialidadObjetivo + ")");
                 }
@@ -537,7 +536,7 @@ public Incidencia actualizarIncidencia(
         usuarioRepository.save(tecnico);
         incidencia.eliminarTecnico(tecnico);
 
-         Estado nuevoEstado = !incidencia.getTecnicos().isEmpty() ? Estado.ASIGNADA : Estado.VALIDADA;
+        Estado nuevoEstado = !incidencia.getTecnicos().isEmpty() ? Estado.ASIGNADA : Estado.VALIDADA;
         incidencia.actualizarEstado(nuevoEstado);
 
         incidencia.agregarHistorial(new Historial(
@@ -572,10 +571,10 @@ public Incidencia actualizarIncidencia(
         incidenciaRepository.save(incidencia);
 
         MailService.enviarIncidenciaAsignadaTecnico(
-            tecnicoSeleccionado.getEmail(),
-            incidencia.getId(),
-            incidencia.getDescripcion(),
-            incidencia.getUbicacion());
+                tecnicoSeleccionado.getEmail(),
+                incidencia.getId(),
+                incidencia.getDescripcion(),
+                incidencia.getUbicacion());
 
         return tecnicoSeleccionado;
     }
@@ -591,8 +590,8 @@ public Incidencia actualizarIncidencia(
 
         if (tecnicoHaAceptadoIncidencia(incidencia, tecnicoSeleccionado)) {
             throw new DomainRuleViolation(
-                "No se puede desasignar al técnico de " + especialidad
-                    + " porque ya ha aceptado la incidencia.");
+                    "No se puede desasignar al técnico de " + especialidad
+                            + " porque ya ha aceptado la incidencia.");
         }
 
         incidencia.eliminarTecnico(tecnicoSeleccionado);
@@ -628,8 +627,8 @@ public Incidencia actualizarIncidencia(
     public Incidencia aceptarIncidenciaTecnico(Long id, Long tecnicoId) {
         Incidencia incidencia = obtenerPorId(id);
 
-        if (incidencia.getEstado() != Estado.VALIDADA 
-                && incidencia.getEstado() != Estado.ASIGNADA 
+        if (incidencia.getEstado() != Estado.VALIDADA
+                && incidencia.getEstado() != Estado.ASIGNADA
                 && incidencia.getEstado() != Estado.EN_CURSO) {
             throw new DomainRuleViolation("Solo se pueden aceptar incidencias en estado VALIDADA, ASIGNADA o EN_CURSO");
         }
@@ -639,7 +638,6 @@ public Incidencia actualizarIncidencia(
                 .findFirst()
                 .orElseThrow(() -> new DomainRuleViolation("Técnico no asignado a esta incidencia"));
 
-    
         incidencia.marcarTecnicoAceptado(tecnicoId);
 
         Estado estadoHistorial;
@@ -654,22 +652,22 @@ public Incidencia actualizarIncidencia(
                     Estado.EN_CURSO);
         }
 
-    String observacion = tecnico.getEspecialidad().toString() + " ha aceptado la incidencia.";
-    incidencia.agregarHistorial(new Historial(incidencia, tecnico, estadoHistorial, observacion));
+        String observacion = tecnico.getEspecialidad().toString() + " ha aceptado la incidencia.";
+        incidencia.agregarHistorial(new Historial(incidencia, tecnico, estadoHistorial, observacion));
 
-    return incidenciaRepository.save(incidencia);
-}
-
+        return incidenciaRepository.save(incidencia);
+    }
 
     @Transactional
     public Incidencia rechazarIncidenciaTecnico(Long id, Long tecnicoId, String comentario) {
         if (comentario == null || comentario.isBlank()) {
-        throw new DomainRuleViolation("El técnico debe añadir un comentario al resolver la incidencia.");
+            throw new DomainRuleViolation("El técnico debe añadir un comentario al resolver la incidencia.");
         }
         Incidencia incidencia = obtenerPorId(id);
 
         if (incidencia.getEstado() != Estado.EN_CURSO && incidencia.getEstado() != Estado.ASIGNADA) {
-            throw new DomainRuleViolation("Solo se pueden rechazar incidencias que estén en estado EN_CURSO o ASIGNADA");
+            throw new DomainRuleViolation(
+                    "Solo se pueden rechazar incidencias que estén en estado EN_CURSO o ASIGNADA");
         }
 
         Tecnico tecnico = incidencia.getTecnicos().stream()
@@ -692,7 +690,7 @@ public Incidencia actualizarIncidencia(
         } else if (incidencia.getEstado() == Estado.EN_CURSO) {
             nuevoEstado = Estado.EN_CURSO;
         }
-        
+
         incidencia.actualizarEstado(nuevoEstado);
 
         incidencia.agregarHistorial(new Historial(
@@ -710,7 +708,7 @@ public Incidencia actualizarIncidencia(
                     incidenciaGuardada.getDescripcion(),
                     tecnico.getNombre(),
                     comentario);
-}
+        }
 
         if (incidencia.getCiudadano() != null) {
             MailService.enviarCambioEstado(
@@ -725,106 +723,103 @@ public Incidencia actualizarIncidencia(
     @Transactional
     public Incidencia resolverIncidenciaTecnico(Long incidenciaId, Long tecnicoId, String comentario) {
 
-    if (comentario == null || comentario.isBlank()) {
-        throw new DomainRuleViolation("El técnico debe añadir un comentario al resolver la incidencia.");
-    }
+        if (comentario == null || comentario.isBlank()) {
+            throw new DomainRuleViolation("El técnico debe añadir un comentario al resolver la incidencia.");
+        }
 
-    Incidencia incidencia = obtenerPorId(incidenciaId);
+        Incidencia incidencia = obtenerPorId(incidenciaId);
 
-    if (incidencia.getTecnicosFinalizadosIds().contains(tecnicoId)) {
-        throw new DomainRuleViolation("Ya ha sido marcada como resuelta en esta incidencia.");
-    }
+        if (incidencia.getTecnicosFinalizadosIds().contains(tecnicoId)) {
+            throw new DomainRuleViolation("Ya ha sido marcada como resuelta en esta incidencia.");
+        }
 
-    boolean esTecnicoAsignado = incidencia.getTecnicos().stream()
-            .anyMatch(t -> t.getId().equals(tecnicoId));
+        boolean esTecnicoAsignado = incidencia.getTecnicos().stream()
+                .anyMatch(t -> t.getId().equals(tecnicoId));
 
-    if (!esTecnicoAsignado) {
-        throw new DomainRuleViolation("El técnico no está asignado a esta incidencia.");
-    }
+        if (!esTecnicoAsignado) {
+            throw new DomainRuleViolation("El técnico no está asignado a esta incidencia.");
+        }
 
-    if (incidencia.getEstado() != Estado.EN_CURSO) {
-        throw new DomainRuleViolation("Solo se pueden resolver incidencias en estado EN_CURSO.");
-    }
+        if (incidencia.getEstado() != Estado.EN_CURSO) {
+            throw new DomainRuleViolation("Solo se pueden resolver incidencias en estado EN_CURSO.");
+        }
 
-    Usuario tecnico = usuarioRepository.findById(tecnicoId)
-            .orElseThrow(() -> new DomainRuleViolation("Técnico no encontrado"));
+        Usuario tecnico = usuarioRepository.findById(tecnicoId)
+                .orElseThrow(() -> new DomainRuleViolation("Técnico no encontrado"));
 
-    // Marcar técnico como finalizado y liberar su carga
-    incidencia.marcarTecnicoFinalizado(tecnicoId);
+        // Marcar técnico como finalizado y liberar su carga
+        incidencia.marcarTecnicoFinalizado(tecnicoId);
 
-    if (tecnico instanceof Tecnico tecnicoCast) {
-        tecnicoCast.decrementarCarga();
-        usuarioRepository.save(tecnicoCast);
-    }
+        if (tecnico instanceof Tecnico tecnicoCast) {
+            tecnicoCast.decrementarCarga();
+            usuarioRepository.save(tecnicoCast);
+        }
 
-    boolean todosFinalizados = incidencia.coincidenTecnicosFinalizadosConAsignados();
+        boolean todosFinalizados = incidencia.coincidenTecnicosFinalizadosConAsignados();
 
-    if (todosFinalizados) {
-        incidencia.actualizarEstado(Estado.RESUELTA);
-        String observacionHistorial = "Todos los técnicos han finalizado";
+        if (todosFinalizados) {
+            incidencia.actualizarEstado(Estado.RESUELTA);
+            String observacionHistorial = "Todos los técnicos han finalizado";
+            if (comentario != null && !comentario.isBlank()) {
+                observacionHistorial += ". Observaciones del técnico: " + comentario;
+            }
+            incidencia.agregarHistorial(new Historial(
+                    incidencia,
+                    tecnico,
+                    Estado.RESUELTA,
+                    observacionHistorial));
+
+            Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
+
+            MailService.enviarTareaFinalizadaPorTecnico(
+                    incidencia.getOperador().getEmail(),
+                    incidencia.getId(),
+                    incidencia.getDescripcion(),
+                    tecnico.getNombre(),
+                    comentario);
+
+            if (incidencia.getCiudadano() != null) {
+                MailService.enviarIncidenciaResuelta(
+                        incidencia.getCiudadano().getEmail(),
+                        incidencia.getId(),
+                        incidencia.getDescripcion());
+            }
+
+            return incidenciaGuardada;
+        }
+
+        String observacionHistorial2 = "Técnico ha finalizado su parte";
         if (comentario != null && !comentario.isBlank()) {
-            observacionHistorial += ". Observaciones del técnico: " + comentario;
+            observacionHistorial2 += ". Observaciones del técnico: " + comentario;
         }
         incidencia.agregarHistorial(new Historial(
                 incidencia,
                 tecnico,
-                Estado.RESUELTA,
-                observacionHistorial));
+                Estado.EN_CURSO,
+                observacionHistorial2));
 
-        Incidencia incidenciaGuardada = incidenciaRepository.save(incidencia);
-        
-        MailService.enviarTareaFinalizadaPorTecnico(
-            incidencia.getOperador().getEmail(),
-            incidencia.getId(),
-            incidencia.getDescripcion(),
-            tecnico.getNombre(), 
-            comentario
-        );
-
-        if (incidencia.getCiudadano() != null) {
-            MailService.enviarIncidenciaResuelta(
-                    incidencia.getCiudadano().getEmail(),
-                    incidencia.getId(),
-                    incidencia.getDescripcion());
-        }
-
-        return incidenciaGuardada;
-    }
-
-    String observacionHistorial2 = "Técnico ha finalizado su parte";
-    if (comentario != null && !comentario.isBlank()) {
-        observacionHistorial2 += ". Observaciones del técnico: " + comentario;
-    }
-    incidencia.agregarHistorial(new Historial(
-            incidencia,
-            tecnico,
-            Estado.EN_CURSO,
-            observacionHistorial2));
-
-    return incidenciaRepository.save(incidencia);
+        return incidenciaRepository.save(incidencia);
     }
 
     public List<IncidenciaPublicaDTO> obtenerIncidenciasPublicas() {
 
         List<Estado> estadosExcluir = List.of(
-            Estado.CERRADA,
-            Estado.RECHAZADA,
-            Estado.CREADA,
-            Estado.RESUELTA
-        );
+                Estado.CERRADA,
+                Estado.RECHAZADA,
+                Estado.CREADA,
+                Estado.RESUELTA);
 
         return incidenciaRepository.findByEstadoNotIn(estadosExcluir)
-            .stream()
-            .map(i -> new IncidenciaPublicaDTO(
-                i.getId(),
-                i.getFechaCreacion(),
-                i.getEstado().name(),
-                i.getDescripcion(),
-                i.getPrioridad().name(),
-                i.getUbicacion(),
-                i.getHistoriales()
-            ))
-            .toList();
+                .stream()
+                .map(i -> new IncidenciaPublicaDTO(
+                        i.getId(),
+                        i.getFechaCreacion(),
+                        i.getEstado().name(),
+                        i.getDescripcion(),
+                        i.getPrioridad().name(),
+                        i.getUbicacion(),
+                        i.getHistoriales()))
+                .toList();
     }
 
     @Transactional
@@ -868,16 +863,25 @@ public Incidencia actualizarIncidencia(
         return incidenciaGuardada;
     }
 
-    public List<Incidencia> buscarIncidenciasPorProximidad(double latitud, double longitud, double rangoKm) {
-        return incidenciaRepository.findAll().stream()
+    public List<Incidencia> buscarIncidenciasPorProximidad(double latitud, double longitud, double rangoKm,
+            String descripcion) {
+
+        List<Incidencia> cercanas = incidenciaRepository.findAll().stream()
                 .filter(i -> i.getEstado() != Estado.CREADA)
                 .filter(i -> {
                     Ubicacion u = i.getUbicacion();
-                    if (u == null || u.getLatitud() == null || u.getLongitud() == null) return false;
+                    if (u == null || u.getLatitud() == null || u.getLongitud() == null)
+                        return false;
                     double distancia = calcularDistanciaKm(latitud, longitud, u.getLatitud(), u.getLongitud());
                     return distancia <= rangoKm;
                 })
                 .collect(Collectors.toList());
+
+        if (descripcion == null || descripcion.isBlank()) {
+            return cercanas;
+        }
+
+        return filtrarPorDescripcionSimilar(cercanas, descripcion);
     }
 
     private double calcularDistanciaKm(double lat1, double lon1, double lat2, double lon2) {
@@ -886,7 +890,7 @@ public Incidencia actualizarIncidencia(
         double dLon = Math.toRadians(lon2 - lon1);
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                        * Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
@@ -894,7 +898,8 @@ public Incidencia actualizarIncidencia(
     public IncidenciaPublicaDTO obtenerIncidenciaPublicaPorId(Long id) {
         Incidencia incidencia = obtenerPorId(id);
 
-        if (incidencia.getEstado() == Estado.CERRADA || incidencia.getEstado() == Estado.RECHAZADA || incidencia.getEstado() == Estado.CREADA || incidencia.getEstado() == Estado.RESUELTA) {
+        if (incidencia.getEstado() == Estado.CERRADA || incidencia.getEstado() == Estado.RECHAZADA
+                || incidencia.getEstado() == Estado.CREADA || incidencia.getEstado() == Estado.RESUELTA) {
             throw new DomainRuleViolation("La incidencia con id " + id + " no es pública.");
         }
 
@@ -905,7 +910,72 @@ public Incidencia actualizarIncidencia(
                 incidencia.getDescripcion(),
                 incidencia.getPrioridad().name(),
                 incidencia.getUbicacion(),
-                incidencia.getHistoriales()
-        );
+                incidencia.getHistoriales());
+    }
+
+    private List<Incidencia> filtrarPorDescripcionSimilar(List<Incidencia> incidencias, String descripcion) {
+
+        if (incidencias.isEmpty() || comparacionUrl == null || comparacionUrl.isBlank()) {
+            return incidencias;
+        }
+
+        if (iaApiKey == null || iaApiKey.isBlank()) {
+            return incidencias;
+        }
+
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("auth", iaApiKey);
+
+            List<Map<String, Object>> incidenciasParaComparar = incidencias.stream()
+                    .map(i -> {
+                        Map<String, Object> map = new java.util.HashMap<>();
+                        map.put("id", i.getId());
+                        map.put("descripcion", i.getDescripcion());
+                        return map;
+                    })
+                    .collect(Collectors.toList());
+
+            Map<String, Object> body = new java.util.HashMap<>();
+            body.put("descripcion", descripcion);
+            body.put("incidencias", incidenciasParaComparar);
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+            ResponseEntity<JsonNode> response = restTemplate.postForEntity(
+                    comparacionUrl,
+                    request,
+                    JsonNode.class);
+
+            JsonNode responseBody = response.getBody();
+
+            if (responseBody == null || !responseBody.has("reply")) {
+                return incidencias;
+            }
+
+            String replyText = responseBody.get("reply").asText();
+
+            JsonNode parsedReply = objectMapper.readTree(replyText);
+
+            if (!parsedReply.has("ids") || !parsedReply.get("ids").isArray()) {
+                return incidencias;
+            }
+
+            List<Long> idsSimilares = new ArrayList<>();
+            for (JsonNode idNode : parsedReply.get("ids")) {
+                idsSimilares.add(idNode.asLong());
+            }
+
+            List<Incidencia> resultado = incidencias.stream()
+                    .filter(i -> idsSimilares.contains(i.getId()))
+                    .collect(Collectors.toList());
+
+            return resultado;
+
+        } catch (Exception e) {
+            return incidencias;
+        }
     }
 }

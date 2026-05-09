@@ -62,6 +62,14 @@ public class IncidenciaController {
     public record ActualizarTecnicosEspecialidadesRequest(List<String> especialidades) {
     }
 
+    public record BuscarCercanasRequest(
+            Double latitud,
+            Double longitud,
+            Double rangoKm,
+            String descripcion
+    ) {
+    }
+
     private Usuario getAuthenticatedUser(Principal principal) {
         if (principal == null)
             return null;
@@ -445,17 +453,16 @@ public class IncidenciaController {
         return ResponseEntity.ok(incidenciaService.cerrarIncidencia(id, comentario.comentarioTecnico()));
     }  
     
-    @GetMapping("/buscar-cercanas")
+    @PostMapping("/buscar-cercanas")
     public ResponseEntity<List<Incidencia>> buscarIncidenciasCercanas(
-            @RequestParam double latitud,
-            @RequestParam double longitud,
-            @RequestParam double rangoKm,
+            @RequestBody BuscarCercanasRequest request,
             Principal principal) {
         Usuario usuario = getAuthenticatedUser(principal);
         if (!(usuario instanceof urbandesk.backend.domain.user.Operador)) {
             throw new urbandesk.backend.domain.DomainRuleViolation("Solo los operadores pueden buscar incidencias por proximidad.");
         }
-        List<Incidencia> incidencias = incidenciaService.buscarIncidenciasPorProximidad(latitud, longitud, rangoKm);
+        List<Incidencia> incidencias = incidenciaService.buscarIncidenciasPorProximidad(
+                request.latitud(), request.longitud(), request.rangoKm(), request.descripcion());
         return ResponseEntity.ok(incidencias);
     }
 
