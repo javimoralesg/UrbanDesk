@@ -668,8 +668,8 @@ public Incidencia actualizarIncidencia(
         }
         Incidencia incidencia = obtenerPorId(id);
 
-        if (incidencia.getEstado() != Estado.VALIDADA && incidencia.getEstado() != Estado.ASIGNADA) {
-            throw new DomainRuleViolation("Solo se pueden rechazar incidencias que estén en estado VALIDADA o ASIGNADA");
+        if (incidencia.getEstado() != Estado.EN_CURSO && incidencia.getEstado() != Estado.ASIGNADA) {
+            throw new DomainRuleViolation("Solo se pueden rechazar incidencias que estén en estado EN_CURSO o ASIGNADA");
         }
 
         Tecnico tecnico = incidencia.getTecnicos().stream()
